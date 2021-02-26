@@ -72,7 +72,7 @@ If you run rigctld on a computer connected to the radio, it can be polled for ba
 
 If you use either Cloudlog logging or QRZ/HamDB lookup you can click the gear icon to enter your credentials. Q's are pushed to CloudLog as soon as they are logged.
 
-The QRZ/HamDB lookup is only used to get the name and gridsquare for the call. Mainly because when a Q is pushed to CloudLog it will not show as a pin on the map unless it has a gridsquare. So this is a scratch my own itch feature. Just place a check in either box to use them. If both are checked it will it will use QRZ.
+The QRZ/HamDB lookup is only used to get the name and gridsquare for the call. Mainly because when a Q is pushed to [CloudLog](https://github.com/magicbug/Cloudlog) it will not show as a pin on the map unless it has a gridsquare. So this is a scratch my own itch feature. Just place a check in either box to use them. If both are checked it will it will use QRZ.
 If you have no internet connection leave these unchecked since it might cause a delayafter entering your Q.
 
 ## XPlanet marker file
