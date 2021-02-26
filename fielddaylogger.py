@@ -790,8 +790,18 @@ class MainWindow(QtWidgets.QMainWindow):
 					if self.qrzsession:
 						payload = {'s':self.qrzsession, 'callsign':call}
 						r=requests.get(self.qrzurl,params=payload, timeout=3.0)
+				grid, name = self.parseLookup(r)
 			elif self.usehamdb and internet_good:
 				r=requests.get(f"http://api.hamdb.org/v1/{call}/xml/k6gtefdlogger",timeout=3.0)
+				grid, name = self.parseLookup(r)
+		except:
+			self.infobox.insertPlainText(f"Something Smells...\n")
+		return grid, name
+
+	def parseLookup(self,r):
+		grid=False
+		name=False
+		try:
 			if r.status_code == 200:
 				if r.text.find('<Error>') > 0:
 					errorText = r.text[r.text.find('<Error>')+7:r.text.find('</Error>')]
@@ -806,7 +816,7 @@ class MainWindow(QtWidgets.QMainWindow):
 					else:
 						name += " " + r.text[r.text.find('<name>')+6:r.text.find('</name>')]
 		except:
-			self.infobox.insertPlainText(f"Something smells...\n")
+			self.infobox.insertPlainText(f"Lookup Failed...\n")
 		return grid, name
 
 	def adif(self):
