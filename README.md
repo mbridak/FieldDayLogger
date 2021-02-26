@@ -21,7 +21,7 @@ Field Day only has a generic digital mode designator 'DI', which gets exported t
 
 ## Running the binary
 
-In the dist directory is the latest binary for Linux [fielddaylogger](https://github.com/mbridak/WinterFieldDayLogger/raw/main/dist/wfdlogger), Raspberry Pi [fielddaylogger_pi](https://github.com/mbridak/WinterFieldDayLogger/raw/main/dist/wfdlogger_pi) and Windows 10 [fielddaylogger.exe](https://github.com/mbridak/WinterFieldDayLogger/raw/main/dist/wfdlogger.exe). You can copy it to a folder in your Linux PATH `/usr/local/bin` or `~/bin` or on either platform just run it where ever it happens to be. Or you can follow the steps below to run it from source.
+In the dist directory is the latest binary for Linux [fielddaylogger](https://github.com/mbridak/FieldDayLogger/raw/main/dist/fielddaylogger), Raspberry Pi [fielddaylogger_pi](https://github.com/mbridak/FieldDayLogger/raw/main/dist/fielddaylogger_pi) and Windows 10 [fielddaylogger.exe](https://github.com/mbridak/FieldDayLogger/raw/main/dist/fielddaylogger.exe). You can copy it to a folder in your Linux PATH `/usr/local/bin` or `~/bin` or on either platform just run it where ever it happens to be. Or you can follow the steps below to run it from source.
 
 ## Installing an icon
 
