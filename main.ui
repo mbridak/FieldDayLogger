@@ -1,0 +1,3643 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>592</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>Courier</family>
+    <pointsize>12</pointsize>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>K6GTE Field Day Logger</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(42, 42, 42);
+color: rgb(211, 215, 207);</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>170</y>
+      <width>781</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Monospace</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-color: rgb(238, 238, 236);
+border-top-color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::WinPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+       <kerning>true</kerning>
+      </font>
+     </property>
+     <property name="text">
+      <string>CW:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>10</y>
+       <width>58</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Phone:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>10</y>
+       <width>77</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Digital:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_4">
+     <property name="geometry">
+      <rect>
+       <x>370</x>
+       <y>10</y>
+       <width>106</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>QSO Points:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_5">
+     <property name="geometry">
+      <rect>
+       <x>560</x>
+       <y>10</y>
+       <width>58</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Qs HR:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_6">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>10</y>
+       <width>87</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Qs 15Min:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Total_Digital">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>10</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>000</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="QSO_Points">
+     <property name="geometry">
+      <rect>
+       <x>480</x>
+       <y>10</y>
+       <width>68</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>0000000</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="QSO_PerHour">
+     <property name="geometry">
+      <rect>
+       <x>620</x>
+       <y>10</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>00</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Total_Phone">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>10</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>000</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="QSO_Last15">
+     <property name="geometry">
+      <rect>
+       <x>750</x>
+       <y>10</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>00</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Total_CW">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>10</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>000</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="Line" name="line">
+     <property name="geometry">
+      <rect>
+       <x>106</x>
+       <y>2</y>
+       <width>3</width>
+       <height>37</height>
+      </rect>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>2</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+    <widget class="Line" name="line_2">
+     <property name="geometry">
+      <rect>
+       <x>225</x>
+       <y>2</y>
+       <width>3</width>
+       <height>37</height>
+      </rect>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>2</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+    <widget class="Line" name="line_3">
+     <property name="geometry">
+      <rect>
+       <x>366</x>
+       <y>2</y>
+       <width>3</width>
+       <height>37</height>
+      </rect>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>2</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+    <widget class="Line" name="line_4">
+     <property name="geometry">
+      <rect>
+       <x>556</x>
+       <y>2</y>
+       <width>3</width>
+       <height>37</height>
+      </rect>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>2</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+    <widget class="Line" name="line_5">
+     <property name="geometry">
+      <rect>
+       <x>656</x>
+       <y>2</y>
+       <width>3</width>
+       <height>37</height>
+      </rect>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>2</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>781</width>
+      <height>151</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::WinPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <widget class="QListWidget" name="listWidget">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>11</y>
+       <width>771</width>
+       <height>131</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">alternate-background-color: rgb(66, 66, 66);
+</string>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::DoubleClicked</set>
+     </property>
+     <property name="showDropIndicator" stdset="0">
+      <bool>false</bool>
+     </property>
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>223</y>
+      <width>331</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::WinPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <widget class="QLineEdit" name="callsign_entry">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>113</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>Enter other operators callsign.</string>
+     </property>
+     <property name="statusTip">
+      <string>Enter other operators callsign.</string>
+     </property>
+     <property name="whatsThis">
+      <string>Enter other operators callsign.</string>
+     </property>
+     <property name="maxLength">
+      <number>14</number>
+     </property>
+     <property name="frame">
+      <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>CallSign</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="class_entry">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>10</y>
+       <width>71</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="placeholderText">
+      <string>Class</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="section_entry">
+     <property name="geometry">
+      <rect>
+       <x>232</x>
+       <y>10</y>
+       <width>91</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="placeholderText">
+      <string>Section</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame_4">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>273</y>
+      <width>331</width>
+      <height>251</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Monospace</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::WinPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <widget class="QTextEdit" name="infobox">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>9</y>
+       <width>321</width>
+       <height>231</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>2</number>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame_5">
+    <property name="geometry">
+     <rect>
+      <x>709</x>
+      <y>223</y>
+      <width>81</width>
+      <height>301</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Monospace</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::WinPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <widget class="QLabel" name="label_25">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>81</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_26">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>115</y>
+       <width>81</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+     </property>
+     <property name="text">
+      <string>CANADA</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_ND">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>46</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>ND</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_IA">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>46</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>IA</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_KS">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>69</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>KS</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_SD">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>92</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>SD</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_MN">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>92</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>MN</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_NE">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>69</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>NE</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_MO">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>23</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>MO</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_CO">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>23</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>CO</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_AB">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>138</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>AB</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_ONE">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>161</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>ONE</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_ONS">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>207</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>ONS</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_BC">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>161</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>BC</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_GTA">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>184</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>GTA</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_MAR">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>207</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>MAR</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_NT">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>138</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>NT</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_ONN">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>184</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>ONN</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_QC">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>230</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>QC</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_SK">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>253</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>SK</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_PE">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>276</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>PE</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_MB">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>230</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>MB</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_NL">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>253</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>NL</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame_6">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>223</y>
+      <width>81</width>
+      <height>301</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Monospace</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::WinPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <widget class="QLabel" name="label_22">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>81</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+     </property>
+     <property name="text">
+      <string>7</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_23">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>138</y>
+       <width>81</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+     </property>
+     <property name="text">
+      <string>8</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_24">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>207</y>
+       <width>81</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+     </property>
+     <property name="text">
+      <string>9</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_OR">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>46</y>
+       <width>23</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>OR</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_AZ">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>46</y>
+       <width>19</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>AZ</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_MI">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>161</y>
+       <width>18</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>MI</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_OH">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>184</y>
+       <width>23</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>OH</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_WV">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>161</y>
+       <width>23</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>WV</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_NV">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>23</y>
+       <width>21</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>NV</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_AK">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>23</y>
+       <width>21</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>AK</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_WI">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>230</y>
+       <width>18</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>WI</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_IL">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>230</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>IL</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_IN">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>253</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>IN</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_ID">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>92</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>ID</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_EWA">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>69</y>
+       <width>33</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>EWA</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_WWA">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>92</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>WWA</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_UT">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>69</y>
+       <width>20</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>UT</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_MT">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>115</y>
+       <width>23</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>MT</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_WY">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>115</y>
+       <width>24</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>WY</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame_7">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>223</y>
+      <width>81</width>
+      <height>301</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Monospace</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::WinPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <widget class="QLabel" name="label_20">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>81</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+     </property>
+     <property name="text">
+      <string>5</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_21">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>115</y>
+       <width>81</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+     </property>
+     <property name="text">
+      <string>6</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_SCV">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>138</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>SCV</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_EB">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>138</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>EB</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_LAX">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>161</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>LAX</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_SF">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>184</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>SF</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_ORG">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>184</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>ORG</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_SDG">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>161</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>SDG</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_NTX">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>23</y>
+       <width>31</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>NTX</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_AR">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>23</y>
+       <width>21</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>AR</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_OK">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>46</y>
+       <width>23</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>OK</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_LA">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>46</y>
+       <width>19</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>LA</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_STX">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>69</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>STX</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_MS">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>69</y>
+       <width>22</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>MS</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_WTX">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>92</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>WTX</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_NM">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>92</y>
+       <width>24</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>NM</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_PAC">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>207</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>PAC</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_SB">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>230</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>SB</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_SJV">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>207</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>SJV</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_SV">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>230</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>SV</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame_8">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>223</y>
+      <width>81</width>
+      <height>301</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Monospace</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::WinPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <widget class="QLabel" name="label_18">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>81</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+     </property>
+     <property name="text">
+      <string>3</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_19">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>69</y>
+       <width>81</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+     </property>
+     <property name="text">
+      <string>4</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_WPA">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>46</y>
+       <width>31</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>WPA</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_EPA">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>46</y>
+       <width>29</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>EPA</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_AL">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>92</y>
+       <width>18</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>AL</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_WCF">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>207</y>
+       <width>32</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>WCF</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_PR">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>207</y>
+       <width>20</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>PR</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_SC">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>92</y>
+       <width>18</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>SC</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_MDC">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>23</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>MDC</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_DE">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>23</y>
+       <width>20</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>DE</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_GA">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>115</y>
+       <width>21</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>GA</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_SFL">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>115</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>SFL</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_KY">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>138</y>
+       <width>19</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>KY</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_TN">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>138</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>TN</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_NC">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>161</y>
+       <width>21</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>NC</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_VA">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>161</y>
+       <width>19</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>VA</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_NFL">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>184</y>
+       <width>27</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>NFL</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_VI">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>184</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>VI</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame_9">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>223</y>
+      <width>81</width>
+      <height>301</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Monospace</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::WinPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <widget class="QLabel" name="label_15">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>81</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+     </property>
+     <property name="text">
+      <string>DX</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_16">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>46</y>
+       <width>81</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+     </property>
+     <property name="text">
+      <string>1</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_17">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>161</y>
+       <width>81</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+     </property>
+     <property name="text">
+      <string>2</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_DX">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>23</y>
+       <width>21</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>DX</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_CT">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>69</y>
+       <width>20</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>CT</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_RI">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>69</y>
+       <width>20</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>RI</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_EMA">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>92</y>
+       <width>32</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>EMA</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_VT">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>92</y>
+       <width>20</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>VT</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_ME">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>115</y>
+       <width>22</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>ME</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_WMA">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>115</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>WMA</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_NH">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>138</y>
+       <width>22</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>NH</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_ENY">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>184</y>
+       <width>29</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>ENY</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_NNY">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>184</y>
+       <width>31</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>NNY</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_NLI">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>207</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>NLI</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_SNJ">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>207</y>
+       <width>27</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>SNJ</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_NNJ">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>230</y>
+       <width>30</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>NNJ</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Section_WNY">
+     <property name="geometry">
+      <rect>
+       <x>46</x>
+       <y>230</y>
+       <width>29</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(136, 138, 133);</string>
+     </property>
+     <property name="text">
+      <string>WNY</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="label_14">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>563</y>
+      <width>51</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Band:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="band_selector">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>559</y>
+      <width>61</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <item>
+     <property name="text">
+      <string>160</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>80</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>40</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>20</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>15</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>10</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>6</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>2</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label_57">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>563</y>
+      <width>51</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Mode:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="mode_selector">
+    <property name="geometry">
+     <rect>
+      <x>179</x>
+      <y>559</y>
+      <width>51</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <item>
+     <property name="text">
+      <string>CW</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>PH</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>DI</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>645</x>
+      <y>564</y>
+      <width>32</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>UTC:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>645</x>
+      <y>536</y>
+      <width>32</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>LOC:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="localtime">
+    <property name="geometry">
+     <rect>
+      <x>681</x>
+      <y>536</y>
+      <width>110</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>00/00 00:00:00</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="utctime">
+    <property name="geometry">
+     <rect>
+      <x>681</x>
+      <y>564</y>
+      <width>110</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>00/00 00:00:00</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mycallEntry">
+    <property name="geometry">
+     <rect>
+      <x>348</x>
+      <y>559</y>
+      <width>91</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
+    <property name="toolTip">
+     <string>Enter YOUR callsign.</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border: 1px solid red;</string>
+    </property>
+    <property name="maxLength">
+     <number>14</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="placeholderText">
+     <string>YourCall</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="myclassEntry">
+    <property name="geometry">
+     <rect>
+      <x>446</x>
+      <y>559</y>
+      <width>61</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
+    <property name="toolTip">
+     <string>Enter YOUR operating class</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border: 1px solid red;</string>
+    </property>
+    <property name="maxLength">
+     <number>3</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="placeholderText">
+     <string>Class</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mysectionEntry">
+    <property name="geometry">
+     <rect>
+      <x>516</x>
+      <y>559</y>
+      <width>61</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
+    <property name="toolTip">
+     <string>Enter YOUR ARRL Section</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border: 1px solid red;</string>
+    </property>
+    <property name="maxLength">
+     <number>3</number>
+    </property>
+    <property name="cursorPosition">
+     <number>0</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="placeholderText">
+     <string>Sect</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_58">
+    <property name="geometry">
+     <rect>
+      <x>238</x>
+      <y>563</y>
+      <width>39</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>PWR:</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="power_selector">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>559</y>
+      <width>61</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
+    <property name="buttonSymbols">
+     <enum>QAbstractSpinBox::UpDownArrows</enum>
+    </property>
+    <property name="maximum">
+     <number>1500</number>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="genLogButton">
+    <property name="geometry">
+     <rect>
+      <x>528</x>
+      <y>530</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(92, 53, 102);</string>
+    </property>
+    <property name="text">
+     <string>Generate Logs</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="radio_icon">
+    <property name="geometry">
+     <rect>
+      <x>441</x>
+      <y>534</y>
+      <width>36</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>radio_green.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLabel" name="QRZ_icon">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>534</y>
+      <width>29</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(26, 26, 26);</string>
+    </property>
+    <property name="text">
+     <string>QRZ</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="cloudlog_icon">
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>534</y>
+      <width>25</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>cloud_green.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="settingsbutton">
+    <property name="geometry">
+     <rect>
+      <x>590</x>
+      <y>560</y>
+      <width>28</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>icon/gear16x16.png</normaloff>icon/gear16x16.png</iconset>
+    </property>
+   </widget>
+   <zorder>frame_2</zorder>
+   <zorder>frame_3</zorder>
+   <zorder>frame_4</zorder>
+   <zorder>frame_5</zorder>
+   <zorder>frame_6</zorder>
+   <zorder>frame_7</zorder>
+   <zorder>frame_8</zorder>
+   <zorder>frame_9</zorder>
+   <zorder>label_14</zorder>
+   <zorder>band_selector</zorder>
+   <zorder>label_57</zorder>
+   <zorder>mode_selector</zorder>
+   <zorder>label_7</zorder>
+   <zorder>label_8</zorder>
+   <zorder>localtime</zorder>
+   <zorder>utctime</zorder>
+   <zorder>mycallEntry</zorder>
+   <zorder>myclassEntry</zorder>
+   <zorder>mysectionEntry</zorder>
+   <zorder>label_58</zorder>
+   <zorder>power_selector</zorder>
+   <zorder>genLogButton</zorder>
+   <zorder>radio_icon</zorder>
+   <zorder>QRZ_icon</zorder>
+   <zorder>cloudlog_icon</zorder>
+   <zorder>settingsbutton</zorder>
+   <zorder>frame</zorder>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>callsign_entry</tabstop>
+  <tabstop>class_entry</tabstop>
+  <tabstop>section_entry</tabstop>
+  <tabstop>infobox</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

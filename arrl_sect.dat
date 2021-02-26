@@ -1,0 +1,118 @@
+# mod for machine readability
+#
+# section_abbrev state_abbrev call_area abbrev name
+#
+# Revised: 6/11/2014
+#
+#		     ARRL/CANADIAN SECTION ABBREVIATIONS
+#
+CT  CT 1 CT Connecticut
+EB  CA 6 EB East Bay
+EMA MA 1 EMA Eastern Massachusetts
+LAX CA 6 LAX Los Angeles
+ME  ME 1 ME Maine
+ORG CA 6 ORG Orange
+NH  NH 1 NH New Hampshire
+SB  CA 6 SB Santa Barbara
+RI  RI 1 RI Rhode Island
+SCV CA 6 SCV Santa Clara Valley
+VT  VT 1 VT Vermont
+SDG CA 6 SDG San Diego
+WMA MA 1 WMA Western Massachusetts
+SF  CA 6 SF San Francisco
+SJV CA 6 SJV San Joaquin Valley
+SV  CA 6 SV Sacramento Valley
+PAC HI 6 PAC Pacific
+ENY NY 2 ENY Eastern New York
+NLI NY 2 NLI New York City-Long Island
+NNJ NJ 2 NNJ Northern New Jersey
+NNY NY 2 NNY Northern New York
+AZ  AZ 7 AZ Arizona
+SNJ NJ 2 SNJ Southern New Jersey
+EWA WA 7 EWA Eastern Washington
+WNY NY 2 WNY Western New York
+ID  ID 7 ID Idaho
+MT  MT 7 MT Montana
+NV  NV 7 NV Nevada
+OR  OR 7 OR Oregon
+DE  DE 3 DE Delaware
+UT  UT 7 UT Utah
+EPA PA 3 EPA Eastern Pennsylvania
+WWA WA 7 WWA Western Washington
+MDC MD 3 MDC Maryland-DC
+WY  WY 7 WY Wyoming
+WPA PA 3 WPA Western Pennsylvania
+AK  AK 7 AK Alaska
+AL  AL 4 AL Alabama
+MI  MI 8 MI Michigan
+GA  GA 4 GA Georgia
+OH  OH 8 OH Ohio
+KY  KY 4 KY Kentucky
+WV  WV 8 WV West Virginia
+NC  NC 4 NC North Carolina
+NFL FL 4 NFL Northern Florida
+SC  SC 4 SC South Carolina
+SFL FL 4 SFL Southern Florida
+IL  IL 9 IL Illinois
+WCF FL 4 WCF West Central Florida
+IN  IN 9 IN Indiana
+TN  TN 4 TN Tennessee
+WI  WI 9 WI Wisconsin
+VA  VA 4 VA Virginia
+#
+PR  -- 4? PR Puerto Rico
+VI  -- 4? VI Virgin Islands
+#
+CO  CO 0 CO Colorado
+IA  IA 0 IA Iowa
+AR  AR 5 AR Arkansa
+KS  KS 0 KS Kansas
+LA  LA 5 LA Louisiana
+MN  MN 0 MN Minnesota
+MS  MS 5 MS Mississippi
+MO  MO 0 MO Missouri
+NM  NM 5 NM New Mexico
+NE  NE 0 NE Nebraska
+NTX TX 5 NTX North Texas
+ND  ND 0 ND North Dakota
+OK  OK 5 OK Oklahoma
+SD  SD 0 SD South Dakota
+STX TX 5 STX South Texas
+WTX TX 5 WTX West Texas
+#
+MAR -- C MAR Maritime
+SK  -- C SK Saskatchewan
+NL  -- C NL Newfoundland/Labrador
+AB  -- C AB Alberta
+QC  -- C QC Quebec
+BC  -- C BC British Columbia
+ON  -- C ON Ontario
+NWT -- C NWT Northwest Territories/Yukon/Nunavut
+MB  -- C MB Manitoba
+PE  -- C PE Prince Edward Island
+#
+GTA -- C GTA Greater Toronto Area
+ONE -- C ONE Ontario East
+ONN -- C ONN Ontario North
+ONS -- C ONS Ontario South
+#
+DX  -- - DX Foreign
+#
+# info from ARRL web form by Dan Henderson, N1ND, contests@arrl.org  Updated:  08/28/01
+#
+# additional synonyms (not official) akb
+WVA  WV 8 WV West Virginia
+STEX TX 5 STX South Texas
+MD   MD 3 MDC Maryland-DC
+ORE  OR 7 OR Oregon
+WYO  WY 7 WY Wyoming
+WIS  WI 9 WI Wisconsin
+NMEX NM 5 NM New Mexico
+NDAK ND 0 ND North Dakota
+SJC  CA 6 SJV San Joaquin Valley
+NEB  NE 0 NE Nebraska
+NB   NE 0 NE Nebraska
+ONT  -- C ON Ontario
+NT   -- C NWT Northwest Territories/Yukon/Nunavut
+ST   TX 5 STX South Texas
+SFLA FL 4 SFL Southern Florida
