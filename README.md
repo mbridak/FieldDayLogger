@@ -10,7 +10,7 @@ The log is stored in an sqlite3 database file 'FieldDay.db'. If you need to wipe
 
 The logger will generate a cabrillo file 'YOURCALL.log' and a 'Statistics.txt' file with a band/mode/power breakdown which you can use when you submit your logs to the ARRL online [here](http://field-day.arrl.org/fdentry.php). An ADIF file will also be generated so you can merge contacts into your normal Log.
 
-![Alt text](https://github.com/mbridak/WinterFieldDayLogger/raw/main/pics/loggerscreenshot.png)
+![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/loggerscreenshot.png)
 
 
 
@@ -53,7 +53,7 @@ Just make fielddaylogger.py executable and run it within the same folder, or typ
 
 When run for the first time, you will need to set your callsign, class, section, band, mode and power used for the contacts. This can be found at the bottom of the screen.
 
-![Alt text](https://github.com/mbridak/WinterFieldDayLogger/raw/main/pics/yourstuff.png)
+![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/yourstuff.png)
 
 ## Logging
 
@@ -66,7 +66,7 @@ Okay you've made a contact. Enter the call in the call field. As you type it in,
 
 If you run rigctld on a computer connected to the radio, it can be polled for band/mode updates automatically. Click the gear icon at the bottom of the screen to set the IP and port for rigctld. There is a radio icon at the bottom of the logging window to indicate polling status.
 
-![Alt text](https://github.com/mbridak/WinterFieldDayLogger/raw/main/pics/loggerSettingsDialog.png)
+![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/loggerSettingsDialog.png)
 
 ## Cloudlog, QRZ, HamDB useage
 
@@ -79,7 +79,7 @@ If you have no internet connection leave these unchecked since it might cause a 
 
 If you use QRZ/HamdDB lookups you can also generate an [XPlanet](http://xplanet.sourceforge.net/) markerfile which will show little pips on the map as contacts are logged.
 
-![Alt text](https://github.com/mbridak/WinterFieldDayLogger/raw/main/pics/xplanet.png)
+![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/xplanet.png)
 
 The above launched with an example command:
 
@@ -91,25 +91,25 @@ xplanet -body earth -window -longitude -117 -latitude 38 -config Default -projec
 
 Double click a contact in the upper portion of the screen to edit or delete it.
 
-![Alt text](https://github.com/mbridak/WinterFieldDayLogger/raw/main/pics/editqso.png)
+![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/editqso.png)
 
 ## Super Check Partial
 
 If you type more than two characters in the callsign field the program will filter the input through a "Super Check Partial" routine and show you possible matches to known contesting call signs. Is this useful? Doubt it.
 
-![Alt text](https://github.com/mbridak/WinterFieldDayLogger/raw/main/pics/scp.png)
+![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/scp.png)
 
 ## Section partial check
 
 As you type the section abbreviation you are presented with a list of all possible sections that start with what you have typed.
 
-![Alt text](https://github.com/mbridak/WinterFieldDayLogger/raw/main/pics/sectioncheck.png)
+![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/sectioncheck.png)
 
 ## DUP checking
 
 Once you type a complete callsign and press TAB or SPACE to advance to the next field. The callsign is checked against previous callsigns in your log. It will list any prior contact made showing the band and mode of the contact. If the band and mode are the same as the one you are currently using, the listing will be highlighted, the screen will flash, a bell will sound to alert you that this is a DUP. At this point you and the other OP can argue back and forth about who's wrong. In the end you'll put your big boy pants on and make a decision if you'll enter the call or not.
 
-![Alt text](https://github.com/mbridak/WinterFieldDayLogger/raw/main/pics/dupe.png)
+![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/dupe.png)
 
 ## Autofill
 
@@ -119,7 +119,7 @@ If you have worked this person before on another band/mode the program will load
 
 After the big weekend, once you've swept up all the broken beer bottles and wiped the BBQ sauce off your chin, go ahead and click the Generate Logs button.
 
-![Alt text](https://github.com/mbridak/WinterFieldDayLogger/raw/main/pics/genlog.png)
+![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/genlog.png)
 
 This will generate the following:
 
