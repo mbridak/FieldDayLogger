@@ -835,7 +835,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		print("<EOH>", end='\r\n', file=open(logname, "a", encoding='ascii'))
 		for x in log:
 			_, hiscall, hisclass, hissection, datetime, freq, band, mode, _, grid, opname = x
-			if mode == "DI": mode = "RTTY"
+			if mode == "DI": mode = "FT8"
 			if mode == "PH": mode = "SSB"
 			if mode == "CW":
 				rst = "599"
@@ -863,7 +863,7 @@ class MainWindow(QtWidgets.QMainWindow):
 			if state: print(f"<STATE:{len(state)}>{state}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
 			if len(grid) > 1: print(f"<GRIDSQUARE:{len(grid)}>{grid}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
 			if len(opname) > 1: print(f"<NAME:{len(opname)}>{opname}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			comment = "ARRL-FIELD-DAY"
+			comment = "ARRL-FD"
 			print(f"<COMMENT:{len(comment)}>{comment}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
 			print("<EOR>", end='\r\n', file=open(logname, 'a', encoding='ascii'))
 			print("", end='\r\n', file=open(logname, 'a', encoding='ascii'))
@@ -879,7 +879,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		conn.close()
 		_, hiscall, hisclass, hissection, datetime, band, mode, _, grid, opname = q
 			
-		if mode == "DI": mode = "RTTY"
+		if mode == "DI": mode = "FT8"
 		if mode == "PH": mode = "SSB"
 		if mode == "CW":
 			rst = "599"
@@ -903,7 +903,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		if state: adifq += f"<STATE:{len(state)}>{state}"
 		if len(grid) > 1: adifq += f"<GRIDSQUARE:{len(grid)}>{grid}"
 		if len(opname) > 1: adifq += f"<NAME:{len(opname)}>{opname}"
-		comment = "ARRL Field Day"
+		comment = "ARRL-FD"
 		adifq += f"<COMMENT:{len(comment)}>{comment}"
 		adifq += "<EOR>"
 
@@ -935,7 +935,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		
 		print("START-OF-LOG: 3.0", end='\r\n', file=open(filename, "w", encoding='ascii'))
 		print("CREATED-BY: K6GTE Field Day Logger", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		print("CONTEST: ARRL-FIELD-DAY", end='\r\n', file=open(filename, "a", encoding='ascii'))
+		print("CONTEST: ARRL-FD", end='\r\n', file=open(filename, "a", encoding='ascii'))
 		print(f"CALLSIGN: {self.mycall}", end='\r\n', file=open(filename, "a", encoding='ascii'))
 		print("LOCATION:", end='\r\n', file=open(filename, "a", encoding='ascii'))
 		print(f"ARRL-SECTION: {self.mysection}", end='\r\n', file=open(filename, "a", encoding='ascii'))
