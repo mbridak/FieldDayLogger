@@ -13,6 +13,8 @@ import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import uic
+from PyQt5.QtNetwork import QUdpSocket, QHostAddress
+
 from datetime import datetime
 from sqlite3 import Error
 from pathlib import Path
@@ -65,7 +67,7 @@ class MainWindow(QtWidgets.QMainWindow):
 	oldmode = 0
 	basescore = 0
 	powermult = 0
-
+	datadict = {}
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -93,6 +95,111 @@ class MainWindow(QtWidgets.QMainWindow):
 		self.radiochecktimer = QtCore.QTimer()
 		self.radiochecktimer.timeout.connect(self.Radio)
 		self.radiochecktimer.start(1000)
+		self.udp_socket = QUdpSocket()
+		self.udp_socket.bind(QHostAddress.LocalHost, 2333)
+		self.udp_socket.readyRead.connect(self.on_udpSocket_readyRead)
+
+	def getvalue(self, item):
+		if item in self.datadict:
+			return self.datadict[item]
+		return 'NOT_FOUND'
+
+	def on_udpSocket_readyRead(self):
+		"""
+		This will process incomming UDP packets from GridTracker if it is set up to
+		send updates to N1MM+
+		"""
+		self.datadict = {}
+		datagram, senderHost, senderPortNumber = self.udp_socket.readDatagram(self.udp_socket.pendingDatagramSize())
+		#print(f'{senderHost} {senderPortNumber} {datagram.decode()}')
+		data = datagram.decode()
+		splitdata = data.upper().split("<")
+
+		for x in splitdata:
+			if x:
+				a = x.split(":")
+				if a==['EOR>']: break
+				self.datadict[a[0]] = a[1].split(">")[1].strip()
+		
+		x = self.getvalue("COMMAND")
+		if x == "LOG":
+			call = self.getvalue("CALL")
+			dayt = self.getvalue("QSO_DATE")
+			tyme = self.getvalue("TIME_ON")
+			dt = f"{dayt[0:4]}-{dayt[4:6]}-{dayt[6:8]} {tyme[0:2]}:{tyme[2:4]}:{tyme[4:6]}"
+			freq = int(float(self.getvalue("FREQ"))*1000000)
+			band = self.getvalue("BAND").split("M")[0]
+			grid = self.getvalue("GRIDSQUARE")
+			name = self.getvalue("NAME")
+			hisclass, hissect = self.getvalue("SRX").split(' ')
+			power = int(float(self.getvalue("TX_PWR")))
+
+			contact = (call, hisclass, hissect, dt, freq, band, "DI", power, grid, name)
+			try:
+				conn = sqlite3.connect(self.database)
+				sql = "INSERT INTO contacts(callsign, class, section, date_time, frequency, band, mode, power, grid, opname) VALUES(?,?,?,?,?,?,?,?,?,?)"
+				cur = conn.cursor()
+				cur.execute(sql, contact)
+				conn.commit()
+			except Error as e:
+				print("Log Contact: ")
+				print(e)
+			finally:
+				conn.close()
+
+			self.sections()
+			self.stats()
+			self.updatemarker()
+			self.logwindow()
+			self.clearinputs()
+			self.postcloudlog()
+
+			"""
+			print(f'CALL: {self.getvalue("CALL")}')
+			print(f'QSO_DATE: {self.getvalue("QSO_DATE")}')
+			print(f'TIME_ON: {self.getvalue("TIME_ON")}')
+			print(f'CONTEST_ID: {self.getvalue("CONTEST_ID")}')
+			print(f'MODE: {self.getvalue("MODE")}')
+			print(f'FREQ: {self.getvalue("FREQ")}')
+			print(f'FREQ_RX: {self.getvalue("FREQ_RX")}')
+			print(f'BAND: {self.getvalue("BAND")}')
+			print(f'COMMENT: {self.getvalue("COMMENT")}')
+			print(f'CQZ: {self.getvalue("CQZ")}')
+			print(f'ITUZ: {self.getvalue("ITUZ")}')
+			print(f'GRIDSQUARE: {self.getvalue("GRIDSQUARE")}')
+			print(f'NAME: {self.getvalue("NAME")}')
+			print(f'RST_RCVD: {self.getvalue("RST_RCVD")}')
+			print(f'RST_SENT: {self.getvalue("RST_SENT")}')
+			print(f'TX_PWR: {self.getvalue("TX_PWR")}')
+			print(f'RX_PWR: {self.getvalue("RX_PWR")}')
+			print(f'SRX: {self.getvalue("SRX")}')
+			print(f'STX: {self.getvalue("STX")}')
+			print(f'QTH: {self.getvalue("QTH")}')
+			print(f'OPERATOR: {self.getvalue("OPERATOR")}')
+			print(f'RADIO_NR: {self.getvalue("RADIO_NR")}')
+			print(f'POINTS: {self.getvalue("POINTS")}')
+			print(f'ARI_PROV: {self.getvalue("ARI_PROV")}')
+			print(f'ARRL_SECT: {self.getvalue("ARRL_SECT")}')
+			print(f'DIG: {self.getvalue("DIG")}')
+			print(f'DISTRIKT: {self.getvalue("DISTRIKT")}')
+			print(f'DOK: {self.getvalue("DOK")}')
+			print(f'IOTA: {self.getvalue("IOTA")}')
+			print(f'KDA: {self.getvalue("KDA")}')
+			print(f'OBLAST: {self.getvalue("OBLAST")}')
+			print(f'PFX: {self.getvalue("PFX")}')
+			print(f'RDA: {self.getvalue("RDA")}')
+			print(f'SAC: {self.getvalue("SAC")}')
+			print(f'SECT: {self.getvalue("SECT")}')
+			print(f'STATE: {self.getvalue("STATE")}')
+			print(f'IARU_ZONE: {self.getvalue("IARU_ZONE")}')
+			print(f'SECTION: {self.getvalue("SECTION")}')
+			print(f'NAQSO_SECT: {self.getvalue("NAQSO_SECT")}')
+			print(f'VE_PROV: {self.getvalue("VE_PROV")}')
+			print(f'UKEI: {self.getvalue("UKEI")}')
+			print(f'WWPMC: {self.getvalue("WWPMC")}')
+			print(f'PRECEDENCE: {self.getvalue("PRECEDENCE")}')
+			print(f'CHECK: {self.getvalue("CHECK")}')
+			"""
 
 	def relpath(self, filename):
 		"""
@@ -406,15 +513,6 @@ class MainWindow(QtWidgets.QMainWindow):
 		if not self.userigctl:
 			self.oldfreq = int(float(self.dfreq[self.band]) * 1000000)
 		contact = (self.callsign_entry.text(), self.class_entry.text(), self.section_entry.text(), self.oldfreq, self.band, self.mode, int(self.power_selector.value()), grid, opname)
-
-		""" Just playing with server backend
-		loggerhost = "127.0.0.1"
-		loggerport = 7288
-		with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-			s.connect((loggerhost, loggerport))
-			s.sendall(f'<CMD><SAVEQSO><VALUE>{self.callsign_entry.text()} {self.class_entry.text()} {self.section_entry.text()} {self.oldfreq} {self.band} {self.mode} {int(self.power_selector.value())} {grid} {opname.replace(" ","_")}</VALUE></CMD>'.encode())
-			s.close()
-		"""
 
 		try:
 			conn = sqlite3.connect(self.database)
