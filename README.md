@@ -12,7 +12,14 @@ The logger will generate a cabrillo file 'YOURCALL.log' and a 'Statistics.txt' f
 
 ![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/loggerscreenshot.png)
 
+## Experimental feature
 
+I've added a UDP server on port 2333 to accept connections from GridTracker.
+If you enable the N1MM+ connection in GridTracker, in theory this Field Day logger should accept the connection as if it was N1MM+ and log the FT8 contact.
+
+Will it work? Mmmmmm sure... Sure it will. I can't really test it untill the day of the event. Sooo Yeah...
+
+Right now it's just active in the sources. I'll try and build the binaries soon.
 
 ## Caveats
 
