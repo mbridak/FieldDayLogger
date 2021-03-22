@@ -24,7 +24,7 @@ Right now it's just active in the sources. I'll try and build the binaries soon.
 ## Caveats
 
 This is a simple logger ment for single op, it's not usable for clubs.
-Field Day only has a generic digital mode designator 'DI', which gets exported to the cabrillo file. But ADIF and CloudLog needed something else, So I Chose RTTY. Feel free to change it to what ever you will use. Just search for the two places in the code 'RTTY' is used and Bob's your dads brother.
+Field Day only has a generic digital mode designator 'DI', which gets exported to the cabrillo file. But ADIF and CloudLog needed something else, So I Chose FT8. Yes Yes, I know. FT8 is the spawn of Satan, and is killing Ham Radio... Blah Blah Blah... But I needed it for the experiment mentioned above. Flames will be directed to the /dev/null dept. Feel free to change it to what ever you will use. Just search for the two places in the code 'FT8' is used and Bob's your dads brother.
 
 ## Running the binary
 
