@@ -121,8 +121,8 @@ class MainWindow(QtWidgets.QMainWindow):
 				if a==['EOR>']: break
 				self.datadict[a[0]] = a[1].split(">")[1].strip()
 		
-		x = self.getvalue("COMMAND")
-		if x == "LOG":
+		x = self.getvalue("CONTEST_ID")
+		if x == "ARRL-FIELD-DAY":
 			call = self.getvalue("CALL")
 			dayt = self.getvalue("QSO_DATE")
 			tyme = self.getvalue("TIME_ON")
@@ -131,10 +131,12 @@ class MainWindow(QtWidgets.QMainWindow):
 			band = self.getvalue("BAND").split("M")[0]
 			grid = self.getvalue("GRIDSQUARE")
 			name = self.getvalue("NAME")
-			hisclass, hissect = self.getvalue("SRX").split(' ')
-			power = int(float(self.getvalue("TX_PWR")))
+			if grid == 'NOT_FOUND' or name == 'NOT_FOUND':
+				grid, name = self.qrzlookup(call)
+			hisclass, hissect = self.getvalue("SRX_STRING").split(' ')
+			#power = int(float(self.getvalue("TX_PWR")))
 
-			contact = (call, hisclass, hissect, dt, freq, band, "DI", power, grid, name)
+			contact = (call, hisclass, hissect, dt, freq, band, "DI", self.power, grid, name)
 			try:
 				conn = sqlite3.connect(self.database)
 				sql = "INSERT INTO contacts(callsign, class, section, date_time, frequency, band, mode, power, grid, opname) VALUES(?,?,?,?,?,?,?,?,?,?)"
@@ -1001,6 +1003,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		if state: adifq += f"<STATE:{len(state)}>{state}"
 		if len(grid) > 1: adifq += f"<GRIDSQUARE:{len(grid)}>{grid}"
 		if len(opname) > 1: adifq += f"<NAME:{len(opname)}>{opname}"
+		adifq += "<CONTEST_ID:14>ARRL-FIELD-DAY"
 		comment = "ARRL-FD"
 		adifq += f"<COMMENT:{len(comment)}>{comment}"
 		adifq += "<EOR>"
