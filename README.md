@@ -14,8 +14,8 @@ The logger will generate a cabrillo file 'YOURCALL.log' and a 'Statistics.txt' f
 
 ## Experimental feature
 
-I've added a UDP server on port 2333 to accept connections from GridTracker.
-If you enable the N1MM+ connection in GridTracker, in theory this Field Day logger should accept the connection as if it was N1MM+ and log the FT8 contact.
+I've added a UDP server on port 2237 to accept UDP datagrams from WSJT-X.
+I'm sure I might be able to tie it in more, so this app would be able to flag dupes. But for now it will just ferret out contacts made in Field Day mode.
 
 Will it work? Mmmmmm sure... Sure it will. I can't really test it untill the day of the event. Sooo Yeah...
 
