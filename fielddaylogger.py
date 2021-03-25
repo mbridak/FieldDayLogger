@@ -96,7 +96,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		self.radiochecktimer.timeout.connect(self.Radio)
 		self.radiochecktimer.start(1000)
 		self.udp_socket = QUdpSocket()
-		self.udp_socket.bind(QHostAddress.LocalHost, 2333)
+		self.udp_socket.bind(QHostAddress.LocalHost, 2237)
 		self.udp_socket.readyRead.connect(self.on_udpSocket_readyRead)
 
 	def getvalue(self, item):
@@ -106,12 +106,21 @@ class MainWindow(QtWidgets.QMainWindow):
 
 	def on_udpSocket_readyRead(self):
 		"""
-		This will process incomming UDP packets from GridTracker if it is set up to
-		send updates to N1MM+
+		This will process incomming UDP log packets from WSJT-X.
+		I Hope...
 		"""
 		self.datadict = {}
 		datagram, senderHost, senderPortNumber = self.udp_socket.readDatagram(self.udp_socket.pendingDatagramSize())
 		#print(f'{senderHost} {senderPortNumber} {datagram.decode()}')
+
+		#Next block is a bit of a kludge
+		if datagram[0:4] != b'\xad\xbc\xcb\xda': return #bail if no wsjt-x magic number
+		gotcall = datagram.find(b'<call:') #if log packet it will contain this nugget.
+		if gotcall != -1:
+			datagram = datagram[gotcall:] # strip everything else
+		else:
+			return #Otherwise we don't want to bother with this packet
+
 		data = datagram.decode()
 		splitdata = data.upper().split("<")
 
