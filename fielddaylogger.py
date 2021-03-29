@@ -10,6 +10,7 @@ import time
 import sqlite3
 import socket
 import os
+import struct
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import uic
@@ -68,6 +69,8 @@ class MainWindow(QtWidgets.QMainWindow):
 	basescore = 0
 	powermult = 0
 	datadict = {}
+	dupdict = {}
+	ft8dupe=""
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -95,9 +98,30 @@ class MainWindow(QtWidgets.QMainWindow):
 		self.radiochecktimer = QtCore.QTimer()
 		self.radiochecktimer.timeout.connect(self.Radio)
 		self.radiochecktimer.start(1000)
+		self.ft8dupechecktimer = QtCore.QTimer()
+		self.ft8dupechecktimer.timeout.connect(self.ft8dupecheck)
+		self.ft8dupechecktimer.start(1000)
 		self.udp_socket = QUdpSocket()
 		self.udp_socket.bind(QHostAddress.LocalHost, 2237)
 		self.udp_socket.readyRead.connect(self.on_udpSocket_readyRead)
+
+	def getint(self, bytestring):
+		"""
+		Returns an int from a bigendian signed 4 byte string
+		"""
+		return int.from_bytes(bytestring, byteorder='big', signed=True)
+
+	def getuint(self, bytestring):
+		"""
+		Returns an int from a bigendian unsigned 4 byte string
+		"""
+		return int.from_bytes(bytestring, byteorder='big', signed=False)
+
+	def getbool(self, bytestring):
+		"""
+		Returns a bool from a 1 byte string
+		"""
+		return bool.from_bytes(bytestring, byteorder='big', signed=False)
 
 	def getvalue(self, item):
 		if item in self.datadict:
@@ -111,10 +135,92 @@ class MainWindow(QtWidgets.QMainWindow):
 		"""
 		self.datadict = {}
 		datagram, senderHost, senderPortNumber = self.udp_socket.readDatagram(self.udp_socket.pendingDatagramSize())
-		#print(f'{senderHost} {senderPortNumber} {datagram.decode()}')
+		#print(f'{senderHost} {senderPortNumber} {datagram}')
 
-		#Next block is a bit of a kludge
 		if datagram[0:4] != b'\xad\xbc\xcb\xda': return #bail if no wsjt-x magic number
+		version = self.getuint(datagram[4:8])
+		packettype = self.getuint(datagram[8:12])
+		uniquesize = self.getint(datagram[12:16])
+		unique = datagram[16:16+uniquesize].decode()
+		payload = datagram[16+uniquesize:]
+
+		if packettype == 0: #Heartbeat
+			hbmaxschema = self.getuint(payload[0:4])
+			hbversion_len = self.getint(payload[4:8])
+			hbversion = payload[8:8+hbversion_len].decode()
+			print(f"heartbeat: sv:{version} p:{packettype} u:{unique}: ms:{hbmaxschema} av:{hbversion}")
+			return
+
+		if packettype == 1: #Status
+			[dialfreq] = struct.unpack('>Q',payload[0:8])
+			modelen = self.getint(payload[8:12])
+			mode = payload[12:12+modelen].decode()
+			payload = payload[12+modelen:]
+			dxcalllen = self.getint(payload[0:4])
+			dxcall = payload[4:4+dxcalllen].decode()
+			"""
+			payload = payload[4+dxcalllen:]
+			reportlen = self.getint(payload[0:4])
+			report = payload[4:4+reportlen].decode()
+			payload = payload[4+reportlen:]
+			txmodelen = self.getint(payload[0:4])
+			txmode = payload[4:4+txmodelen].decode()
+			payload = payload[4+txmodelen:]
+			txenabled = self.getbool(payload[:1])
+			transmitting = self.getbool(payload[1:2])
+			decoding = self.getbool(payload[2:3])
+			rxdf = self.getuint(payload[3:7])
+			txdf = self.getuint(payload[7:11])
+			decalllen = self.getint(payload[11:15])
+			decall = payload[15:15+decalllen].decode()
+			payload = payload[15+decalllen:]
+			degridlen = self.getint(payload[0:4])
+			degrid = payload[4:4+degridlen].decode()
+			payload = payload[4+degridlen:]
+			dxgridlen = self.getint(payload[0:4])
+			dxgrid = payload[4:4+dxgridlen].decode()
+			payload = payload[4+dxgridlen:]
+			txwatchdog = self.getbool(payload[:1])
+			submodelen = self.getuint(payload[1:5])
+			if submodelen == 4294967295:
+				payload = payload[5:]
+				submode=''
+			else:
+				submode = payload[5:5+submodelen].decode()
+				payload= payload[5+submodelen:]
+			fastmode = self.getbool(payload[:1])
+			[sopmode] = struct.unpack("B",payload[1:2])
+			freqtol = self.getuint(payload[2:6])
+			trperiod = self.getuint(payload[6:10])
+			confnamelen = self.getuint(payload[10:14])
+			confname = payload[14:14+confnamelen].decode()
+			#print(f"Status: sv:{version} p:{packettype} u:{unique} df:{dialfreq} m:{mode} dxc:{dxcall} rpt:{report} txm:{txmode} txe:{txenabled} tx:{transmitting} d:{decoding} rdf:{rxdf} tdf:{txdf} dec:{decall} deg:{degrid} dxg:{dxgrid} txw:{txwatchdog} smo:{submode} fmo:{fastmode} sop:{sopmode} ft:{freqtol} trp:{trperiod} cn:{confname}")
+			"""
+			if f"{dxcall}{self.band}{self.mode}" in self.dupdict:
+				self.ft8dupe = f"{dxcall} {self.band}M {self.mode} FT8 Dupe!"
+			return
+
+		if packettype == 2: #Decode commented out because we really don't care.
+			"""
+			pnew = self.getbool(payload[:1])
+			qtime = payload[1:5]
+			snr = self.getint(payload[5:9])
+			[timedelta] = struct.unpack('>d',payload[9:17])
+			freqdelta = self.getuint(payload[17:21])
+			modelen = self.getuint(payload[21:25])
+			mode = payload[25:25+modelen].decode()
+			payload = payload[25+modelen:]
+			messagelen = self.getuint(payload[0:4])
+			message = payload[4:4+messagelen].decode()
+			lowconfidence = self.getbool(payload[4+messagelen:5+messagelen])
+			offair = self.getbool(payload[5+messagelen:6+messagelen])
+
+			print(f"Decode: sv:{version} p:{packettype} u:{unique} snr:{snr} td:{timedelta} fd:{freqdelta} m:{mode} msg:{message} lc:{lowconfidence} oa:{offair}")
+			"""
+			return
+
+
+		if packettype != 12: return #bail if not logged ADIF
 		gotcall = datagram.find(b'<call:') #if log packet it will contain this nugget.
 		if gotcall != -1:
 			datagram = datagram[gotcall:] # strip everything else
@@ -165,52 +271,15 @@ class MainWindow(QtWidgets.QMainWindow):
 			self.clearinputs()
 			self.postcloudlog()
 
-			"""
-			print(f'CALL: {self.getvalue("CALL")}')
-			print(f'QSO_DATE: {self.getvalue("QSO_DATE")}')
-			print(f'TIME_ON: {self.getvalue("TIME_ON")}')
-			print(f'CONTEST_ID: {self.getvalue("CONTEST_ID")}')
-			print(f'MODE: {self.getvalue("MODE")}')
-			print(f'FREQ: {self.getvalue("FREQ")}')
-			print(f'FREQ_RX: {self.getvalue("FREQ_RX")}')
-			print(f'BAND: {self.getvalue("BAND")}')
-			print(f'COMMENT: {self.getvalue("COMMENT")}')
-			print(f'CQZ: {self.getvalue("CQZ")}')
-			print(f'ITUZ: {self.getvalue("ITUZ")}')
-			print(f'GRIDSQUARE: {self.getvalue("GRIDSQUARE")}')
-			print(f'NAME: {self.getvalue("NAME")}')
-			print(f'RST_RCVD: {self.getvalue("RST_RCVD")}')
-			print(f'RST_SENT: {self.getvalue("RST_SENT")}')
-			print(f'TX_PWR: {self.getvalue("TX_PWR")}')
-			print(f'RX_PWR: {self.getvalue("RX_PWR")}')
-			print(f'SRX: {self.getvalue("SRX")}')
-			print(f'STX: {self.getvalue("STX")}')
-			print(f'QTH: {self.getvalue("QTH")}')
-			print(f'OPERATOR: {self.getvalue("OPERATOR")}')
-			print(f'RADIO_NR: {self.getvalue("RADIO_NR")}')
-			print(f'POINTS: {self.getvalue("POINTS")}')
-			print(f'ARI_PROV: {self.getvalue("ARI_PROV")}')
-			print(f'ARRL_SECT: {self.getvalue("ARRL_SECT")}')
-			print(f'DIG: {self.getvalue("DIG")}')
-			print(f'DISTRIKT: {self.getvalue("DISTRIKT")}')
-			print(f'DOK: {self.getvalue("DOK")}')
-			print(f'IOTA: {self.getvalue("IOTA")}')
-			print(f'KDA: {self.getvalue("KDA")}')
-			print(f'OBLAST: {self.getvalue("OBLAST")}')
-			print(f'PFX: {self.getvalue("PFX")}')
-			print(f'RDA: {self.getvalue("RDA")}')
-			print(f'SAC: {self.getvalue("SAC")}')
-			print(f'SECT: {self.getvalue("SECT")}')
-			print(f'STATE: {self.getvalue("STATE")}')
-			print(f'IARU_ZONE: {self.getvalue("IARU_ZONE")}')
-			print(f'SECTION: {self.getvalue("SECTION")}')
-			print(f'NAQSO_SECT: {self.getvalue("NAQSO_SECT")}')
-			print(f'VE_PROV: {self.getvalue("VE_PROV")}')
-			print(f'UKEI: {self.getvalue("UKEI")}')
-			print(f'WWPMC: {self.getvalue("WWPMC")}')
-			print(f'PRECEDENCE: {self.getvalue("PRECEDENCE")}')
-			print(f'CHECK: {self.getvalue("CHECK")}')
-			"""
+	def ft8dupecheck(self):
+		if self.ft8dupe != "":
+			self.infobox.clear()
+			self.flash()
+			self.infobox.setTextColor(QtGui.QColor(245, 121, 0))
+			self.infobox.insertPlainText(f"{self.ft8dupe}\n")
+		else:
+			self.infobox.setTextColor(QtGui.QColor(211, 215, 207))
+		self.ft8dupe = ""
 
 	def relpath(self, filename):
 		"""
@@ -605,6 +674,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		self.qrp = not (qrpc + qrpp + qrpd)
 
 	def logwindow(self):
+		self.dupdict = {}
 		self.listWidget.clear()
 		conn = sqlite3.connect(self.database)
 		c = conn.cursor()
@@ -615,6 +685,7 @@ class MainWindow(QtWidgets.QMainWindow):
 			logid, hiscall, hisclass, hissection, datetime, frequency,band, mode, power, _, _ = x
 			logline = f"{str(logid).rjust(3,'0')} {hiscall.ljust(15)} {hisclass.rjust(3)} {hissection.rjust(3)} {datetime} {str(frequency).rjust(9)} {str(band).rjust(3)}M {mode} {str(power).rjust(3)}W"
 			self.listWidget.addItem(logline)
+			self.dupdict[f"{hiscall}{band}{mode}"] = True
 	
 	def qsoclicked(self):
 		item = self.listWidget.currentItem()
