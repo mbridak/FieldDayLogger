@@ -14,12 +14,13 @@ The logger will generate a cabrillo file 'YOURCALL.log' and a 'Statistics.txt' f
 
 ## Experimental feature
 
-I've added a UDP server on port 2237 to accept UDP datagrams from WSJT-X.
-I'm sure I might be able to tie it in more, so this app would be able to flag dupes. But for now it will just ferret out contacts made in Field Day mode.
+I plan on operating some FT8 during Field Day to suppliment my rock'n CW score. You may ask if my CW score will be so rock'n why would I need supplimening? To that I say... "Shut up..." 
 
-Will it work? Mmmmmm sure... Sure it will. I can't really test it untill the day of the event. Sooo Yeah...
+So I've added a UDP server on port 2237 to accept UDP datagrams from WSJT-X. It's totally unicast, and "Hey thats my port, get your own port." So it won't play nice with others on the port playground.
 
-Right now it's just active in the sources. I'll try and build the binaries soon.
+Right now it just adds a contact if WSJTx sends an ADIF logged packet. It monitors the status packets looking for the dxcall field and flags dupes in the logging window. 
+
+Will it work? Mmmmmm sure... Sure it will. I can't really test it untill the day of the event 'cause you know there aint a lot of people calling CQ FD right now... Sooo Yeah...
 
 ## Caveats
 
@@ -28,7 +29,9 @@ Field Day only has a generic digital mode designator 'DI', which gets exported t
 
 ## Running the binary
 
-In the dist directory is the latest binary for Linux [fielddaylogger](https://github.com/mbridak/FieldDayLogger/raw/main/dist/fielddaylogger), Raspberry Pi [fielddaylogger_pi](https://github.com/mbridak/FieldDayLogger/raw/main/dist/fielddaylogger_pi) and Windows 10 [fielddaylogger.exe](https://github.com/mbridak/FieldDayLogger/raw/main/dist/fielddaylogger.exe). You can copy it to a folder in your Linux PATH `/usr/local/bin` or `~/bin` or on either platform just run it where ever it happens to be. Or you can follow the steps below to run it from source.
+In the dist directory is the latest binary for Linux [fielddaylogger](https://github.com/mbridak/FieldDayLogger/raw/main/dist/fielddaylogger), Raspberry Pi [fielddaylogger_pi](https://github.com/mbridak/FieldDayLogger/raw/main/dist/fielddaylogger_pi) and Windows 10 [fielddaylogger.exe](https://github.com/mbridak/FieldDayLogger/raw/main/dist/fielddaylogger.exe). 
+
+These are not auto generated. And are built on a 'When I get around to it.' schedule. I'll try and build them all before the big weekend. You can copy it to a folder in your Linux PATH `/usr/local/bin` or `~/bin` or on either platform just run it where ever it happens to be. Or you can follow the steps below to run it from source.
 
 ## Installing an icon
 
