@@ -25,7 +25,7 @@ class MainWindow(QtWidgets.QMainWindow):
 	mycall = ""
 	myclass = ""
 	mysection = ""
-	power = "0"
+	power = "100"
 	band = "40"
 	mode = "CW"
 	qrp = False
@@ -534,7 +534,7 @@ class MainWindow(QtWidgets.QMainWindow):
 			c = conn.cursor()
 			sql_table = """ CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY, callsign text NOT NULL, class text NOT NULL, section text NOT NULL, date_time text NOT NULL, frequency INTEGER DEFAULT 0, band text NOT NULL, mode text NOT NULL, power INTEGER NOT NULL, grid text NOT NULL, opname text NOT NULL); """
 			c.execute(sql_table)
-			sql_table = """ CREATE TABLE IF NOT EXISTS preferences (id INTEGER PRIMARY KEY, mycallsign TEXT DEFAULT '', myclass TEXT DEFAULT '', mysection TEXT DEFAULT '', power TEXT DEFAULT '0', altpower INTEGER DEFAULT 0, outdoors INTEGER DEFAULT 0, notathome INTEGER DEFAULT 0, satellite INTEGER DEFAULT 0, qrzusername TEXT DEFAULT 'w1aw', qrzpassword TEXT default 'secret', qrzurl TEXT DEFAULT 'https://xmldata.qrz.com/xml/',cloudlogapi TEXT DEFAULT 'cl12345678901234567890', cloudlogurl TEXT DEFAULT 'http://www.yoururl.com/Cloudlog/index.php/api/qso', useqrz INTEGER DEFAULT 0, usecloudlog INTEGER DEFAULT 0, userigcontrol INTEGER DEFAULT 0, rigcontrolip TEXT DEFAULT '127.0.0.1', rigcontrolport TEXT DEFAULT '4532',markerfile TEXT default 'secret', usemarker INTEGER DEFAULT 0, usehamdb INTEGER DEFAULT 0); """
+			sql_table = """ CREATE TABLE IF NOT EXISTS preferences (id INTEGER PRIMARY KEY, mycallsign TEXT DEFAULT '', myclass TEXT DEFAULT '', mysection TEXT DEFAULT '', power TEXT DEFAULT '100', altpower INTEGER DEFAULT 0, outdoors INTEGER DEFAULT 0, notathome INTEGER DEFAULT 0, satellite INTEGER DEFAULT 0, qrzusername TEXT DEFAULT 'w1aw', qrzpassword TEXT default 'secret', qrzurl TEXT DEFAULT 'https://xmldata.qrz.com/xml/',cloudlogapi TEXT DEFAULT 'cl12345678901234567890', cloudlogurl TEXT DEFAULT 'http://www.yoururl.com/Cloudlog/index.php/api/qso', useqrz INTEGER DEFAULT 0, usecloudlog INTEGER DEFAULT 0, userigcontrol INTEGER DEFAULT 0, rigcontrolip TEXT DEFAULT '127.0.0.1', rigcontrolport TEXT DEFAULT '4532',markerfile TEXT default 'secret', usemarker INTEGER DEFAULT 0, usehamdb INTEGER DEFAULT 0); """
 			c.execute(sql_table)
 			conn.commit()
 			conn.close()
@@ -569,9 +569,10 @@ class MainWindow(QtWidgets.QMainWindow):
 					self.usemarker = bool(self.usemarker)
 					self.usehamdb = bool(self.usehamdb)
 			else:
-				sql = f"INSERT INTO preferences(id, mycallsign, myclass, mysection, power, altpower, outdoors, notathome, satellite, markerfile, usemarker, usehamdb) VALUES(1,'{self.mycall}','{self.myclass}','{self.mysection}','{self.power}',{0},{0},{0},{0},'{self.markerfile}',{int(self.usemarker)},{int(self.usehamdb)})"
+				sql = f"INSERT INTO preferences(id, mycallsign, myclass, mysection, power, altpower, outdoors, notathome, satellite, markerfile, usemarker, usehamdb) VALUES(1,'{self.mycall}','{self.myclass}','{self.mysection}','100',{0},{0},{0},{0},'{self.markerfile}',{int(self.usemarker)},{int(self.usehamdb)})"
 				c.execute(sql)
 				conn.commit()
+				self.power_selector.setValue(int(self.power))
 			conn.close()
 		except Error as e:
 			print(e)
@@ -1057,8 +1058,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		c.execute("select * from contacts order by id DESC")
 		q = c.fetchone()
 		conn.close()
-		_, hiscall, hisclass, hissection, datetime, band, mode, _, grid, opname = q
-			
+		_, hiscall, hisclass, hissection, datetime, freq, band, mode, _, grid, opname = q
 		if mode == "DI": mode = "FT8"
 		if mode == "PH": mode = "SSB"
 		if mode == "CW":
