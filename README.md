@@ -12,20 +12,29 @@ The logger will generate a cabrillo file 'YOURCALL.log' and a 'Statistics.txt' f
 
 ![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/loggerscreenshot.png)
 
-## Experimental feature
+## 2021 Field Day, what was learned.
 
-I plan on operating some FT8 during Field Day to suppliment my rock'n CW score. You may ask if my CW score will be so rock'n why would I need supplimening? To that I say... "Shut up..." 
+I didn't test my shack computer prior to Field Day. Why? Well I'm an idiot, and that's what idiots do. I start up a pre built binary and all is good. I make my first contact. I submit the contact and it crashes straight away... Ooooo I think... That's not good.
 
-So I've added a UDP server on port 2237 to accept UDP datagrams from WSJT-X. It's totally unicast, and "Hey thats my port, get your own port." So it won't play nice with others on the port playground.
+This is something another user might not experience. I didn't have xplanet installed and configured and the app tried to write to a non existing folder/file. Who needs error checking... We do. I'll fix that pretty soon now.
+
+Crash cause #2, I some how left off a database field in the unpacking logic where it goes to send a qso record to Cloudlog. Alot of people don't use Cloudlog. So not so terrible. I do, so it was a little irksome to me. I've already fixed this and pushed the changes with in 20 minutes of the start of Field Day.
+
+Not a great start, but lessons learned.
+
+Now some good news. That FT8 wsjt auto logging thing worked great out of the box. I was frankly amazed. Any time I needed to use the restroom, get a drink, a snack, whatever. I set up ft8 to call cq, check it every few minutes and rake in the points.
+ 
+
+## FT8
+
+I've added a UDP server on port 2237 to accept UDP datagrams from WSJT-X. It's totally unicast, and "Hey thats my port, get your own port." So it won't play nice with others on the port playground.
 
 Right now it just adds a contact if WSJTx sends an ADIF logged packet. It monitors the status packets looking for the dxcall field and flags dupes in the logging window. 
-
-Will it work? Mmmmmm sure... Sure it will. I can't really test it untill the day of the event 'cause you know there aint a lot of people calling CQ FD right now... Sooo Yeah...
 
 ## Caveats
 
 This is a simple logger ment for single op, it's not usable for clubs.
-Field Day only has a generic digital mode designator 'DI', which gets exported to the cabrillo file. But ADIF and CloudLog needed something else, So I Chose FT8. Yes Yes, I know. FT8 is the spawn of Satan, and is killing Ham Radio... Blah Blah Blah... But I needed it for the experiment mentioned above. Flames will be directed to the /dev/null dept. Feel free to change it to what ever you will use. Just search for the two places in the code 'FT8' is used and Bob's your dads brother.
+Field Day only has a generic digital mode designator 'DI', which gets exported to the cabrillo file. But ADIF and CloudLog needed something else, So I Chose FT8. Yes Yes, I know. FT8 is the spawn of Satan, and is killing Ham Radio... Blah Blah Blah... But I needed it for the ~~experiment~~ fully baked feature mentioned above. Flames will be directed to the /dev/null dept. Feel free to change it to what ever you will use. Just search for the two places in the code 'FT8' is used and Bob's your dads brother.
 
 ## Running the binary
 
