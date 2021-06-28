@@ -946,17 +946,21 @@ class MainWindow(QtWidgets.QMainWindow):
 	def updatemarker(self):
 		if self.usemarker:
 			filename = str(Path.home())+"/"+self.markerfile
-			print("", file=open(filename, "w", encoding='ascii'))
-			conn = sqlite3.connect(self.database)
-			c = conn.cursor()
-			c.execute("select DISTINCT grid from contacts")
-			x=c.fetchall()
-			if x:
-				for count in x:
-					grid = count[0]
-					if len(grid) > 1:
-						lat, lon = self.gridtolatlon(grid)
-						print(f'{lat} {lon} ""', end='\r\n', file=open(filename, "a", encoding='ascii'))
+			try:
+				print("", file=open(filename, "w", encoding='ascii'))
+				conn = sqlite3.connect(self.database)
+				c = conn.cursor()
+				c.execute("select DISTINCT grid from contacts")
+				x=c.fetchall()
+				if x:
+					for count in x:
+						grid = count[0]
+						if len(grid) > 1:
+							lat, lon = self.gridtolatlon(grid)
+							print(f'{lat} {lon} ""', end='\r\n', file=open(filename, "a", encoding='ascii'))
+			except:
+				self.infobox.setTextColor(QtGui.QColor(245, 121, 0))
+				self.infobox.insertPlainText(f"Unable to write to {filename}\n")
 
 	def qrzlookup(self, call):
 		grid = False
