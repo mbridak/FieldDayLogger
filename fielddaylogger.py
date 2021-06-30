@@ -1260,6 +1260,31 @@ class settings(QtWidgets.QDialog):
 		except Error as e:
 			print(e)
 
+class startup(QtWidgets.QDialog):
+	def __init__(self, parent=None):
+		super().__init__(parent)
+		uic.loadUi(self.relpath("startup.ui"), self)
+		self.continue_pushButton.clicked.connect(self.store)
+		self.dialog_callsign.setText(window.mycall)
+		self.dialog_class.setText(window.myclass)
+		self.dialog_section.setText(window.mysection)
+
+	def relpath(self, filename):
+		try:
+			base_path = sys._MEIPASS # pylint: disable=no-member
+		except:
+			base_path = os.path.abspath(".")
+		return os.path.join(base_path, filename)
+
+	def store(self):
+		window.mycallEntry.setText(self.dialog_callsign.text())
+		window.changemycall()
+		window.myclassEntry.setText(self.dialog_class.text())
+		window.changemyclass()
+		window.mysectionEntry.setText(self.dialog_section.text())
+		window.changemysection()
+		self.close()
+
 
 app = QtWidgets.QApplication(sys.argv)
 app.setStyle('Fusion')
@@ -1269,6 +1294,9 @@ window.create_DB()
 window.changeband()
 window.changemode()
 window.readpreferences()
+if window.mycall == '' or window.myclass == '' or window.mysection == '':
+	startupdialog = startup()
+	startupdialog.show()
 window.qrzauth()
 window.cloudlogauth()
 window.stats()
