@@ -306,6 +306,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		
 	def settingspressed(self):
 		settingsdialog = settings(self)
+		settingsdialog.setup(self.database)
 		settingsdialog.exec()
 		self.infobox.clear()
 		self.readpreferences()
@@ -1234,12 +1235,18 @@ class editQSODialog(QtWidgets.QDialog):
 		self.close()
 
 class settings(QtWidgets.QDialog):
+
+	database = ""
+
 	def __init__(self, parent=None):
 		super().__init__(parent)
 		uic.loadUi(self.relpath("settings.ui"), self)
 		self.buttonBox.accepted.connect(self.saveChanges)
+
+	def setup(self, thedatabase):
+		self.database = thedatabase
 		try:
-			conn = sqlite3.connect(window.database)
+			conn = sqlite3.connect(self.database)
 			c = conn.cursor()	
 			c.execute("select * from preferences where id = 1")
 			pref = c.fetchall()
@@ -1259,7 +1266,6 @@ class settings(QtWidgets.QDialog):
 					self.markerfile_field.setText(markerfile)
 					self.generatemarker_checkbox.setChecked(bool(usemarker))
 					self.usehamdb_checkBox.setChecked(bool(usehamdb))
-
 		except Error as e:
 			print(e)
 
@@ -1272,7 +1278,7 @@ class settings(QtWidgets.QDialog):
 
 	def saveChanges(self):
 		try:
-			conn = sqlite3.connect(window.database)
+			conn = sqlite3.connect(self.database)
 			sql = f"UPDATE preferences SET qrzusername = '{self.qrzname_field.text()}', qrzpassword = '{self.qrzpass_field.text()}', qrzurl = '{self.qrzurl_field.text()}', cloudlogapi = '{self.cloudlogapi_field.text()}', cloudlogurl = '{self.cloudlogurl_field.text()}', rigcontrolip = '{self.rigcontrolip_field.text()}', rigcontrolport = '{self.rigcontrolport_field.text()}', useqrz = '{int(self.useqrz_checkBox.isChecked())}', usecloudlog = '{int(self.usecloudlog_checkBox.isChecked())}', userigcontrol = '{int(self.userigcontrol_checkBox.isChecked())}', markerfile = '{self.markerfile_field.text()}', usemarker = '{int(self.generatemarker_checkbox.isChecked())}', usehamdb = '{int(self.usehamdb_checkBox.isChecked())}'  where id=1;"
 			cur = conn.cursor()
 			cur.execute(sql)
