@@ -20,6 +20,12 @@ from datetime import datetime
 from sqlite3 import Error
 from pathlib import Path
 
+class qsoEdit(QtCore.QObject):
+	"""
+	custom qt event signal used when qso is edited or deleted.
+	"""
+	lineChanged = QtCore.pyqtSignal()
+
 class MainWindow(QtWidgets.QMainWindow):
 	database = "FieldDay.db"
 	mycall = ""
@@ -693,12 +699,19 @@ class MainWindow(QtWidgets.QMainWindow):
 			logline = f"{str(logid).rjust(3,'0')} {hiscall.ljust(15)} {hisclass.rjust(3)} {hissection.rjust(3)} {datetime} {str(frequency).rjust(9)} {str(band).rjust(3)}M {mode} {str(power).rjust(3)}W"
 			self.listWidget.addItem(logline)
 			self.dupdict[f"{hiscall}{band}{mode}"] = True
-	
+
+	def qsoedited(self):
+		self.sections()
+		self.stats()
+		self.logwindow()
+
 	def qsoclicked(self):
 		item = self.listWidget.currentItem()
 		self.linetopass = item.text()
 		dialog = editQSODialog(self)
-		dialog.exec()
+		dialog.setUp(self.linetopass, self.database)
+		dialog.change.lineChanged.connect(self.qsoedited)
+		dialog.open()
 
 	def readSections(self):
 		try:
@@ -1164,11 +1177,17 @@ class MainWindow(QtWidgets.QMainWindow):
 class editQSODialog(QtWidgets.QDialog):
 
 	theitem=""
+	database=""
 
 	def __init__(self, parent=None):
 		super().__init__(parent)
 		uic.loadUi(self.relpath("dialog.ui"), self)
-		self.theitem, thecall, theclass, thesection, thedate, thetime, thefreq, theband, themode, thepower = window.linetopass.split()
+		self.deleteButton.clicked.connect(self.delete_contact)
+		self.buttonBox.accepted.connect(self.saveChanges)
+		self.change = qsoEdit()
+
+	def setUp(self, linetopass, thedatabase):
+		self.theitem, thecall, theclass, thesection, thedate, thetime, thefreq, theband, themode, thepower = linetopass.split()
 		self.editCallsign.setText(thecall)
 		self.editClass.setText(theclass)
 		self.editSection.setText(thesection)
@@ -1179,8 +1198,8 @@ class editQSODialog(QtWidgets.QDialog):
 		date_time = thedate+" "+thetime
 		now = QtCore.QDateTime.fromString(date_time, 'yyyy-MM-dd hh:mm:ss')
 		self.editDateTime.setDateTime(now)
-		self.deleteButton.clicked.connect(self.delete_contact)
-		self.buttonBox.accepted.connect(self.saveChanges)
+		self.database = thedatabase
+		pass
 
 	def relpath(self, filename):
 		try:
@@ -1191,21 +1210,19 @@ class editQSODialog(QtWidgets.QDialog):
 
 	def saveChanges(self):
 		try:
-			conn = sqlite3.connect(window.database)
-			sql = f"update contacts set callsign = '{self.editCallsign.text()}', class = '{self.editClass.text()}', section = '{self.editSection.text()}', date_time = '{self.editDateTime.text()}', frequency = '{self.editFreq.text()}', band = '{self.editBand.currentText()}', mode = '{self.editMode.currentText()}', power = '{self.editPower.value()}'  where id={self.theitem}"
+			conn = sqlite3.connect(self.database)
+			sql = f"update contacts set callsign = '{self.editCallsign.text().upper()}', class = '{self.editClass.text().upper()}', section = '{self.editSection.text().upper()}', date_time = '{self.editDateTime.text()}', frequency = '{self.editFreq.text()}', band = '{self.editBand.currentText()}', mode = '{self.editMode.currentText().upper()}', power = '{self.editPower.value()}'  where id={self.theitem}"
 			cur = conn.cursor()
 			cur.execute(sql)
 			conn.commit()
 			conn.close()
 		except Error as e:
 			print(e)
-		window.sections()
-		window.stats()
-		window.logwindow()
+		self.change.lineChanged.emit()
 
 	def delete_contact(self):
 		try:
-			conn = sqlite3.connect(window.database)
+			conn = sqlite3.connect(self.database)
 			sql = f"delete from contacts where id={self.theitem}"
 			cur = conn.cursor()
 			cur.execute(sql)
@@ -1213,9 +1230,7 @@ class editQSODialog(QtWidgets.QDialog):
 			conn.close()
 		except Error as e:
 			print(e)
-		window.sections()
-		window.stats()
-		window.logwindow()
+		self.change.lineChanged.emit()
 		self.close()
 
 class settings(QtWidgets.QDialog):
