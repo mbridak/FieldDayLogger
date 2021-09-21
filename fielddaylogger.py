@@ -128,6 +128,12 @@ class MainWindow(QtWidgets.QMainWindow):
 			return self.datadict[item]
 		return 'NOT_FOUND'
 
+	def updateTime(self):
+		now = datetime.now().isoformat(' ')[5:19].replace('-', '/')
+		utcnow = datetime.utcnow().isoformat(' ')[5:19].replace('-', '/')
+		self.localtime.setText(now)
+		self.utctime.setText(utcnow)
+
 	def on_udpSocket_readyRead(self):
 		"""
 		This will process incomming UDP log packets from WSJT-X.
@@ -1265,9 +1271,6 @@ class startup(QtWidgets.QDialog):
 		super().__init__(parent)
 		uic.loadUi(self.relpath("startup.ui"), self)
 		self.continue_pushButton.clicked.connect(self.store)
-		self.dialog_callsign.setText(window.mycall)
-		self.dialog_class.setText(window.myclass)
-		self.dialog_section.setText(window.mysection)
 
 	def relpath(self, filename):
 		try:
@@ -1276,15 +1279,36 @@ class startup(QtWidgets.QDialog):
 			base_path = os.path.abspath(".")
 		return os.path.join(base_path, filename)
 
-	def store(self):
-		window.mycallEntry.setText(self.dialog_callsign.text())
-		window.changemycall()
-		window.myclassEntry.setText(self.dialog_class.text())
-		window.changemyclass()
-		window.mysectionEntry.setText(self.dialog_section.text())
-		window.changemysection()
-		self.close()
+	def setCallSign(self, callsign):
+		self.dialog_callsign.setText(callsign)
 
+	def setClass(self, myclass):
+		self.dialog_class.setText(myclass)
+
+	def setSection(self, mysection):
+		self.dialog_section.setText(mysection)
+
+	def getCallSign(self):
+		return self.dialog_callsign.text()
+
+	def getClass(self):
+		return self.dialog_class.text()
+
+	def getSection(self):
+		return self.dialog_section.text()
+
+	def store(self):
+		self.accept()
+
+
+def startupDialogFinished():
+	window.mycallEntry.setText(startupdialog.getCallSign())
+	window.changemycall()
+	window.myclassEntry.setText(startupdialog.getClass())
+	window.changemyclass()
+	window.mysectionEntry.setText(startupdialog.getSection())
+	window.changemysection()
+	startupdialog.close()
 
 app = QtWidgets.QApplication(sys.argv)
 app.setStyle('Fusion')
@@ -1296,7 +1320,11 @@ window.changemode()
 window.readpreferences()
 if window.mycall == '' or window.myclass == '' or window.mysection == '':
 	startupdialog = startup()
-	startupdialog.show()
+	startupdialog.accepted.connect(startupDialogFinished)
+	startupdialog.open()
+	startupdialog.setCallSign(window.mycall)
+	startupdialog.setClass(window.myclass)
+	startupdialog.setSection(window.mysection)
 window.qrzauth()
 window.cloudlogauth()
 window.stats()
@@ -1314,7 +1342,7 @@ def updatetime():
 
 
 timer = QtCore.QTimer()
-timer.timeout.connect(updatetime)
+timer.timeout.connect(window.updateTime)
 timer.start(1000)
 
 
