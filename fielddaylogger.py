@@ -1321,7 +1321,6 @@ class startup(QtWidgets.QDialog):
 	def store(self):
 		self.accept()
 
-
 def startupDialogFinished():
 	window.mycallEntry.setText(startupdialog.getCallSign())
 	window.changemycall()
@@ -1331,32 +1330,36 @@ def startupDialogFinished():
 	window.changemysection()
 	startupdialog.close()
 
-app = QtWidgets.QApplication(sys.argv)
-app.setStyle('Fusion')
-window = MainWindow()
-window.show()
-window.create_DB()
-window.changeband()
-window.changemode()
-window.readpreferences()
-if window.mycall == '' or window.myclass == '' or window.mysection == '':
-	startupdialog = startup()
-	startupdialog.accepted.connect(startupDialogFinished)
-	startupdialog.open()
-	startupdialog.setCallSign(window.mycall)
-	startupdialog.setClass(window.myclass)
-	startupdialog.setSection(window.mysection)
-window.qrzauth()
-window.cloudlogauth()
-window.stats()
-window.readSections()
-window.readSCP()
-window.logwindow()
-window.sections()
-window.callsign_entry.setFocus()
+def main():
+	app = QtWidgets.QApplication(sys.argv)
+	app.setStyle('Fusion')
+	window = MainWindow()
+	window.show()
+	window.create_DB()
+	window.changeband()
+	window.changemode()
+	window.readpreferences()
+	if window.mycall == '' or window.myclass == '' or window.mysection == '':
+		startupdialog = startup()
+		startupdialog.accepted.connect(startupDialogFinished)
+		startupdialog.open()
+		startupdialog.setCallSign(window.mycall)
+		startupdialog.setClass(window.myclass)
+		startupdialog.setSection(window.mysection)
+	window.qrzauth()
+	window.cloudlogauth()
+	window.stats()
+	window.readSections()
+	window.readSCP()
+	window.logwindow()
+	window.sections()
+	window.callsign_entry.setFocus()
 
-timer = QtCore.QTimer()
-timer.timeout.connect(window.updateTime)
-timer.start(1000)
+	timer = QtCore.QTimer()
+	timer.timeout.connect(window.updateTime)
+	timer.start(1000)
 
-app.exec()
+	app.exec()
+
+if __name__ == "__main__":
+    main()
