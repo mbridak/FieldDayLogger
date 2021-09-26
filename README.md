@@ -50,19 +50,7 @@ If you wish you can install a Linux desktop/menu icon launcher by going to the i
 
 Install Python 3, then two required libs via pip.
 
-`pip install PyQt5`
-
-and
-
-`pip install requests`
-
-or you may have to type:
-
-`python3 -m pip install PyQt5`
-
-and
-
-`python3 -m pip install requests`
+`python3 -m pip3 install -r requirements.txt`
 
 Just make fielddaylogger.py executable and run it within the same folder, or type:
 
