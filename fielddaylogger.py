@@ -413,6 +413,7 @@ class MainWindow(QtWidgets.QMainWindow):
 				newfreq = self.rigctrlsocket.recv(1024).decode().strip()
 				self.rigctrlsocket.send(b'm\n')
 				newmode = self.rigctrlsocket.recv(1024).decode().strip().split()[0]
+				self.rigctrlsocket.shutdown(socket.SHUT_RDWR)
 				self.rigctrlsocket.close()
 				self.radio_icon.setPixmap(QtGui.QPixmap(self.relpath('icon/radio_green.png')))
 				if newfreq != self.oldfreq or newmode != self.oldmode or newrfpower != self.oldrfpower:
