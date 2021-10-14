@@ -72,6 +72,7 @@ class MainWindow(QtWidgets.QMainWindow):
 	usemarker = False
 	oldfreq = 0
 	oldmode = 0
+	oldrfpower = 0
 	basescore = 0
 	powermult = 0
 	datadict = {}
@@ -406,14 +407,20 @@ class MainWindow(QtWidgets.QMainWindow):
 		if self.rigonline:
 			try:
 				self.rigctrlsocket.settimeout(0.5)
+				self.rigctrlsocket.send(b'l RFPOWER\n')
+				newrfpower = self.rigctrlsocket.recv(1024).decode().strip()
 				self.rigctrlsocket.send(b'f\n')
 				newfreq = self.rigctrlsocket.recv(1024).decode().strip()
 				self.rigctrlsocket.send(b'm\n')
 				newmode = self.rigctrlsocket.recv(1024).decode().strip().split()[0]
+				self.rigctrlsocket.close()
 				self.radio_icon.setPixmap(QtGui.QPixmap(self.relpath('icon/radio_green.png')))
-				if newfreq != self.oldfreq or newmode != self.oldmode:
+				if newfreq != self.oldfreq or newmode != self.oldmode or newrfpower != self.oldrfpower:
 					self.oldfreq = newfreq
 					self.oldmode = newmode
+					self.oldrfpower = newrfpower
+					self.power_selector.setValue(int(float(newrfpower) * 100))
+					self.changepower()
 					self.setband(str(self.getband(newfreq)))
 					self.setmode(str(self.getmode(newmode)))
 			except:
