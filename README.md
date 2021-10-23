@@ -52,6 +52,10 @@ Install Python 3, then two required libs via pip.
 
 `python3 -m pip3 install -r requirements.txt`
 
+Or if you're the Ubuntu/Debian type you can:
+
+`sudo apt install python3-pyqt5 python3-requests`
+
 Just make fielddaylogger.py executable and run it within the same folder, or type:
 
 `python3 fielddaylogger.py`
