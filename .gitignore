@@ -1,6 +1,7 @@
 FieldDay.db
 FieldDay.adi
 Statistics.txt
+changes.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -13,6 +14,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+dist/
 develop-eggs/
 downloads/
 eggs/

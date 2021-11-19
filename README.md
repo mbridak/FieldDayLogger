@@ -38,23 +38,19 @@ Field Day only has a generic digital mode designator 'DI', which gets exported t
 
 ## Running the binary
 
-In the dist directory is the latest binary for Linux [fielddaylogger](https://github.com/mbridak/FieldDayLogger/raw/main/dist/fielddaylogger), Raspberry Pi [fielddaylogger_pi](https://github.com/mbridak/FieldDayLogger/raw/main/dist/fielddaylogger_pi) and Windows 10 [fielddaylogger.exe](https://github.com/mbridak/FieldDayLogger/raw/main/dist/fielddaylogger.exe). 
-
-These are not auto generated. And are built on a 'When I get around to it.' schedule. I'll try and build them all before the big weekend. You can copy it to a folder in your Linux PATH `/usr/local/bin` or `~/bin` or on either platform just run it where ever it happens to be. Or you can follow the steps below to run it from source.
-
-## Installing an icon
-
-If you wish you can install a Linux desktop/menu icon launcher by going to the install_icon folder and running the `install.sh` script. and to remove the hideous icon later, run the `uninstall.sh` script
+In the [releases](https://github.com/mbridak/FieldDayLogger/releases) you will find binaries for Linux, Windows and Raspberry Pi.
 
 ## Running from source
 
-Install Python 3, then two required libs via pip.
+Install Python 3, then two required libraries.
 
-`python3 -m pip3 install -r requirements.txt`
-
-Or if you're the Ubuntu/Debian type you can:
+If you're the Ubuntu/Debian type you can:
 
 `sudo apt install python3-pyqt5 python3-requests`
+
+You can install librabies via pip:
+
+`python3 -m pip3 install -r requirements.txt`
 
 Just make fielddaylogger.py executable and run it within the same folder, or type:
 
@@ -62,7 +58,7 @@ Just make fielddaylogger.py executable and run it within the same folder, or typ
 
 ## What to do first
 
-When run for the first time, you will need to set your callsign, class, section, band, mode and power used for the contacts. This can be found at the bottom of the screen.
+When run for the first time, you will need to set your callsign, class, section, band, mode and power used for the contacts. This can be found at the bottom of the screen. There is a gear icon where you can change some settings described below.
 
 ![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/yourstuff.png)
 
