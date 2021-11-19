@@ -3,17 +3,16 @@
 #Nothing to see here move along.
 #xplanet -body earth -window -longitude -117 -latitude 38 -config Default -projection azmithal -radius 200 -wait 5
 
-import json
 import requests
 import sys
-import time
 import sqlite3
 import socket
 import os
 import struct
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5 import uic
+from json import dumps
+
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtNetwork import QUdpSocket, QHostAddress
 
 from datetime import datetime
@@ -52,7 +51,6 @@ class MainWindow(QtWidgets.QMainWindow):
 	wrkdsections=[]
 	linetopass=""
 	bands = ('160', '80', '60','40', '20', '15', '10', '6', '2')
-	dfreq = {'160':"1.830", '80':"3.530", '60':"53.300", '40':"7.030", '20':"14.030", '15':"21.030", '10':"28.030", '6':"50.030", '2':"144.030", '222':"222.030", '432':"432.030", 'SAT':"0.0"}
 	cloudlogapi = ""
 	cloudlogurl = ""
 	cloudlogauthenticated = False
@@ -357,6 +355,33 @@ class MainWindow(QtWidgets.QMainWindow):
 			except requests.exceptions.RequestException as e:
 				self.infobox.insertPlainText(f"****Cloudlog Auth Error:****\n{e}\n")
 
+	def fakefreq(self, band, mode):
+		modes = {
+			"CW":0,
+			"DI":1,
+			"PH":2,
+			"FT8":1,
+			"SSB":2
+		}
+		fakefreqs = {
+			'160':["1830", "1805", "1840"],
+			'80':["3530", "3559", "3970"],
+			'60':["5332", "5373", "5405"],
+			'40':["7030", "7040", "7250"],
+			'30':["10130", "10130", "0000"],
+			'20':["14030", "14070", "14250"],
+			'17':["18080", "18100", "18150"],
+			'15':["21065", "21070", "21200"],
+			'12':["24911","24920","24970"],
+			'10':["28065", "28070", "28400"],
+			'6':["50.030", "50300", "50125"],
+			'2':["144030", "144144", "144250"],
+			'222':["222100", "222070", "222100"],
+			'432':["432070", "432200", "432100"],
+			'SAT':["144144", "144144", "144144"]
+		}
+		possiblefreqs = fakefreqs[band]
+		return possiblefreqs[modes[mode]]
 
 	def getband(self, freq):
 		if freq.isnumeric():
@@ -420,8 +445,9 @@ class MainWindow(QtWidgets.QMainWindow):
 					self.oldfreq = newfreq
 					self.oldmode = newmode
 					self.oldrfpower = newrfpower
-					self.power_selector.setValue(int(float(newrfpower) * 100))
-					self.changepower()
+					#This works for my ic-7300 but not my ft-817, I'm a qrp guy so... yeah...
+					#self.power_selector.setValue(int(float(newrfpower) * 100))
+					#self.changepower()
 					self.setband(str(self.getband(newfreq)))
 					self.setmode(str(self.getmode(newmode)))
 			except:
@@ -475,13 +501,13 @@ class MainWindow(QtWidgets.QMainWindow):
 	def changemycall(self):
 		text = self.mycallEntry.text()
 		if(len(text)):
-			if text[-1] == " ":
+			if text[-1] == " ": # allow only alphanumerics or slashes
 				self.mycallEntry.setText(text.strip())
 			else:
 				cleaned = ''.join(ch for ch in text if ch.isalnum() or ch=='/').upper()
 				self.mycallEntry.setText(cleaned)
 		self.mycall = self.mycallEntry.text()
-		if self.mycall !="":
+		if self.mycall != "":
 			self.mycallEntry.setStyleSheet("border: 1px solid green;")
 		else:
 			self.mycallEntry.setStyleSheet("border: 1px solid red;")
@@ -490,10 +516,10 @@ class MainWindow(QtWidgets.QMainWindow):
 	def changemyclass(self):
 		text = self.myclassEntry.text()
 		if(len(text)):
-			if text[-1] == " ":
+			if text[-1] == " ": # allow only alphanumerics
 				self.myclassEntry.setText(text.strip())
 			else:
-				cleaned = ''.join(ch for ch in text if ch.isalnum() or ch=='/').upper()
+				cleaned = ''.join(ch for ch in text if ch.isalnum()).upper()
 				self.myclassEntry.setText(cleaned)
 		self.myclass = self.myclassEntry.text()
 		if self.myclass != "":
@@ -505,10 +531,10 @@ class MainWindow(QtWidgets.QMainWindow):
 	def changemysection(self):
 		text = self.mysectionEntry.text()
 		if(len(text)):
-			if text[-1] == " ":
+			if text[-1] == " ": # allow only alphanumerics
 				self.mysectionEntry.setText(text.strip())
 			else:
-				cleaned = ''.join(ch for ch in text if ch.isalpha() or ch=='/').upper()
+				cleaned = ''.join(ch for ch in text if ch.isalpha()).upper()
 				self.mysectionEntry.setText(cleaned)
 		self.mysection = self.mysectionEntry.text()
 		if self.mysection != "":
@@ -518,6 +544,9 @@ class MainWindow(QtWidgets.QMainWindow):
 		self.writepreferences()
 
 	def calltest(self):
+		"""
+		Test and strip callsign of bad characters, advance to next input field if space pressed.
+		"""
 		text = self.callsign_entry.text()
 		if(len(text)):
 			if text[-1] == " ":
@@ -529,6 +558,9 @@ class MainWindow(QtWidgets.QMainWindow):
 				self.superCheck()
 
 	def classtest(self):
+		"""
+		Test and strip class of bad characters, advance to next input field if space pressed.
+		"""
 		text = self.class_entry.text()
 		if(len(text)):
 			if text[-1] == " ":
@@ -539,6 +571,9 @@ class MainWindow(QtWidgets.QMainWindow):
 				self.class_entry.setText(cleaned)
 
 	def sectiontest(self):
+		"""
+		Test and strip section of bad characters, advance to next input field if space pressed.
+		"""
 		text = self.section_entry.text()
 		if(len(text)):
 			if text[-1] == " ":
@@ -549,7 +584,9 @@ class MainWindow(QtWidgets.QMainWindow):
 				self.section_entry.setText(cleaned)
 
 	def create_DB(self):
-		""" create a database and table if it does not exist """
+		"""
+		create database tables contacts and preferences if they do not exist.
+		"""
 		try:
 			conn = sqlite3.connect(self.database)
 			c = conn.cursor()
@@ -563,12 +600,19 @@ class MainWindow(QtWidgets.QMainWindow):
 			print(e)
 
 	def highlighted(self, state):
+		"""
+		Return CSS foreground highlight color if state is true,
+		otherwise return an empty string.
+		"""
 		if state:
 			return "color: rgb(245, 121, 0);"
 		else:
 			return ""
 
 	def readpreferences(self):
+		"""
+		Restore preferences if they exist, otherwise create some sane defaults.
+		"""
 		try:
 			conn = sqlite3.connect(self.database)
 			c = conn.cursor()
@@ -599,6 +643,9 @@ class MainWindow(QtWidgets.QMainWindow):
 			print(e)
 
 	def writepreferences(self):
+		"""
+		Stores preferences into the 'preferences' sql table.
+		"""
 		try:
 			conn = sqlite3.connect(self.database)
 			sql = f"UPDATE preferences SET mycallsign = '{self.mycall}', myclass = '{self.myclass}', mysection = '{self.mysection}', power = '{self.power_selector.value()}', markerfile = '{self.markerfile}', usemarker = {int(self.usemarker)}, usehamdb = {int(self.usehamdb)} WHERE id = 1"
@@ -613,7 +660,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		if(len(self.callsign_entry.text()) == 0 or len(self.class_entry.text()) == 0 or len(self.section_entry.text()) == 0): return
 		grid, opname = self.qrzlookup(self.callsign_entry.text())
 		if not self.userigctl:
-			self.oldfreq = int(float(self.dfreq[self.band]) * 1000000)
+			self.oldfreq = int(float(self.fakefreq[self.band, self.mode]) * 1000)
 		contact = (self.callsign_entry.text(), self.class_entry.text(), self.section_entry.text(), self.oldfreq, self.band, self.mode, int(self.power_selector.value()), grid, opname)
 
 		try:
@@ -635,6 +682,9 @@ class MainWindow(QtWidgets.QMainWindow):
 		self.postcloudlog()
 
 	def stats(self):
+		"""
+		Get an idea of how you're doing points wise.
+		"""
 		conn = sqlite3.connect(self.database)
 		c = conn.cursor()
 		c.execute("select count(*) from contacts where mode = 'CW'")
@@ -653,6 +703,9 @@ class MainWindow(QtWidgets.QMainWindow):
 		self.QSO_Points.setText(str(self.calcscore()))
 
 	def calcscore(self):
+		"""
+		Return our current score based on operating power, band / mode multipliers and types of contacts. 
+		"""
 		self.qrpcheck()
 		conn = sqlite3.connect(self.database)
 		c = conn.cursor()
@@ -724,21 +777,20 @@ class MainWindow(QtWidgets.QMainWindow):
 
 	def readSections(self):
 		try:
-			fd = open(self.relpath("arrl_sect.dat"), "r")  # read section data
-			while 1:
-				ln = fd.readline().strip()  # read a line and put in db
-				if not ln: break
-				if ln[0] == '#': continue
-				try:
-					_, st, canum, abbrev, name = str.split(ln, None, 4)
-					self.secName[abbrev] = abbrev + ' ' + name + ' ' + canum
-					self.secState[abbrev] = st
-					for i in range(len(abbrev) - 1):
-						p = abbrev[:-i - 1]
-						self.secPartial[p] = 1
-				except ValueError as e:
-					print("rd arrl sec dat err, itm skpd: ", e)
-			fd.close()
+			with open(self.relpath("arrl_sect.dat"), "r") as fd:
+				while 1:
+					ln = fd.readline().strip()  # read a line and put in db
+					if not ln: break
+					if ln[0] == '#': continue
+					try:
+						_, st, canum, abbrev, name = str.split(ln, None, 4)
+						self.secName[abbrev] = abbrev + ' ' + name + ' ' + canum
+						self.secState[abbrev] = st
+						for i in range(len(abbrev) - 1):
+							p = abbrev[:-i - 1]
+							self.secPartial[p] = 1
+					except ValueError as e:
+						print("rd arrl sec dat err, itm skpd: ", e)
 		except IOError as e:
 			print("read error during readSections", e)
 	
@@ -753,10 +805,9 @@ class MainWindow(QtWidgets.QMainWindow):
 			self.infobox.insertPlainText(self.secName[xxx]+"\n")
 
 	def readSCP(self):
-		f = open(self.relpath("MASTER.SCP"))
-		self.scp = f.readlines()
-		f.close()
-		self.scp = list(map(lambda x: x.strip(), self.scp))
+		with open(self.relpath("MASTER.SCP"), "r") as f:
+			self.scp = f.readlines()
+			self.scp = list(map(lambda x: x.strip(), self.scp))
 
 	def superCheck(self):
 		self.infobox.clear()
@@ -798,6 +849,9 @@ class MainWindow(QtWidgets.QMainWindow):
 		self.wrkdsections = self.wrkdsections.replace("('", "").replace("',), ", ",").replace("',)]", "").replace('[', '').split(',')
 
 	def workedSection(self, section):
+		"""
+		Return CSS foreground value for section based on if it has been worked. 
+		"""
 		if section in self.wrkdsections:
 			return "color: rgb(245, 121, 0);"
 		else:
@@ -899,6 +953,9 @@ class MainWindow(QtWidgets.QMainWindow):
 		self.Section_PE.setStyleSheet(self.workedSection("PE"))
 
 	def sections(self):
+		"""
+		Updates onscreen sections highlighting the ones worked.
+		"""
 		self.workedSections()
 		self.sectionsCol1()
 		self.sectionsCol2()
@@ -907,6 +964,9 @@ class MainWindow(QtWidgets.QMainWindow):
 		self.sectionsCol5()
 
 	def getBandModeTally(self, band, mode):
+		"""
+		Returns the amount of contacts and the maximum power used for a particular band/mode combination.
+		"""
 		conn = ""
 		conn = sqlite3.connect(self.database)
 		c = conn.cursor()
@@ -914,6 +974,9 @@ class MainWindow(QtWidgets.QMainWindow):
 		return c.fetchone()
 
 	def getbands(self):
+		"""
+		Returns a list of bands worked, and an empty list if none worked.
+		"""
 		bandlist=[]
 		conn = sqlite3.connect(self.database)
 		c = conn.cursor()
@@ -928,17 +991,21 @@ class MainWindow(QtWidgets.QMainWindow):
 	def generateBandModeTally(self):
 		blist = self.getbands()
 		bmtfn = "Statistics.txt"
-		print("\t\tCW\tPWR\tDI\tPWR\tPH\tPWR", end='\r\n', file=open(bmtfn, "w"))
-		print("-"*60, end='\r\n', file=open(bmtfn, "a"))
-		for b in self.bands:
-			if b in blist:
-				cwt = self.getBandModeTally(b,"CW")
-				dit = self.getBandModeTally(b,"DI")
-				pht = self.getBandModeTally(b,"PH")
-				print(f"Band:\t{b}\t{cwt[0]}\t{cwt[1]}\t{dit[0]}\t{dit[1]}\t{pht[0]}\t{pht[1]}", end='\r\n', file=open(bmtfn, "a"))
-				print("-"*60, end='\r\n', file=open(bmtfn, "a"))
+		with open(bmtfn, "w") as f:
+			print("\t\tCW\tPWR\tDI\tPWR\tPH\tPWR", end='\r\n', file=f)
+			print("-"*60, end='\r\n', file=f)
+			for b in self.bands:
+				if b in blist:
+					cwt = self.getBandModeTally(b,"CW")
+					dit = self.getBandModeTally(b,"DI")
+					pht = self.getBandModeTally(b,"PH")
+					print(f"Band:\t{b}\t{cwt[0]}\t{cwt[1]}\t{dit[0]}\t{dit[1]}\t{pht[0]}\t{pht[1]}", end='\r\n', file=f)
+					print("-"*60, end='\r\n', file=f)
 
 	def getState(self, section):
+		"""
+		Returns the US state a section is in, or Bool False if none was found.
+		"""
 		try:
 			state = self.secState[section]
 			if state != "--":
@@ -948,6 +1015,9 @@ class MainWindow(QtWidgets.QMainWindow):
 		return False
 
 	def gridtolatlon(self, maiden):
+		"""
+		Converts a maidenhead gridsquare to a latitude longitude pair.
+		"""
 		maiden = str(maiden).strip().upper()
 
 		N = len(maiden)
@@ -975,17 +1045,17 @@ class MainWindow(QtWidgets.QMainWindow):
 		if self.usemarker:
 			filename = str(Path.home())+"/"+self.markerfile
 			try:
-				print("", file=open(filename, "w", encoding='ascii'))
 				conn = sqlite3.connect(self.database)
 				c = conn.cursor()
 				c.execute("select DISTINCT grid from contacts")
 				x=c.fetchall()
 				if x:
-					for count in x:
-						grid = count[0]
-						if len(grid) > 1:
-							lat, lon = self.gridtolatlon(grid)
-							print(f'{lat} {lon} ""', end='\r\n', file=open(filename, "a", encoding='ascii'))
+					with open(filename, "w", encoding='ascii') as f:
+						for count in x:
+							grid = count[0]
+							if len(grid) > 1 and not len(grid)%2:
+								lat, lon = self.gridtolatlon(grid)
+								print(f'{lat} {lon} ""', end='\r\n', file=f)
 			except:
 				self.infobox.setTextColor(QtGui.QColor(245, 121, 0))
 				self.infobox.insertPlainText(f"Unable to write to {filename}\n")
@@ -1044,46 +1114,55 @@ class MainWindow(QtWidgets.QMainWindow):
 		conn.close()
 		grid = False
 		opname = False
-		print("<ADIF_VER:5>2.2.0", end='\r\n', file=open(logname, "w", encoding='ascii'))
-		print("<EOH>", end='\r\n', file=open(logname, "a", encoding='ascii'))
-		for x in log:
-			_, hiscall, hisclass, hissection, datetime, freq, band, mode, _, grid, opname = x
-			if mode == "DI": mode = "FT8"
-			if mode == "PH": mode = "SSB"
-			if mode == "CW":
-				rst = "599"
-			else:
-				rst = "59"
-			loggeddate = datetime[:10]
-			loggedtime = datetime[11:13] + datetime[14:16]
+		with open(logname, "w", encoding='ascii') as f:
+			print("<ADIF_VER:5>2.2.0", end='\r\n', file=f)
+			print("<EOH>", end='\r\n', file=f)
+			for x in log:
+				_, hiscall, hisclass, hissection, datetime, freq, band, mode, _, grid, opname = x
+				if mode == "DI": mode = "FT8"
+				if mode == "PH": mode = "SSB"
+				if mode == "CW":
+					rst = "599"
+				else:
+					rst = "59"
+				loggeddate = datetime[:10]
+				loggedtime = datetime[11:13] + datetime[14:16]
 
-			temp = str(freq/1000000).split('.')
-			freq = temp[0] + "." + temp[1].ljust(3,'0')
+				temp = str(freq/1000000).split('.')
+				freq = temp[0] + "." + temp[1].ljust(3,'0')
 
-			print(f"<QSO_DATE:{len(''.join(loggeddate.split('-')))}:d>{''.join(loggeddate.split('-'))}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			print(f"<TIME_ON:{len(loggedtime)}>{loggedtime}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			print(f"<CALL:{len(hiscall)}>{hiscall}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			print(f"<MODE:{len(mode)}>{mode}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			print(f"<BAND:{len(band + 'M')}>{band + 'M'}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			print(f"<FREQ:{len(freq)}>{freq}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			print(f"<RST_SENT:{len(rst)}>{rst}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			print(f"<RST_RCVD:{len(rst)}>{rst}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			print(f"<STX_STRING:{len(self.myclass + ' ' + self.mysection)}>{self.myclass + ' ' + self.mysection}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			print(f"<SRX_STRING:{len(hisclass + ' ' + hissection)}>{hisclass + ' ' + hissection}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			print(f"<ARRL_SECT:{len(hissection)}>{hissection}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			print(f"<CLASS:{len(hisclass)}>{hisclass}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			state = self.getState(hissection)
-			if state: print(f"<STATE:{len(state)}>{state}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			if len(grid) > 1: print(f"<GRIDSQUARE:{len(grid)}>{grid}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			if len(opname) > 1: print(f"<NAME:{len(opname)}>{opname}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			comment = "ARRL-FD"
-			print(f"<COMMENT:{len(comment)}>{comment}", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			print("<EOR>", end='\r\n', file=open(logname, 'a', encoding='ascii'))
-			print("", end='\r\n', file=open(logname, 'a', encoding='ascii'))
+				if freq == '0.000': #incase no freq was logged
+					freq = int(self.fakefreq(band, mode))
+					temp = str(freq/1000).split('.')
+					freq = temp[0] + "." + temp[1].ljust(3,'0')
+
+				print(f"<QSO_DATE:{len(''.join(loggeddate.split('-')))}:d>{''.join(loggeddate.split('-'))}", end='\r\n', file=f)
+				print(f"<TIME_ON:{len(loggedtime)}>{loggedtime}", end='\r\n', file=f)
+				print(f"<CALL:{len(hiscall)}>{hiscall}", end='\r\n', file=f)
+				print(f"<MODE:{len(mode)}>{mode}", end='\r\n', file=f)
+				print(f"<BAND:{len(band + 'M')}>{band + 'M'}", end='\r\n', file=f)
+				print(f"<FREQ:{len(freq)}>{freq}", end='\r\n', file=f)
+				print(f"<RST_SENT:{len(rst)}>{rst}", end='\r\n', file=f)
+				print(f"<RST_RCVD:{len(rst)}>{rst}", end='\r\n', file=f)
+				print(f"<STX_STRING:{len(self.myclass + ' ' + self.mysection)}>{self.myclass + ' ' + self.mysection}", end='\r\n', file=f)
+				print(f"<SRX_STRING:{len(hisclass + ' ' + hissection)}>{hisclass + ' ' + hissection}", end='\r\n', file=f)
+				print(f"<ARRL_SECT:{len(hissection)}>{hissection}", end='\r\n', file=f)
+				print(f"<CLASS:{len(hisclass)}>{hisclass}", end='\r\n', file=f)
+				state = self.getState(hissection)
+				if state: print(f"<STATE:{len(state)}>{state}", end='\r\n', file=f)
+				if len(grid) > 1: print(f"<GRIDSQUARE:{len(grid)}>{grid}", end='\r\n', file=f)
+				if len(opname) > 1: print(f"<NAME:{len(opname)}>{opname}", end='\r\n', file=f)
+				comment = "ARRL-FD"
+				print(f"<COMMENT:{len(comment)}>{comment}", end='\r\n', file=f)
+				print("<EOR>", end='\r\n', file=f)
+				print("", end='\r\n', file=f)
 		self.infobox.insertPlainText("Done\n\n")
 		app.processEvents()
 
 	def postcloudlog(self):
+		"""
+		Log contact to Cloudlog: https://github.com/magicbug/Cloudlog
+		"""
 		if (not self.usecloudlog) or (not self.cloudlogauthenticated): return
 		conn = sqlite3.connect(self.database)
 		c = conn.cursor()
@@ -1104,7 +1183,10 @@ class MainWindow(QtWidgets.QMainWindow):
 		adifq += f"<CALL:{len(hiscall)}>{hiscall}"
 		adifq += f"<MODE:{len(mode)}>{mode}"
 		adifq += f"<BAND:{len(band + 'M')}>{band + 'M'}"
-		adifq += f"<FREQ:{len(self.dfreq[band])}>{self.dfreq[band]}"
+		freq = int(self.fakefreq(band,mode))
+		temp = str(freq/1000).split('.')
+		freq = temp[0] + "." + temp[1].ljust(3,'0')
+		adifq += f"<FREQ:{len(freq)}>{freq}"
 		adifq += f"<RST_SENT:{len(rst)}>{rst}"
 		adifq += f"<RST_RCVD:{len(rst)}>{rst}"
 		adifq += f"<STX_STRING:{len(self.myclass + ' ' + self.mysection)}>{self.myclass + ' ' + self.mysection}"
@@ -1125,7 +1207,7 @@ class MainWindow(QtWidgets.QMainWindow):
 			"type":"adif",
 			"string":adifq
 		}
-		jsonData = json.dumps(payloadDict)
+		jsonData = dumps(payloadDict)
 		_ = requests.post(self.cloudlogurl, jsonData)
 
 	def cabrillo(self):
@@ -1145,35 +1227,35 @@ class MainWindow(QtWidgets.QMainWindow):
 			catpower = "HIGH"
 		else:
 			catpower = "LOW"
-		
-		print("START-OF-LOG: 3.0", end='\r\n', file=open(filename, "w", encoding='ascii'))
-		print("CREATED-BY: K6GTE Field Day Logger", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		print("CONTEST: ARRL-FD", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		print(f"CALLSIGN: {self.mycall}", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		print("LOCATION:", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		print(f"ARRL-SECTION: {self.mysection}", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		print(f"CATEGORY: {self.myclass}", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		print(f"CATEGORY-POWER: {catpower}", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		print(f"CLAIMED-SCORE: {self.calcscore()}", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		print(f"OPERATORS: {self.mycall}", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		print("NAME: ", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		print("ADDRESS: ", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		print("ADDRESS-CITY: ", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		print("ADDRESS-STATE: ", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		print("ADDRESS-POSTALCODE: ", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		print("ADDRESS-COUNTRY: ", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		print("EMAIL: ", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		for x in log:
-			_, hiscall, hisclass, hissection, datetime, freq, _, mode, _, _, _ = x
-			if mode == "DI": mode = "DG"
-			loggeddate = datetime[:10]
-			loggedtime = datetime[11:13] + datetime[14:16]
-
-			temp = str(freq/1000000).split('.')
-			freq = temp[0] + temp[1].ljust(3,'0')[:3]
-
-			print(f"QSO: {freq.rjust(6)} {mode} {loggeddate} {loggedtime} {self.mycall} {self.myclass} {self.mysection} {hiscall} {hisclass} {hissection}", end='\r\n', file=open(filename, "a", encoding='ascii'))
-		print("END-OF-LOG:", end='\r\n', file=open(filename, "a", encoding='ascii'))
+		with open(filename, "w", encoding='ascii') as f:
+			print("START-OF-LOG: 3.0", end='\r\n', file=f)
+			print("CREATED-BY: K6GTE Field Day Logger", end='\r\n', file=f)
+			print("CONTEST: ARRL-FD", end='\r\n', file=f)
+			print(f"CALLSIGN: {self.mycall}", end='\r\n', file=f)
+			print("LOCATION:", end='\r\n', file=f)
+			print(f"ARRL-SECTION: {self.mysection}", end='\r\n', file=f)
+			print(f"CATEGORY: {self.myclass}", end='\r\n', file=f)
+			print(f"CATEGORY-POWER: {catpower}", end='\r\n', file=f)
+			print(f"CLAIMED-SCORE: {self.calcscore()}", end='\r\n', file=f)
+			print(f"OPERATORS: {self.mycall}", end='\r\n', file=f)
+			print("NAME: ", end='\r\n', file=f)
+			print("ADDRESS: ", end='\r\n', file=f)
+			print("ADDRESS-CITY: ", end='\r\n', file=f)
+			print("ADDRESS-STATE: ", end='\r\n', file=f)
+			print("ADDRESS-POSTALCODE: ", end='\r\n', file=f)
+			print("ADDRESS-COUNTRY: ", end='\r\n', file=f)
+			print("EMAIL: ", end='\r\n', file=f)
+			for x in log:
+				_, hiscall, hisclass, hissection, datetime, freq, band, mode, _, _, _ = x
+				if mode == "DI": mode = "DG"
+				loggeddate = datetime[:10]
+				loggedtime = datetime[11:13] + datetime[14:16]
+				temp = str(freq/1000000).split('.')
+				freq = temp[0] + temp[1].ljust(3,'0')[:3]
+				if freq == '0000':
+					freq=self.fakefreq(band, mode)
+				print(f"QSO: {freq.rjust(6)} {mode} {loggeddate} {loggedtime} {self.mycall} {self.myclass} {self.mysection} {hiscall} {hisclass} {hissection}", end='\r\n', file=f)
+			print("END-OF-LOG:", end='\r\n', file=f)
 		self.infobox.insertPlainText(" Done\n\n")
 		app.processEvents()
 
