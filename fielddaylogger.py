@@ -9,6 +9,7 @@ import sqlite3
 import socket
 import os
 import struct
+import logging
 
 from json import dumps
 
@@ -328,14 +329,17 @@ class MainWindow(QtWidgets.QMainWindow):
 				if r.status_code == 200 and r.text.find('<Key>') > 0:
 					self.qrzsession=r.text[r.text.find('<Key>')+5:r.text.find('</Key>')]
 					self.QRZ_icon.setStyleSheet("color: rgb(128, 128, 0);")
+					logging.info("QRZ: Obtained session key.")
 				else:
 					self.qrzsession = False
 					self.QRZ_icon.setStyleSheet("color: rgb(136, 138, 133);")
 				if r.status_code == 200 and r.text.find('<Error>') > 0:
 					errorText = r.text[r.text.find('<Error>')+7:r.text.find('</Error>')]
 					self.infobox.insertPlainText("\nQRZ Error: "+ errorText + "\n")
+					logging.warning(f"QRZ Error: {errorText}")
 			except requests.exceptions.RequestException as e:
 				self.infobox.insertPlainText(f"****QRZ Error****\n{e}\n")
+				logging.warning(f"QRZ Error: {e}")
 		else:
 			self.QRZ_icon.setStyleSheet("color: rgb(26, 26, 26);")
 			self.qrzsession = False
@@ -352,10 +356,17 @@ class MainWindow(QtWidgets.QMainWindow):
 					if r.text[r.text.find('<status>')+8:r.text.find('</status>')] == "Valid":
 						self.cloudlogauthenticated = True
 						self.cloudlog_icon.setPixmap(QtGui.QPixmap(self.relpath('icon/cloud_green.png')))
+						logging.info("Cloudlog: Authenticated.")
+				else: logging.warning(f"Cloudlog: {r.status_code} Unable to authenticate.")
 			except requests.exceptions.RequestException as e:
 				self.infobox.insertPlainText(f"****Cloudlog Auth Error:****\n{e}\n")
+				logging.warning(f"Cloudlog: {e}")
 
 	def fakefreq(self, band, mode):
+		"""
+		If unable to obtain a frequency from the rig, This will return a sane value for a frequency mainly for the cabrillo and adif log.
+		Takes a band and mode as input and returns freq in khz.
+		"""
 		modes = {
 			"CW":0,
 			"DI":1,
@@ -384,6 +395,9 @@ class MainWindow(QtWidgets.QMainWindow):
 		return possiblefreqs[modes[mode]]
 
 	def getband(self, freq):
+		"""
+		Takes a frequency in hz and returns the band.
+		"""
 		if freq.isnumeric():
 			frequency = int(float(freq))
 			if frequency > 1800000 and frequency < 2000000:
@@ -414,6 +428,10 @@ class MainWindow(QtWidgets.QMainWindow):
 			return "0"
 
 	def getmode(self, rigmode):
+		"""
+		Takes the mode returned from the radio and returns a normalized value,
+		CW for CW, PH for voice, DI for digital
+		"""
 		if rigmode == "CW" or rigmode == 'CWR':
 			return "CW"
 		if rigmode == "USB" or rigmode == "LSB" or rigmode == "FM" or rigmode == "AM":
@@ -421,10 +439,16 @@ class MainWindow(QtWidgets.QMainWindow):
 		return "DI" #All else digital
 
 	def setband(self, theband):
+		"""
+		Takes a band in meters and programatically changes the onscreen dropdown to match.
+		"""
 		self.band_selector.setCurrentIndex(self.band_selector.findText(theband))
 		self.changeband()
 
 	def setmode(self, themode):
+		"""
+		Takes a string for the mode (CW, PH, DI) and programatically changes the onscreen dropdown.
+		"""
 		self.mode_selector.setCurrentIndex(self.mode_selector.findText(themode))
 		self.changemode()
 
@@ -588,16 +612,15 @@ class MainWindow(QtWidgets.QMainWindow):
 		create database tables contacts and preferences if they do not exist.
 		"""
 		try:
-			conn = sqlite3.connect(self.database)
-			c = conn.cursor()
-			sql_table = """ CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY, callsign text NOT NULL, class text NOT NULL, section text NOT NULL, date_time text NOT NULL, frequency INTEGER DEFAULT 0, band text NOT NULL, mode text NOT NULL, power INTEGER NOT NULL, grid text NOT NULL, opname text NOT NULL); """
-			c.execute(sql_table)
-			sql_table = """ CREATE TABLE IF NOT EXISTS preferences (id INTEGER PRIMARY KEY, mycallsign TEXT DEFAULT '', myclass TEXT DEFAULT '', mysection TEXT DEFAULT '', power TEXT DEFAULT '100', altpower INTEGER DEFAULT 0, outdoors INTEGER DEFAULT 0, notathome INTEGER DEFAULT 0, satellite INTEGER DEFAULT 0, qrzusername TEXT DEFAULT 'w1aw', qrzpassword TEXT default 'secret', qrzurl TEXT DEFAULT 'https://xmldata.qrz.com/xml/',cloudlogapi TEXT DEFAULT 'cl12345678901234567890', cloudlogurl TEXT DEFAULT 'http://www.yoururl.com/Cloudlog/index.php/api/qso', useqrz INTEGER DEFAULT 0, usecloudlog INTEGER DEFAULT 0, userigcontrol INTEGER DEFAULT 0, rigcontrolip TEXT DEFAULT '127.0.0.1', rigcontrolport TEXT DEFAULT '4532',markerfile TEXT default 'secret', usemarker INTEGER DEFAULT 0, usehamdb INTEGER DEFAULT 0); """
-			c.execute(sql_table)
-			conn.commit()
-			conn.close()
+			with sqlite3.connect(self.database) as conn:
+				c = conn.cursor()
+				sql_table = """ CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY, callsign text NOT NULL, class text NOT NULL, section text NOT NULL, date_time text NOT NULL, frequency INTEGER DEFAULT 0, band text NOT NULL, mode text NOT NULL, power INTEGER NOT NULL, grid text NOT NULL, opname text NOT NULL); """
+				c.execute(sql_table)
+				sql_table = """ CREATE TABLE IF NOT EXISTS preferences (id INTEGER PRIMARY KEY, mycallsign TEXT DEFAULT '', myclass TEXT DEFAULT '', mysection TEXT DEFAULT '', power TEXT DEFAULT '100', altpower INTEGER DEFAULT 0, outdoors INTEGER DEFAULT 0, notathome INTEGER DEFAULT 0, satellite INTEGER DEFAULT 0, qrzusername TEXT DEFAULT 'w1aw', qrzpassword TEXT default 'secret', qrzurl TEXT DEFAULT 'https://xmldata.qrz.com/xml/',cloudlogapi TEXT DEFAULT 'cl12345678901234567890', cloudlogurl TEXT DEFAULT 'http://www.yoururl.com/Cloudlog/index.php/api/qso', useqrz INTEGER DEFAULT 0, usecloudlog INTEGER DEFAULT 0, userigcontrol INTEGER DEFAULT 0, rigcontrolip TEXT DEFAULT '127.0.0.1', rigcontrolport TEXT DEFAULT '4532',markerfile TEXT default 'secret', usemarker INTEGER DEFAULT 0, usehamdb INTEGER DEFAULT 0); """
+				c.execute(sql_table)
+				conn.commit()
 		except Error as e:
-			print(e)
+			logging.critical(f"create_DB: Unable to create database: {e}")
 
 	def highlighted(self, state):
 		"""
@@ -614,47 +637,45 @@ class MainWindow(QtWidgets.QMainWindow):
 		Restore preferences if they exist, otherwise create some sane defaults.
 		"""
 		try:
-			conn = sqlite3.connect(self.database)
-			c = conn.cursor()
-			c.execute("select * from preferences where id = 1")
-			pref = c.fetchall()
-			if len(pref) > 0:
-				for x in pref:
-					_, self.mycall, self.myclass, self.mysection, self.power, _, _, _, _, self.qrzname, self.qrzpass, self.qrzurl, self.cloudlogapi, self.cloudlogurl, useqrz, usecloudlog, userigcontrol, self.rigctrlhost, self.rigctrlport, self.markerfile, self.usemarker, self.usehamdb = x
-					self.mycallEntry.setText(self.mycall)
-					if self.mycall != "": self.mycallEntry.setStyleSheet("border: 1px solid green;")
-					self.myclassEntry.setText(self.myclass)
-					if self.myclass != "": self.myclassEntry.setStyleSheet("border: 1px solid green;")
-					self.mysectionEntry.setText(self.mysection)
-					if self.mysection != "": self.mysectionEntry.setStyleSheet("border: 1px solid green;")
+			with sqlite3.connect(self.database) as conn:
+				c = conn.cursor()
+				c.execute("select * from preferences where id = 1")
+				pref = c.fetchall()
+				if len(pref) > 0:
+					for x in pref:
+						_, self.mycall, self.myclass, self.mysection, self.power, _, _, _, _, self.qrzname, self.qrzpass, self.qrzurl, self.cloudlogapi, self.cloudlogurl, useqrz, usecloudlog, userigcontrol, self.rigctrlhost, self.rigctrlport, self.markerfile, self.usemarker, self.usehamdb = x
+						self.mycallEntry.setText(self.mycall)
+						if self.mycall != "": self.mycallEntry.setStyleSheet("border: 1px solid green;")
+						self.myclassEntry.setText(self.myclass)
+						if self.myclass != "": self.myclassEntry.setStyleSheet("border: 1px solid green;")
+						self.mysectionEntry.setText(self.mysection)
+						if self.mysection != "": self.mysectionEntry.setStyleSheet("border: 1px solid green;")
+						self.power_selector.setValue(int(self.power))
+						self.usecloudlog = bool(usecloudlog)
+						self.useqrz = bool(useqrz)
+						self.userigctl = bool(userigcontrol)
+						self.usemarker = bool(self.usemarker)
+						self.usehamdb = bool(self.usehamdb)
+				else:
+					sql = f"INSERT INTO preferences(id, mycallsign, myclass, mysection, power, altpower, outdoors, notathome, satellite, markerfile, usemarker, usehamdb) VALUES(1,'{self.mycall}','{self.myclass}','{self.mysection}','100',{0},{0},{0},{0},'{self.markerfile}',{int(self.usemarker)},{int(self.usehamdb)})"
+					c.execute(sql)
+					conn.commit()
 					self.power_selector.setValue(int(self.power))
-					self.usecloudlog = bool(usecloudlog)
-					self.useqrz = bool(useqrz)
-					self.userigctl = bool(userigcontrol)
-					self.usemarker = bool(self.usemarker)
-					self.usehamdb = bool(self.usehamdb)
-			else:
-				sql = f"INSERT INTO preferences(id, mycallsign, myclass, mysection, power, altpower, outdoors, notathome, satellite, markerfile, usemarker, usehamdb) VALUES(1,'{self.mycall}','{self.myclass}','{self.mysection}','100',{0},{0},{0},{0},'{self.markerfile}',{int(self.usemarker)},{int(self.usehamdb)})"
-				c.execute(sql)
-				conn.commit()
-				self.power_selector.setValue(int(self.power))
-			conn.close()
 		except Error as e:
-			print(e)
+			logging.critical(f"readpreferences: {e}")
 
 	def writepreferences(self):
 		"""
 		Stores preferences into the 'preferences' sql table.
 		"""
 		try:
-			conn = sqlite3.connect(self.database)
-			sql = f"UPDATE preferences SET mycallsign = '{self.mycall}', myclass = '{self.myclass}', mysection = '{self.mysection}', power = '{self.power_selector.value()}', markerfile = '{self.markerfile}', usemarker = {int(self.usemarker)}, usehamdb = {int(self.usehamdb)} WHERE id = 1"
-			cur = conn.cursor()
-			cur.execute(sql)
-			conn.commit()
-			conn.close()
+			with sqlite3.connect(self.database) as conn:
+				sql = f"UPDATE preferences SET mycallsign = '{self.mycall}', myclass = '{self.myclass}', mysection = '{self.mysection}', power = '{self.power_selector.value()}', markerfile = '{self.markerfile}', usemarker = {int(self.usemarker)}, usehamdb = {int(self.usehamdb)} WHERE id = 1"
+				cur = conn.cursor()
+				cur.execute(sql)
+				conn.commit()
 		except Error as e:
-			print("Error:",e)
+			logging.critical(f"writepreferences: {e}")
 
 	def log_contact(self):
 		if(len(self.callsign_entry.text()) == 0 or len(self.class_entry.text()) == 0 or len(self.section_entry.text()) == 0): return
@@ -662,17 +683,15 @@ class MainWindow(QtWidgets.QMainWindow):
 		if not self.userigctl:
 			self.oldfreq = int(float(self.fakefreq[self.band, self.mode]) * 1000)
 		contact = (self.callsign_entry.text(), self.class_entry.text(), self.section_entry.text(), self.oldfreq, self.band, self.mode, int(self.power_selector.value()), grid, opname)
-
 		try:
-			conn = sqlite3.connect(self.database)
-			sql = "INSERT INTO contacts(callsign, class, section, date_time, frequency, band, mode, power, grid, opname) VALUES(?,?,?,datetime('now'),?,?,?,?,?,?)"
-			cur = conn.cursor()
-			cur.execute(sql, contact)
-			conn.commit()
-			conn.close()
+			with sqlite3.connect(self.database) as conn:
+				sql = "INSERT INTO contacts(callsign, class, section, date_time, frequency, band, mode, power, grid, opname) VALUES(?,?,?,datetime('now'),?,?,?,?,?,?)"
+				cur = conn.cursor()
+				logging.info(f"log_contact: {sql} : {contact}")
+				cur.execute(sql, contact)
+				conn.commit()
 		except Error as e:
-			print("Log Contact: ")
-			print(e)
+			logging.critical(f"log_ontact: {e}")
 
 		self.sections()
 		self.stats()
@@ -685,39 +704,44 @@ class MainWindow(QtWidgets.QMainWindow):
 		"""
 		Get an idea of how you're doing points wise.
 		"""
-		conn = sqlite3.connect(self.database)
-		c = conn.cursor()
-		c.execute("select count(*) from contacts where mode = 'CW'")
-		self.Total_CW.setText(str(c.fetchone()[0]))
-		c.execute("select count(*) from contacts where mode = 'PH'")
-		self.Total_Phone.setText(str(c.fetchone()[0]))
-		c.execute("select count(*) from contacts where mode = 'DI'")
-		self.Total_Digital.setText(str(c.fetchone()[0]))
-		c.execute("select distinct band, mode from contacts")
-		self.bandmodemult = len(c.fetchall())
-		c.execute("SELECT count(*) FROM contacts where datetime(date_time) >=datetime('now', '-15 Minutes')")
-		self.QSO_Last15.setText(str(c.fetchone()[0]))
-		c.execute("SELECT count(*) FROM contacts where datetime(date_time) >=datetime('now', '-1 Hours')")
-		self.QSO_PerHour.setText(str(c.fetchone()[0]))
-		conn.close()
-		self.QSO_Points.setText(str(self.calcscore()))
+		try:
+			with sqlite3.connect(self.database) as conn:
+				c = conn.cursor()
+				c.execute("select count(*) from contacts where mode = 'CW'")
+				self.Total_CW.setText(str(c.fetchone()[0]))
+				c.execute("select count(*) from contacts where mode = 'PH'")
+				self.Total_Phone.setText(str(c.fetchone()[0]))
+				c.execute("select count(*) from contacts where mode = 'DI'")
+				self.Total_Digital.setText(str(c.fetchone()[0]))
+				c.execute("select distinct band, mode from contacts")
+				self.bandmodemult = len(c.fetchall())
+				c.execute("SELECT count(*) FROM contacts where datetime(date_time) >=datetime('now', '-15 Minutes')")
+				self.QSO_Last15.setText(str(c.fetchone()[0]))
+				c.execute("SELECT count(*) FROM contacts where datetime(date_time) >=datetime('now', '-1 Hours')")
+				self.QSO_PerHour.setText(str(c.fetchone()[0]))
+				self.QSO_Points.setText(str(self.calcscore()))
+		except Error as e:
+			logging.critical(f"stats: {e}")
 
 	def calcscore(self):
 		"""
 		Return our current score based on operating power, band / mode multipliers and types of contacts. 
 		"""
 		self.qrpcheck()
-		conn = sqlite3.connect(self.database)
-		c = conn.cursor()
-		c.execute("select count(*) as cw from contacts where mode = 'CW'")
-		cw = str(c.fetchone()[0])
-		c.execute("select count(*) as ph from contacts where mode = 'PH'")
-		ph = str(c.fetchone()[0])
-		c.execute("select count(*) as di from contacts where mode = 'DI'")
-		di = str(c.fetchone()[0])
-		c.execute("select distinct band, mode from contacts")
-		self.bandmodemult = len(c.fetchall())
-		conn.close()
+		try:
+			with sqlite3.connect(self.database) as conn:
+				c = conn.cursor()
+				c.execute("select count(*) as cw from contacts where mode = 'CW'")
+				cw = str(c.fetchone()[0])
+				c.execute("select count(*) as ph from contacts where mode = 'PH'")
+				ph = str(c.fetchone()[0])
+				c.execute("select count(*) as di from contacts where mode = 'DI'")
+				di = str(c.fetchone()[0])
+				c.execute("select distinct band, mode from contacts")
+				self.bandmodemult = len(c.fetchall())
+		except Error as e:
+			logging.critical(f"calcscore: {e}")
+			return 0
 		self.score = (int(cw) * 2) + int(ph) + (int(di) * 2)
 		self.basescore = self.score
 		self.powermult = 1
@@ -731,31 +755,36 @@ class MainWindow(QtWidgets.QMainWindow):
 
 	def qrpcheck(self):
 		"""qrp = 5W cw, 10W ph and di, highpower greater than 150W"""
-		conn = sqlite3.connect(self.database)
-		c = conn.cursor()
-		c.execute("select count(*) as qrpc from contacts where mode = 'CW' and power > 5")
-		log = c.fetchall()
-		qrpc = list(log[0])[0]
-		c.execute("select count(*) as qrpp from contacts where mode = 'PH' and power > 10")
-		log = c.fetchall()
-		qrpp = list(log[0])[0]
-		c.execute("select count(*) as qrpd from contacts where mode = 'DI' and power > 10")
-		log = c.fetchall()
-		qrpd = list(log[0])[0]
-		c.execute("select count(*) as highpower from contacts where power > 150")
-		log = c.fetchall()
-		self.highpower = bool(list(log[0])[0])
-		conn.close()
-		self.qrp = not (qrpc + qrpp + qrpd)
+		try:
+			with sqlite3.connect(self.database) as conn:
+				c = conn.cursor()
+				c.execute("select count(*) as qrpc from contacts where mode = 'CW' and power > 5")
+				log = c.fetchall()
+				qrpc = list(log[0])[0]
+				c.execute("select count(*) as qrpp from contacts where mode = 'PH' and power > 10")
+				log = c.fetchall()
+				qrpp = list(log[0])[0]
+				c.execute("select count(*) as qrpd from contacts where mode = 'DI' and power > 10")
+				log = c.fetchall()
+				qrpd = list(log[0])[0]
+				c.execute("select count(*) as highpower from contacts where power > 150")
+				log = c.fetchall()
+				self.highpower = bool(list(log[0])[0])
+				self.qrp = not (qrpc + qrpp + qrpd)
+		except Error as e:
+			logging.critical(f"qrpcheck: {e}")
 
 	def logwindow(self):
 		self.dupdict = {}
 		self.listWidget.clear()
-		conn = sqlite3.connect(self.database)
-		c = conn.cursor()
-		c.execute("select * from contacts order by date_time desc")
-		log = c.fetchall()
-		conn.close()
+		try:
+			with sqlite3.connect(self.database) as conn:
+				c = conn.cursor()
+				c.execute("select * from contacts order by date_time desc")
+				log = c.fetchall()
+		except Error as e:
+			logging.critical(f"logwindow: {e}")
+			return
 		for x in log:
 			logid, hiscall, hisclass, hissection, datetime, frequency,band, mode, power, _, _ = x
 			logline = f"{str(logid).rjust(3,'0')} {hiscall.ljust(15)} {hisclass.rjust(3)} {hissection.rjust(3)} {datetime} {str(frequency).rjust(9)} {str(band).rjust(3)}M {mode} {str(power).rjust(3)}W"
@@ -763,11 +792,17 @@ class MainWindow(QtWidgets.QMainWindow):
 			self.dupdict[f"{hiscall}{band}{mode}"] = True
 
 	def qsoedited(self):
+		"""
+		Perform functions after QSO edited or deleted.
+		"""
 		self.sections()
 		self.stats()
 		self.logwindow()
 
 	def qsoclicked(self):
+		"""
+		Gets the line of the log clicked on, and passes that line to the edit dialog.
+		"""
 		item = self.listWidget.currentItem()
 		self.linetopass = item.text()
 		dialog = editQSODialog(self)
@@ -776,6 +811,9 @@ class MainWindow(QtWidgets.QMainWindow):
 		dialog.open()
 
 	def readSections(self):
+		"""
+		Reads in the ARRL sections into some internal dictionaries.
+		"""
 		try:
 			with open(self.relpath("arrl_sect.dat"), "r") as fd:
 				while 1:
@@ -790,11 +828,14 @@ class MainWindow(QtWidgets.QMainWindow):
 							p = abbrev[:-i - 1]
 							self.secPartial[p] = 1
 					except ValueError as e:
-						print("rd arrl sec dat err, itm skpd: ", e)
+						logging.warning(f"readSections: {e}")
 		except IOError as e:
-			print("read error during readSections", e)
+			logging.critical(f"readSections: read error: {e}")
 	
 	def sectionCheck(self):
+		"""
+		Shows you the possible section matches based on what you have typed in the section input filed.
+		"""
 		self.infobox.clear()
 		self.infobox.setTextColor(QtGui.QColor(211, 215, 207))
 		sec = self.section_entry.text()
@@ -805,11 +846,20 @@ class MainWindow(QtWidgets.QMainWindow):
 			self.infobox.insertPlainText(self.secName[xxx]+"\n")
 
 	def readSCP(self):
-		with open(self.relpath("MASTER.SCP"), "r") as f:
-			self.scp = f.readlines()
-			self.scp = list(map(lambda x: x.strip(), self.scp))
+		"""
+		Reads in a list of known contesters into an internal dictionary
+		"""
+		try:
+			with open(self.relpath("MASTER.SCP"), "r") as f:
+				self.scp = f.readlines()
+				self.scp = list(map(lambda x: x.strip(), self.scp))
+		except IOError as e:
+			logging.critical(f"readSCP: read error: {e}")
 
 	def superCheck(self):
+		"""
+		Performs a supercheck partial on the callsign entered in the field.
+		"""
 		self.infobox.clear()
 		self.infobox.setTextColor(QtGui.QColor(211, 215, 207))
 		acall = self.callsign_entry.text()
@@ -817,16 +867,18 @@ class MainWindow(QtWidgets.QMainWindow):
 			matches = list(filter(lambda x: x.startswith(acall), self.scp))
 			for x in matches:
 				self.infobox.insertPlainText(x+" ")
-				pass
 
 	def dupCheck(self):
 		acall = self.callsign_entry.text()
 		self.infobox.clear()
-		conn = sqlite3.connect(self.database)
-		c = conn.cursor()
-		c.execute(f"select callsign, class, section, band, mode from contacts where callsign like '{acall}' order by band")
-		log = c.fetchall()
-		conn.close()
+		try:
+			with sqlite3.connect(self.database) as conn:
+				c = conn.cursor()
+				c.execute(f"select callsign, class, section, band, mode from contacts where callsign like '{acall}' order by band")
+				log = c.fetchall()
+		except Error as e:
+			logging.critical(f"dupCheck: {e}")
+			return
 		for x in log:
 			hiscall, hisclass, hissection, hisband, hismode = x
 			if len(self.class_entry.text()) == 0: self.class_entry.setText(hisclass)
@@ -841,10 +893,14 @@ class MainWindow(QtWidgets.QMainWindow):
 			self.infobox.insertPlainText(f"{hiscall}: {hisband} {hismode}{dupetext}\n")
 
 	def workedSections(self):
-		conn = sqlite3.connect(self.database)
-		c = conn.cursor()
-		c.execute("select distinct section from contacts")
-		all_rows = c.fetchall()
+		try:
+			with sqlite3.connect(self.database) as conn:
+				c = conn.cursor()
+				c.execute("select distinct section from contacts")
+				all_rows = c.fetchall()
+		except Error as e:
+			logging.critical(f"workedSections: {e}")
+			return
 		self.wrkdsections = str(all_rows)
 		self.wrkdsections = self.wrkdsections.replace("('", "").replace("',), ", ",").replace("',)]", "").replace('[', '').split(',')
 
@@ -967,21 +1023,27 @@ class MainWindow(QtWidgets.QMainWindow):
 		"""
 		Returns the amount of contacts and the maximum power used for a particular band/mode combination.
 		"""
-		conn = ""
-		conn = sqlite3.connect(self.database)
-		c = conn.cursor()
-		c.execute(f"select count(*) as tally, MAX(power) as mpow from contacts where band = '{band}' AND mode ='{mode}'")
-		return c.fetchone()
+		try:
+			with sqlite3.connect(self.database) as conn:
+				c = conn.cursor()
+				c.execute(f"select count(*) as tally, MAX(power) as mpow from contacts where band = '{band}' AND mode ='{mode}'")
+				return c.fetchone()
+		except Error as e:
+			logging.critical(f"getBandModeTally: {e}")
 
 	def getbands(self):
 		"""
 		Returns a list of bands worked, and an empty list if none worked.
 		"""
 		bandlist=[]
-		conn = sqlite3.connect(self.database)
-		c = conn.cursor()
-		c.execute("select DISTINCT band from contacts")
-		x=c.fetchall()
+		try:
+			with sqlite3.connect(self.database) as conn:
+				c = conn.cursor()
+				c.execute("select DISTINCT band from contacts")
+				x=c.fetchall()
+		except Error as e:
+			logging.critical(f"getbands: {e}")
+			return []
 		if x:
 			for count in x:
 				bandlist.append(count[0])
@@ -991,16 +1053,19 @@ class MainWindow(QtWidgets.QMainWindow):
 	def generateBandModeTally(self):
 		blist = self.getbands()
 		bmtfn = "Statistics.txt"
-		with open(bmtfn, "w") as f:
-			print("\t\tCW\tPWR\tDI\tPWR\tPH\tPWR", end='\r\n', file=f)
-			print("-"*60, end='\r\n', file=f)
-			for b in self.bands:
-				if b in blist:
-					cwt = self.getBandModeTally(b,"CW")
-					dit = self.getBandModeTally(b,"DI")
-					pht = self.getBandModeTally(b,"PH")
-					print(f"Band:\t{b}\t{cwt[0]}\t{cwt[1]}\t{dit[0]}\t{dit[1]}\t{pht[0]}\t{pht[1]}", end='\r\n', file=f)
-					print("-"*60, end='\r\n', file=f)
+		try:
+			with open(bmtfn, "w") as f:
+				print("\t\tCW\tPWR\tDI\tPWR\tPH\tPWR", end='\r\n', file=f)
+				print("-"*60, end='\r\n', file=f)
+				for b in self.bands:
+					if b in blist:
+						cwt = self.getBandModeTally(b,"CW")
+						dit = self.getBandModeTally(b,"DI")
+						pht = self.getBandModeTally(b,"PH")
+						print(f"Band:\t{b}\t{cwt[0]}\t{cwt[1]}\t{dit[0]}\t{dit[1]}\t{pht[0]}\t{pht[1]}", end='\r\n', file=f)
+						print("-"*60, end='\r\n', file=f)
+		except IOError as e:
+			logging.critical("generateBandModeTally: write error: {e}")
 
 	def getState(self, section):
 		"""
@@ -1042,13 +1107,16 @@ class MainWindow(QtWidgets.QMainWindow):
 		return lat, lon
 
 	def updatemarker(self):
+		"""
+		Updates the xplanet marker file with a list of logged contact lat & lon 
+		"""
 		if self.usemarker:
 			filename = str(Path.home())+"/"+self.markerfile
 			try:
-				conn = sqlite3.connect(self.database)
-				c = conn.cursor()
-				c.execute("select DISTINCT grid from contacts")
-				x=c.fetchall()
+				with sqlite3.connect(self.database) as conn:
+					c = conn.cursor()
+					c.execute("select DISTINCT grid from contacts")
+					x=c.fetchall()
 				if x:
 					with open(filename, "w", encoding='ascii') as f:
 						for count in x:
@@ -1056,9 +1124,12 @@ class MainWindow(QtWidgets.QMainWindow):
 							if len(grid) > 1 and not len(grid)%2:
 								lat, lon = self.gridtolatlon(grid)
 								print(f'{lat} {lon} ""', end='\r\n', file=f)
-			except:
+			except IOError as e:
+				logging.warning(f"updatemarker: error {e} writing to {filename}")
 				self.infobox.setTextColor(QtGui.QColor(245, 121, 0))
 				self.infobox.insertPlainText(f"Unable to write to {filename}\n")
+			except Error as e:
+				logging.critical(f"updatemarker: db error: {e}")
 
 	def qrzlookup(self, call):
 		grid = False
@@ -1069,25 +1140,33 @@ class MainWindow(QtWidgets.QMainWindow):
 				payload = {'s':self.qrzsession, 'callsign':call}
 				r=requests.get(self.qrzurl,params=payload, timeout=3.0)
 				if not r.text.find('<Key>'): #key expired get a new one
+					logging.info("qrzlookup: no key, getting new one.")
 					self.qrzauth()
 					if self.qrzsession:
 						payload = {'s':self.qrzsession, 'callsign':call}
 						r=requests.get(self.qrzurl,params=payload, timeout=3.0)
 				grid, name = self.parseLookup(r)
 			elif self.usehamdb and internet_good:
+				logging.info("qrzlookup: using hamdb for the lookup.")
 				r=requests.get(f"http://api.hamdb.org/v1/{call}/xml/k6gtefdlogger",timeout=3.0)
 				grid, name = self.parseLookup(r)
 		except:
+			logging.warning("qrzlookup: lookup failed.")
 			self.infobox.insertPlainText(f"Something Smells...\n")
 		return grid, name
 
 	def parseLookup(self,r):
+		"""
+		Returns gridsquare and name for a callsign looked up by qrz or hamdb.
+		Or False for both if none found or error. 
+		"""
 		grid=False
 		name=False
 		try:
 			if r.status_code == 200:
 				if r.text.find('<Error>') > 0:
 					errorText = r.text[r.text.find('<Error>')+7:r.text.find('</Error>')]
+					logging.warning(f"parseLookup: {errorText}")
 					self.infobox.insertPlainText(f"\nQRZ/HamDB Error: {errorText}\n")
 				if r.text.find('<grid>') > 0:
 					grid = r.text[r.text.find('<grid>')+6:r.text.find('</grid>')]
@@ -1099,63 +1178,73 @@ class MainWindow(QtWidgets.QMainWindow):
 					else:
 						name += " " + r.text[r.text.find('<name>')+6:r.text.find('</name>')]
 		except:
+			logging.warning("parseLookup: Lookup failed.")
 			self.infobox.insertPlainText(f"Lookup Failed...\n")
 		return grid, name
 
 	def adif(self):
+		"""
+		Creates an ADIF file of the contacts made.
+		"""
 		logname = "FieldDay.adi"
 		self.infobox.setTextColor(QtGui.QColor(211, 215, 207))
-		self.infobox.insertPlainText("Saving ADIF to: "+logname+"\n")
+		self.infobox.insertPlainText(f"Saving ADIF to: {logname}\n")
 		app.processEvents()
-		conn = sqlite3.connect(self.database)
-		c = conn.cursor()
-		c.execute("select * from contacts order by date_time ASC")
-		log = c.fetchall()
-		conn.close()
+		try:
+			with sqlite3.connect(self.database) as conn:
+				c = conn.cursor()
+				c.execute("select * from contacts order by date_time ASC")
+				log = c.fetchall()
+		except Error as e:
+			logging.critical(f"adif: db error: {e}")
+			return
 		grid = False
 		opname = False
-		with open(logname, "w", encoding='ascii') as f:
-			print("<ADIF_VER:5>2.2.0", end='\r\n', file=f)
-			print("<EOH>", end='\r\n', file=f)
-			for x in log:
-				_, hiscall, hisclass, hissection, datetime, freq, band, mode, _, grid, opname = x
-				if mode == "DI": mode = "FT8"
-				if mode == "PH": mode = "SSB"
-				if mode == "CW":
-					rst = "599"
-				else:
-					rst = "59"
-				loggeddate = datetime[:10]
-				loggedtime = datetime[11:13] + datetime[14:16]
+		try:
+			with open(logname, "w", encoding='ascii') as f:
+				print("<ADIF_VER:5>2.2.0", end='\r\n', file=f)
+				print("<EOH>", end='\r\n', file=f)
+				for x in log:
+					_, hiscall, hisclass, hissection, datetime, freq, band, mode, _, grid, opname = x
+					if mode == "DI": mode = "FT8"
+					if mode == "PH": mode = "SSB"
+					if mode == "CW":
+						rst = "599"
+					else:
+						rst = "59"
+					loggeddate = datetime[:10]
+					loggedtime = datetime[11:13] + datetime[14:16]
 
-				temp = str(freq/1000000).split('.')
-				freq = temp[0] + "." + temp[1].ljust(3,'0')
-
-				if freq == '0.000': #incase no freq was logged
-					freq = int(self.fakefreq(band, mode))
-					temp = str(freq/1000).split('.')
+					temp = str(freq/1000000).split('.')
 					freq = temp[0] + "." + temp[1].ljust(3,'0')
 
-				print(f"<QSO_DATE:{len(''.join(loggeddate.split('-')))}:d>{''.join(loggeddate.split('-'))}", end='\r\n', file=f)
-				print(f"<TIME_ON:{len(loggedtime)}>{loggedtime}", end='\r\n', file=f)
-				print(f"<CALL:{len(hiscall)}>{hiscall}", end='\r\n', file=f)
-				print(f"<MODE:{len(mode)}>{mode}", end='\r\n', file=f)
-				print(f"<BAND:{len(band + 'M')}>{band + 'M'}", end='\r\n', file=f)
-				print(f"<FREQ:{len(freq)}>{freq}", end='\r\n', file=f)
-				print(f"<RST_SENT:{len(rst)}>{rst}", end='\r\n', file=f)
-				print(f"<RST_RCVD:{len(rst)}>{rst}", end='\r\n', file=f)
-				print(f"<STX_STRING:{len(self.myclass + ' ' + self.mysection)}>{self.myclass + ' ' + self.mysection}", end='\r\n', file=f)
-				print(f"<SRX_STRING:{len(hisclass + ' ' + hissection)}>{hisclass + ' ' + hissection}", end='\r\n', file=f)
-				print(f"<ARRL_SECT:{len(hissection)}>{hissection}", end='\r\n', file=f)
-				print(f"<CLASS:{len(hisclass)}>{hisclass}", end='\r\n', file=f)
-				state = self.getState(hissection)
-				if state: print(f"<STATE:{len(state)}>{state}", end='\r\n', file=f)
-				if len(grid) > 1: print(f"<GRIDSQUARE:{len(grid)}>{grid}", end='\r\n', file=f)
-				if len(opname) > 1: print(f"<NAME:{len(opname)}>{opname}", end='\r\n', file=f)
-				comment = "ARRL-FD"
-				print(f"<COMMENT:{len(comment)}>{comment}", end='\r\n', file=f)
-				print("<EOR>", end='\r\n', file=f)
-				print("", end='\r\n', file=f)
+					if freq == '0.000': #incase no freq was logged
+						freq = int(self.fakefreq(band, mode))
+						temp = str(freq/1000).split('.')
+						freq = temp[0] + "." + temp[1].ljust(3,'0')
+
+					print(f"<QSO_DATE:{len(''.join(loggeddate.split('-')))}:d>{''.join(loggeddate.split('-'))}", end='\r\n', file=f)
+					print(f"<TIME_ON:{len(loggedtime)}>{loggedtime}", end='\r\n', file=f)
+					print(f"<CALL:{len(hiscall)}>{hiscall}", end='\r\n', file=f)
+					print(f"<MODE:{len(mode)}>{mode}", end='\r\n', file=f)
+					print(f"<BAND:{len(band + 'M')}>{band + 'M'}", end='\r\n', file=f)
+					print(f"<FREQ:{len(freq)}>{freq}", end='\r\n', file=f)
+					print(f"<RST_SENT:{len(rst)}>{rst}", end='\r\n', file=f)
+					print(f"<RST_RCVD:{len(rst)}>{rst}", end='\r\n', file=f)
+					print(f"<STX_STRING:{len(self.myclass + ' ' + self.mysection)}>{self.myclass + ' ' + self.mysection}", end='\r\n', file=f)
+					print(f"<SRX_STRING:{len(hisclass + ' ' + hissection)}>{hisclass + ' ' + hissection}", end='\r\n', file=f)
+					print(f"<ARRL_SECT:{len(hissection)}>{hissection}", end='\r\n', file=f)
+					print(f"<CLASS:{len(hisclass)}>{hisclass}", end='\r\n', file=f)
+					state = self.getState(hissection)
+					if state: print(f"<STATE:{len(state)}>{state}", end='\r\n', file=f)
+					if len(grid) > 1: print(f"<GRIDSQUARE:{len(grid)}>{grid}", end='\r\n', file=f)
+					if len(opname) > 1: print(f"<NAME:{len(opname)}>{opname}", end='\r\n', file=f)
+					comment = "ARRL-FD"
+					print(f"<COMMENT:{len(comment)}>{comment}", end='\r\n', file=f)
+					print("<EOR>", end='\r\n', file=f)
+					print("", end='\r\n', file=f)
+		except IOError as e:
+			logging.critical(f"adif: IO error: {e}")
 		self.infobox.insertPlainText("Done\n\n")
 		app.processEvents()
 
@@ -1164,11 +1253,14 @@ class MainWindow(QtWidgets.QMainWindow):
 		Log contact to Cloudlog: https://github.com/magicbug/Cloudlog
 		"""
 		if (not self.usecloudlog) or (not self.cloudlogauthenticated): return
-		conn = sqlite3.connect(self.database)
-		c = conn.cursor()
-		c.execute("select * from contacts order by id DESC")
-		q = c.fetchone()
-		conn.close()
+		try:
+			with sqlite3.connect(self.database) as conn:
+				c = conn.cursor()
+				c.execute("select * from contacts order by id DESC")
+				q = c.fetchone()
+		except Error as e:
+			logging.critical(f"postcloudlog: db error: {e}")
+			return
 		_, hiscall, hisclass, hissection, datetime, freq, band, mode, _, grid, opname = q
 		if mode == "DI": mode = "FT8"
 		if mode == "PH": mode = "SSB"
@@ -1211,15 +1303,23 @@ class MainWindow(QtWidgets.QMainWindow):
 		_ = requests.post(self.cloudlogurl, jsonData)
 
 	def cabrillo(self):
+		"""
+		Generates a cabrillo log file.
+		"""
 		filename = self.mycall.upper()+".log"
 		self.infobox.setTextColor(QtGui.QColor(211, 215, 207))
 		self.infobox.insertPlainText(f"Saving cabrillo to: {filename}")
 		app.processEvents()
-		conn = sqlite3.connect(self.database)
-		c = conn.cursor()
-		c.execute("select * from contacts order by date_time ASC")
-		log = c.fetchall()
-		conn.close()
+		try:
+			with sqlite3.connect(self.database) as conn:
+				c = conn.cursor()
+				c.execute("select * from contacts order by date_time ASC")
+				log = c.fetchall()
+		except Error as e:
+			logging.critical(f"cabrillo: db error: {e}")
+			self.infobox.insertPlainText(" Failed\n\n")
+			app.processEvents()
+			return
 		catpower = ""
 		if self.qrp:
 			catpower = "QRP"
@@ -1227,35 +1327,41 @@ class MainWindow(QtWidgets.QMainWindow):
 			catpower = "HIGH"
 		else:
 			catpower = "LOW"
-		with open(filename, "w", encoding='ascii') as f:
-			print("START-OF-LOG: 3.0", end='\r\n', file=f)
-			print("CREATED-BY: K6GTE Field Day Logger", end='\r\n', file=f)
-			print("CONTEST: ARRL-FD", end='\r\n', file=f)
-			print(f"CALLSIGN: {self.mycall}", end='\r\n', file=f)
-			print("LOCATION:", end='\r\n', file=f)
-			print(f"ARRL-SECTION: {self.mysection}", end='\r\n', file=f)
-			print(f"CATEGORY: {self.myclass}", end='\r\n', file=f)
-			print(f"CATEGORY-POWER: {catpower}", end='\r\n', file=f)
-			print(f"CLAIMED-SCORE: {self.calcscore()}", end='\r\n', file=f)
-			print(f"OPERATORS: {self.mycall}", end='\r\n', file=f)
-			print("NAME: ", end='\r\n', file=f)
-			print("ADDRESS: ", end='\r\n', file=f)
-			print("ADDRESS-CITY: ", end='\r\n', file=f)
-			print("ADDRESS-STATE: ", end='\r\n', file=f)
-			print("ADDRESS-POSTALCODE: ", end='\r\n', file=f)
-			print("ADDRESS-COUNTRY: ", end='\r\n', file=f)
-			print("EMAIL: ", end='\r\n', file=f)
-			for x in log:
-				_, hiscall, hisclass, hissection, datetime, freq, band, mode, _, _, _ = x
-				if mode == "DI": mode = "DG"
-				loggeddate = datetime[:10]
-				loggedtime = datetime[11:13] + datetime[14:16]
-				temp = str(freq/1000000).split('.')
-				freq = temp[0] + temp[1].ljust(3,'0')[:3]
-				if freq == '0000':
-					freq=self.fakefreq(band, mode)
-				print(f"QSO: {freq.rjust(6)} {mode} {loggeddate} {loggedtime} {self.mycall} {self.myclass} {self.mysection} {hiscall} {hisclass} {hissection}", end='\r\n', file=f)
-			print("END-OF-LOG:", end='\r\n', file=f)
+		try:
+			with open(filename, "w", encoding='ascii') as f:
+				print("START-OF-LOG: 3.0", end='\r\n', file=f)
+				print("CREATED-BY: K6GTE Field Day Logger", end='\r\n', file=f)
+				print("CONTEST: ARRL-FD", end='\r\n', file=f)
+				print(f"CALLSIGN: {self.mycall}", end='\r\n', file=f)
+				print("LOCATION:", end='\r\n', file=f)
+				print(f"ARRL-SECTION: {self.mysection}", end='\r\n', file=f)
+				print(f"CATEGORY: {self.myclass}", end='\r\n', file=f)
+				print(f"CATEGORY-POWER: {catpower}", end='\r\n', file=f)
+				print(f"CLAIMED-SCORE: {self.calcscore()}", end='\r\n', file=f)
+				print(f"OPERATORS: {self.mycall}", end='\r\n', file=f)
+				print("NAME: ", end='\r\n', file=f)
+				print("ADDRESS: ", end='\r\n', file=f)
+				print("ADDRESS-CITY: ", end='\r\n', file=f)
+				print("ADDRESS-STATE: ", end='\r\n', file=f)
+				print("ADDRESS-POSTALCODE: ", end='\r\n', file=f)
+				print("ADDRESS-COUNTRY: ", end='\r\n', file=f)
+				print("EMAIL: ", end='\r\n', file=f)
+				for x in log:
+					_, hiscall, hisclass, hissection, datetime, freq, band, mode, _, _, _ = x
+					if mode == "DI": mode = "DG"
+					loggeddate = datetime[:10]
+					loggedtime = datetime[11:13] + datetime[14:16]
+					temp = str(freq/1000000).split('.')
+					freq = temp[0] + temp[1].ljust(3,'0')[:3]
+					if freq == '0000':
+						freq=self.fakefreq(band, mode)
+					print(f"QSO: {freq.rjust(6)} {mode} {loggeddate} {loggedtime} {self.mycall} {self.myclass} {self.mysection} {hiscall} {hisclass} {hissection}", end='\r\n', file=f)
+				print("END-OF-LOG:", end='\r\n', file=f)
+		except IOError as e:
+			logging.critical(f"cabrillo: IO error: {e}, writing to {filename}")
+			self.infobox.insertPlainText(" Failed\n\n")
+			app.processEvents()
+			return
 		self.infobox.insertPlainText(" Done\n\n")
 		app.processEvents()
 
@@ -1290,7 +1396,6 @@ class editQSODialog(QtWidgets.QDialog):
 		now = QtCore.QDateTime.fromString(date_time, 'yyyy-MM-dd hh:mm:ss')
 		self.editDateTime.setDateTime(now)
 		self.database = thedatabase
-		pass
 
 	def relpath(self, filename):
 		try:
@@ -1301,26 +1406,24 @@ class editQSODialog(QtWidgets.QDialog):
 
 	def saveChanges(self):
 		try:
-			conn = sqlite3.connect(self.database)
-			sql = f"update contacts set callsign = '{self.editCallsign.text().upper()}', class = '{self.editClass.text().upper()}', section = '{self.editSection.text().upper()}', date_time = '{self.editDateTime.text()}', frequency = '{self.editFreq.text()}', band = '{self.editBand.currentText()}', mode = '{self.editMode.currentText().upper()}', power = '{self.editPower.value()}'  where id={self.theitem}"
-			cur = conn.cursor()
-			cur.execute(sql)
-			conn.commit()
-			conn.close()
+			with sqlite3.connect(self.database) as conn:
+				sql = f"update contacts set callsign = '{self.editCallsign.text().upper()}', class = '{self.editClass.text().upper()}', section = '{self.editSection.text().upper()}', date_time = '{self.editDateTime.text()}', frequency = '{self.editFreq.text()}', band = '{self.editBand.currentText()}', mode = '{self.editMode.currentText().upper()}', power = '{self.editPower.value()}'  where id={self.theitem}"
+				cur = conn.cursor()
+				cur.execute(sql)
+				conn.commit()
 		except Error as e:
-			print(e)
+			logging.critical(f"saveChanges: db error: {e}")
 		self.change.lineChanged.emit()
 
 	def delete_contact(self):
 		try:
-			conn = sqlite3.connect(self.database)
-			sql = f"delete from contacts where id={self.theitem}"
-			cur = conn.cursor()
-			cur.execute(sql)
-			conn.commit()
-			conn.close()
+			with sqlite3.connect(self.database) as conn:
+				sql = f"delete from contacts where id={self.theitem}"
+				cur = conn.cursor()
+				cur.execute(sql)
+				conn.commit()
 		except Error as e:
-			print(e)
+			logging.critical(f"delete_contact: db error: {e}")
 		self.change.lineChanged.emit()
 		self.close()
 
@@ -1336,28 +1439,29 @@ class settings(QtWidgets.QDialog):
 	def setup(self, thedatabase):
 		self.database = thedatabase
 		try:
-			conn = sqlite3.connect(self.database)
-			c = conn.cursor()	
-			c.execute("select * from preferences where id = 1")
-			pref = c.fetchall()
-			if len(pref) > 0:
-				for x in pref:
-					_, _, _, _, _, _, _, _, _, qrzname, qrzpass, qrzurl, cloudlogapi, cloudlogurl, useqrz, usecloudlog, userigcontrol, rigctrlhost, rigctrlport, markerfile, usemarker, usehamdb = x
-					self.qrzname_field.setText(qrzname)
-					self.qrzpass_field.setText(qrzpass)
-					self.qrzurl_field.setText(qrzurl)
-					self.cloudlogapi_field.setText(cloudlogapi)
-					self.cloudlogurl_field.setText(cloudlogurl)
-					self.rigcontrolip_field.setText(rigctrlhost)
-					self.rigcontrolport_field.setText(rigctrlport)
-					self.usecloudlog_checkBox.setChecked(bool(usecloudlog))
-					self.useqrz_checkBox.setChecked(bool(useqrz))
-					self.userigcontrol_checkBox.setChecked(bool(userigcontrol))
-					self.markerfile_field.setText(markerfile)
-					self.generatemarker_checkbox.setChecked(bool(usemarker))
-					self.usehamdb_checkBox.setChecked(bool(usehamdb))
+			with sqlite3.connect(self.database) as conn:
+				c = conn.cursor()	
+				c.execute("select * from preferences where id = 1")
+				pref = c.fetchall()
 		except Error as e:
-			print(e)
+			logging.critical(f"settings setup: db error: {e}")
+			return
+		if len(pref) > 0:
+			for x in pref:
+				_, _, _, _, _, _, _, _, _, qrzname, qrzpass, qrzurl, cloudlogapi, cloudlogurl, useqrz, usecloudlog, userigcontrol, rigctrlhost, rigctrlport, markerfile, usemarker, usehamdb = x
+				self.qrzname_field.setText(qrzname)
+				self.qrzpass_field.setText(qrzpass)
+				self.qrzurl_field.setText(qrzurl)
+				self.cloudlogapi_field.setText(cloudlogapi)
+				self.cloudlogurl_field.setText(cloudlogurl)
+				self.rigcontrolip_field.setText(rigctrlhost)
+				self.rigcontrolport_field.setText(rigctrlport)
+				self.usecloudlog_checkBox.setChecked(bool(usecloudlog))
+				self.useqrz_checkBox.setChecked(bool(useqrz))
+				self.userigcontrol_checkBox.setChecked(bool(userigcontrol))
+				self.markerfile_field.setText(markerfile)
+				self.generatemarker_checkbox.setChecked(bool(usemarker))
+				self.usehamdb_checkBox.setChecked(bool(usehamdb))
 
 	def relpath(self, filename):
 		try:
@@ -1368,14 +1472,13 @@ class settings(QtWidgets.QDialog):
 
 	def saveChanges(self):
 		try:
-			conn = sqlite3.connect(self.database)
-			sql = f"UPDATE preferences SET qrzusername = '{self.qrzname_field.text()}', qrzpassword = '{self.qrzpass_field.text()}', qrzurl = '{self.qrzurl_field.text()}', cloudlogapi = '{self.cloudlogapi_field.text()}', cloudlogurl = '{self.cloudlogurl_field.text()}', rigcontrolip = '{self.rigcontrolip_field.text()}', rigcontrolport = '{self.rigcontrolport_field.text()}', useqrz = '{int(self.useqrz_checkBox.isChecked())}', usecloudlog = '{int(self.usecloudlog_checkBox.isChecked())}', userigcontrol = '{int(self.userigcontrol_checkBox.isChecked())}', markerfile = '{self.markerfile_field.text()}', usemarker = '{int(self.generatemarker_checkbox.isChecked())}', usehamdb = '{int(self.usehamdb_checkBox.isChecked())}'  where id=1;"
-			cur = conn.cursor()
-			cur.execute(sql)
-			conn.commit()
-			conn.close()
+			with sqlite3.connect(self.database) as conn:
+				sql = f"UPDATE preferences SET qrzusername = '{self.qrzname_field.text()}', qrzpassword = '{self.qrzpass_field.text()}', qrzurl = '{self.qrzurl_field.text()}', cloudlogapi = '{self.cloudlogapi_field.text()}', cloudlogurl = '{self.cloudlogurl_field.text()}', rigcontrolip = '{self.rigcontrolip_field.text()}', rigcontrolport = '{self.rigcontrolport_field.text()}', useqrz = '{int(self.useqrz_checkBox.isChecked())}', usecloudlog = '{int(self.usecloudlog_checkBox.isChecked())}', userigcontrol = '{int(self.userigcontrol_checkBox.isChecked())}', markerfile = '{self.markerfile_field.text()}', usemarker = '{int(self.generatemarker_checkbox.isChecked())}', usehamdb = '{int(self.usehamdb_checkBox.isChecked())}'  where id=1;"
+				cur = conn.cursor()
+				cur.execute(sql)
+				conn.commit()
 		except Error as e:
-			print(e)
+			logging.critical(f"settings saveChanges: db error: {e}")
 
 class startup(QtWidgets.QDialog):
 	def __init__(self, parent=None):
