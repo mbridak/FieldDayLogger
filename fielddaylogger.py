@@ -3,22 +3,40 @@
 #Nothing to see here move along.
 #xplanet -body earth -window -longitude -117 -latitude 38 -config Default -projection azmithal -radius 200 -wait 5
 
+import logging
+logging.basicConfig(level=logging.WARNING)
+
 import requests
 import sys
 import sqlite3
 import socket
 import os
 import struct
-import logging
 
 from json import dumps
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt5.QtCore import QDir
+from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtNetwork import QUdpSocket, QHostAddress
 
 from datetime import datetime
 from sqlite3 import Error
 from pathlib import Path
+
+def relpath(filename):
+		try:
+			base_path = sys._MEIPASS # pylint: disable=no-member
+		except:
+			base_path = os.path.abspath(".")
+		return os.path.join(base_path, filename)
+
+def load_fonts_from_dir(directory):
+		families = set()
+		for fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
+			_id = QFontDatabase.addApplicationFont(fi.absoluteFilePath())
+			families |= set(QFontDatabase.applicationFontFamilies(_id))
+		return families
 
 class qsoEdit(QtCore.QObject):
 	"""
@@ -367,6 +385,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		If unable to obtain a frequency from the rig, This will return a sane value for a frequency mainly for the cabrillo and adif log.
 		Takes a band and mode as input and returns freq in khz.
 		"""
+		logging.debug(f"fakefreq: band:{band} mode:{mode}")
 		modes = {
 			"CW":0,
 			"DI":1,
@@ -391,8 +410,9 @@ class MainWindow(QtWidgets.QMainWindow):
 			'432':["432070", "432200", "432100"],
 			'SAT':["144144", "144144", "144144"]
 		}
-		possiblefreqs = fakefreqs[band]
-		return possiblefreqs[modes[mode]]
+		freqtoreturn = fakefreqs[band][modes[mode]]
+		logging.debug(f"fakefreq: returning:{freqtoreturn}")
+		return freqtoreturn
 
 	def getband(self, freq):
 		"""
@@ -681,7 +701,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		if(len(self.callsign_entry.text()) == 0 or len(self.class_entry.text()) == 0 or len(self.section_entry.text()) == 0): return
 		grid, opname = self.qrzlookup(self.callsign_entry.text())
 		if not self.userigctl:
-			self.oldfreq = int(float(self.fakefreq[self.band, self.mode]) * 1000)
+			self.oldfreq = int(float(self.fakefreq(self.band, self.mode)) * 1000)
 		contact = (self.callsign_entry.text(), self.class_entry.text(), self.section_entry.text(), self.oldfreq, self.band, self.mode, int(self.power_selector.value()), grid, opname)
 		try:
 			with sqlite3.connect(self.database) as conn:
@@ -1525,6 +1545,9 @@ def startupDialogFinished():
 
 app = QtWidgets.QApplication(sys.argv)
 app.setStyle('Fusion')
+font_dir = relpath("font")
+families = load_fonts_from_dir(os.fspath(font_dir))
+logging.info(families)
 window = MainWindow()
 window.show()
 window.create_DB()
