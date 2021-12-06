@@ -165,7 +165,7 @@ class MainWindow(QtWidgets.QMainWindow):
 		"""
 		self.datadict = {}
 		datagram, senderHost, senderPortNumber = self.udp_socket.readDatagram(self.udp_socket.pendingDatagramSize())
-		#print(f'{senderHost} {senderPortNumber} {datagram}')
+		logging.debug(f'{senderHost} {senderPortNumber} {datagram}')
 
 		if datagram[0:4] != b'\xad\xbc\xcb\xda': return #bail if no wsjt-x magic number
 		version = self.getuint(datagram[4:8])
@@ -224,8 +224,9 @@ class MainWindow(QtWidgets.QMainWindow):
 			trperiod = self.getuint(payload[6:10])
 			confnamelen = self.getuint(payload[10:14])
 			confname = payload[14:14+confnamelen].decode()
-			#print(f"Status: sv:{version} p:{packettype} u:{unique} df:{dialfreq} m:{mode} dxc:{dxcall} rpt:{report} txm:{txmode} txe:{txenabled} tx:{transmitting} d:{decoding} rdf:{rxdf} tdf:{txdf} dec:{decall} deg:{degrid} dxg:{dxgrid} txw:{txwatchdog} smo:{submode} fmo:{fastmode} sop:{sopmode} ft:{freqtol} trp:{trperiod} cn:{confname}")
 			"""
+			logging.debug(f"Status: sv:{version} p:{packettype} u:{unique} df:{dialfreq} m:{mode} dxc:{dxcall} rpt:{report} txm:{txmode} txe:{txenabled} tx:{transmitting} d:{decoding} rdf:{rxdf} tdf:{txdf} dec:{decall} deg:{degrid} dxg:{dxgrid} txw:{txwatchdog} smo:{submode} fmo:{fastmode} sop:{sopmode} ft:{freqtol} trp:{trperiod} cn:{confname}")
+			
 			if f"{dxcall}{self.band}{self.mode}" in self.dupdict:
 				self.ft8dupe = f"{dxcall} {self.band}M {self.mode} FT8 Dupe!"
 			return
@@ -280,19 +281,16 @@ class MainWindow(QtWidgets.QMainWindow):
 				grid, name = self.qrzlookup(call)
 			hisclass, hissect = self.getvalue("SRX_STRING").split(' ')
 			#power = int(float(self.getvalue("TX_PWR")))
-
 			contact = (call, hisclass, hissect, dt, freq, band, "DI", self.power, grid, name)
 			try:
-				conn = sqlite3.connect(self.database)
-				sql = "INSERT INTO contacts(callsign, class, section, date_time, frequency, band, mode, power, grid, opname) VALUES(?,?,?,?,?,?,?,?,?,?)"
-				cur = conn.cursor()
-				cur.execute(sql, contact)
-				conn.commit()
+				with sqlite3.connect(self.database) as conn:
+					sql = "INSERT INTO contacts(callsign, class, section, date_time, frequency, band, mode, power, grid, opname) VALUES(?,?,?,?,?,?,?,?,?,?)"
+					cur = conn.cursor()
+					cur.execute(sql, contact)
+					conn.commit()
 			except Error as e:
-				print("Log Contact: ")
+				logging.critical(f"on_udpSocket_readyRead: {e}")
 				print(e)
-			finally:
-				conn.close()
 
 			self.sections()
 			self.stats()
@@ -336,8 +334,7 @@ class MainWindow(QtWidgets.QMainWindow):
 			socket.create_connection(("1.1.1.1", 53))
 			return True
 		except OSError:
-			pass
-		return False
+			return False
 
 	def qrzauth(self):
 		if self.useqrz and self.has_internet():
@@ -476,11 +473,11 @@ class MainWindow(QtWidgets.QMainWindow):
 		if self.rigonline:
 			try:
 				self.rigctrlsocket.settimeout(0.5)
-				self.rigctrlsocket.send(b'l RFPOWER\n')
+				self.rigctrlsocket.sendall(b'l RFPOWER\n')
 				newrfpower = self.rigctrlsocket.recv(1024).decode().strip()
-				self.rigctrlsocket.send(b'f\n')
+				self.rigctrlsocket.sendall(b'f\n')
 				newfreq = self.rigctrlsocket.recv(1024).decode().strip()
-				self.rigctrlsocket.send(b'm\n')
+				self.rigctrlsocket.sendall(b'm\n')
 				newmode = self.rigctrlsocket.recv(1024).decode().strip().split()[0]
 				self.rigctrlsocket.shutdown(socket.SHUT_RDWR)
 				self.rigctrlsocket.close()
@@ -500,7 +497,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 	def checkRadio(self):
 		if self.userigctl:
-			self.rigctrlsocket=socket.socket()
+			self.rigctrlsocket=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			self.rigctrlsocket.settimeout(0.1)
 			self.rigonline = True
 			try:
