@@ -57,9 +57,9 @@ color: rgb(211, 215, 207);</string>
    <property name="geometry">
     <rect>
      <x>59</x>
-     <y>21</y>
+     <y>20</y>
      <width>101</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="font">
@@ -81,9 +81,9 @@ color: rgb(211, 215, 207);</string>
    <property name="geometry">
     <rect>
      <x>28</x>
-     <y>64</y>
+     <y>60</y>
      <width>131</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="font">
@@ -105,9 +105,9 @@ color: rgb(211, 215, 207);</string>
    <property name="geometry">
     <rect>
      <x>69</x>
-     <y>106</y>
+     <y>100</y>
      <width>91</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="font">
@@ -129,9 +129,9 @@ color: rgb(211, 215, 207);</string>
    <property name="geometry">
     <rect>
      <x>29</x>
-     <y>203</y>
+     <y>200</y>
      <width>131</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="font">
@@ -153,9 +153,9 @@ color: rgb(211, 215, 207);</string>
    <property name="geometry">
     <rect>
      <x>28</x>
-     <y>244</y>
+     <y>240</y>
      <width>131</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="font">
@@ -177,9 +177,9 @@ color: rgb(211, 215, 207);</string>
    <property name="geometry">
     <rect>
      <x>34</x>
-     <y>338</y>
+     <y>336</y>
      <width>126</width>
-     <height>18</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="font">
@@ -191,7 +191,7 @@ color: rgb(211, 215, 207);</string>
     </font>
    </property>
    <property name="text">
-    <string>RigControl IP:</string>
+    <string>XMLRPC IP:</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -200,10 +200,10 @@ color: rgb(211, 215, 207);</string>
   <widget class="QLabel" name="label_7">
    <property name="geometry">
     <rect>
-     <x>16</x>
-     <y>380</y>
-     <width>144</width>
-     <height>18</height>
+     <x>89</x>
+     <y>376</y>
+     <width>71</width>
+     <height>25</height>
     </rect>
    </property>
    <property name="font">
@@ -215,7 +215,7 @@ color: rgb(211, 215, 207);</string>
     </font>
    </property>
    <property name="text">
-    <string>RigControl Port:</string>
+    <string>Port:</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -224,10 +224,10 @@ color: rgb(211, 215, 207);</string>
   <widget class="QCheckBox" name="useqrz_checkBox">
    <property name="geometry">
     <rect>
-     <x>200</x>
+     <x>190</x>
      <y>140</y>
-     <width>91</width>
-     <height>21</height>
+     <width>101</width>
+     <height>25</height>
     </rect>
    </property>
    <property name="font">
@@ -251,10 +251,10 @@ color: rgb(211, 215, 207);</string>
   <widget class="QCheckBox" name="usecloudlog_checkBox">
    <property name="geometry">
     <rect>
-     <x>240</x>
+     <x>230</x>
      <y>280</y>
-     <width>141</width>
-     <height>21</height>
+     <width>151</width>
+     <height>25</height>
     </rect>
    </property>
    <property name="font">
@@ -275,10 +275,10 @@ color: rgb(211, 215, 207);</string>
   <widget class="QCheckBox" name="userigcontrol_checkBox">
    <property name="geometry">
     <rect>
-     <x>240</x>
+     <x>230</x>
      <y>420</y>
      <width>161</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="font">
@@ -508,9 +508,9 @@ color: rgb(211, 215, 207);</string>
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>490</y>
+     <y>486</y>
      <width>137</width>
-     <height>17</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="font">
@@ -548,7 +548,7 @@ color: rgb(211, 215, 207);</string>
      <x>230</x>
      <y>530</y>
      <width>171</width>
-     <height>23</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="font">
@@ -567,10 +567,10 @@ color: rgb(211, 215, 207);</string>
   <widget class="QCheckBox" name="usehamdb_checkBox">
    <property name="geometry">
     <rect>
-     <x>320</x>
+     <x>310</x>
      <y>140</y>
-     <width>111</width>
-     <height>23</height>
+     <width>121</width>
+     <height>25</height>
     </rect>
    </property>
    <property name="font">
