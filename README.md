@@ -69,11 +69,11 @@ Okay you've made a contact. Enter the call in the call field. As you type it in,
 
 # Features
 
-## Radio Polling via rigctld
+## Radio Polling via flrig
 
-If you run rigctld on a computer connected to the radio, it can be polled for band/mode updates automatically. Click the gear icon at the bottom of the screen to set the IP and port for rigctld. There is a radio icon at the bottom of the logging window to indicate polling status.
+If you run flrig on a computer connected to the radio, it can be polled for band/mode updates automatically. Click the gear icon at the bottom of the screen to set the IP and port for flrig. There is a radio icon at the bottom of the logging window to indicate polling status.
 
-![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/loggerSettingsDialog.png)
+![Alt text](pics/loggerSettingsDialog.png)
 
 ## Cloudlog, QRZ, HamDB useage
 
