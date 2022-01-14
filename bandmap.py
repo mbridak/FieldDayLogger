@@ -178,7 +178,10 @@ def updatecontactlist():
             result = c.fetchall()
             for contact in result:
                 if hascolumn:
-                    _, callsign, _, _, _, band, _, _, _, _ = contact
+                    if logdb == "FieldDay.db":
+                        _, callsign, _, _, _, _, band, _, _, _, _ = contact
+                    else:
+                        _, callsign, _, _, _, band, _, _, _, _ = contact
                 else:
                     _, callsign, _, _, _, _, band, _, _ = contact
                 if band in contactlist.keys():
