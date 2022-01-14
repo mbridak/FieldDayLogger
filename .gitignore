@@ -133,3 +133,4 @@ dmypy.json
 .pyre/
 *.backup
 debug
+spots.db
