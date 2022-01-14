@@ -803,7 +803,7 @@ class MainWindow(QtWidgets.QMainWindow):
         return self.score
 
     def qrpcheck(self):
-        """qrp = 5W cw, 10W ph and di, highpower greater than 150W"""
+        """qrp = 5W cw, 10W ph and di, highpower greater than 100W"""
         try:
             with sqlite3.connect(self.database) as conn:
                 c = conn.cursor()
@@ -820,7 +820,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 log = c.fetchall()
                 qrpd = list(log[0])[0]
                 c.execute(
-                    "select count(*) as highpower from contacts where power > 150")
+                    "select count(*) as highpower from contacts where power > 100")
                 log = c.fetchall()
                 self.highpower = bool(list(log[0])[0])
                 self.qrp = not (qrpc + qrpp + qrpd)
