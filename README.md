@@ -14,8 +14,8 @@ The logger will generate a cabrillo file 'YOURCALL.log' and a 'Statistics.txt' f
 
 ## Changes since 21.2.26
 
-* Feat: added CW macro keys.
-* Feat: added a terminal mode bandmap, which pulls from 'local' skimmers. and watches the log database to mark calls already worked. Highlights those close to your VFO if you use flrig.
+* Feat: Added CW macro function keys, It will make an XMLRPC call on port 8000 to my [PyWinKeyerSerial](https://github.com/mbridak/PyWinKeyerSerial) program, also on github. 
+* Feat: Added a terminal mode bandmap, which pulls from 'local' skimmers. and watches the log database to mark calls already worked. Highlights those close to your VFO if you use flrig.
 
 ## 2021 Field Day, what was learned.
 
@@ -126,6 +126,23 @@ Once you type a complete callsign and press TAB or SPACE to advance to the next 
 ## Autofill
 
 If you have worked this person before on another band/mode the program will load the class and section used previously for this call so you will not have to enter this info again.
+
+## CW Macros
+
+The program will check in the current working directory for a file called `cwmacros.txt` it will parse the file and configure the new row of 12 buttons along the bottom half of the window. The macros can be activated by either pressing the corresponding function key, or by directly clicking on the button. You can check the file to glean it's structure, but it's pretty straight forward. Each line has 3 sections separated by the pipe `|` character. Here's an example line.
+
+`F2|Run Exch|{HISCALL} {MYCLASS} {MYSECT}`
+
+The first field is the function key to program. The second is the name of the button. And lastly the third is the text you would like to send.
+
+A limited set substitution macros are offered.
+
+`{MYCALL}`
+`{HISCALL}`
+`{MYCLASS}`
+`{MYSECT}`
+
+These are pulled straight from the onscreen input fields. Combined with normal text this should have you covered for most of your exchange needs.
 
 ## When the event is over
 
