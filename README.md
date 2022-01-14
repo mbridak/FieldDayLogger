@@ -135,7 +135,7 @@ The program will check in the current working directory for a file called `cwmac
 
 The first field is the function key to program. The second is the name of the button. And lastly the third is the text you would like to send.
 
-A limited set substitution macros are offered.
+A limited set of substitution macros are offered.
 
 `{MYCALL}`
 `{HISCALL}`
