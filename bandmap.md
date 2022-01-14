@@ -6,7 +6,7 @@ I've written what can be considered a companion application. It's not new, or no
 ## Features
 * It polls the RBN site for active spotting servers. Gets the gridsquare of those servers, and compares it to your gridsquare. It then calculates the distance to each server from you, and builds a lists of those servers. This way you can define a listening radius. There is no real benefit to looking at spots from a server in Norway if you're in South Texas.
 * If you have flrig setup it will highlight spots near your VFO.
-* It can look at your active Winter Field Day log and highlight those spots you have already worked, so you can focus on other stations.
+* It can look at your active Field Day log and highlight those spots you have already worked, so you can focus on other stations.
 * You can give it a list of bands you wish it to cover. No use in seeing spots on 160 if you don't have an antenna for 160.
 * It will dynamically resize and prune the list of spots if they don't fit in the window, tossing the oldest ones.
 * It can limit the returned spots to those in the general portion of the band. No use in cluttering the screen with spots you're not allowed to work if you're not an Extra/Advanced class.
