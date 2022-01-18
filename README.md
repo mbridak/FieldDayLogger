@@ -15,15 +15,16 @@ The logger will generate a cabrillo file 'YOURCALL.log' and a 'Statistics.txt' f
 ## Changes since 21.2.26
 
 * Feat: Added CW macro function keys, It will make an XMLRPC call on port 8000 to my [PyWinKeyerSerial](https://github.com/mbridak/PyWinKeyerSerial) program, also on github. 
-* Feat: Added a terminal mode bandmap, which pulls from 'local' skimmers. and watches the log database to mark calls already worked. Highlights those close to your VFO if you use flrig.
+* Feat: Added a terminal mode [bandmap](bandmad.md), which pulls from 'local' skimmers. and watches the log database to mark calls already worked. Highlights those close to your VFO if you use flrig.
+* Fixed text entry field issues. Overrode internal TAB focus behavior, since that caused the per-existing text to be selected on focus. Which, in turn, caused the text to be deleted if a key was pressed after the TAB. This led to an increase in operator swearing of 80%. Also if you tried to edit the text in the middle of the callsign field, each character typed would cause the field to be reevaluated and the cursor placed at the end of the string. This accounted for the remaining 20% of swearing. 
 
 ## 2021 Field Day, what was learned.
 
-I didn't test my shack computer prior to Field Day 2021. Why? Well I'm an idiot, and that's what idiots do. I start up a pre built binary and all is good. I make my first contact. I submit the contact and it crashes straight away... Ooooo I think... That's not good.
+I didn't test my shack computer prior to Field Day 2021. Why? Well I'm an idiot, and that's what idiots do. I start up a pre built binary and all is good. I make my first contact. I submit the contact and it crashes straight away... Ooooo, I think... That's not optimal.
 
 This is something another user might not experience. I didn't have xplanet installed and configured and the app tried to write to a non existing folder/file. Who needs error checking... We do. I'll fix that pretty soon now.
 
-Crash cause #2, I some how left off a database field in the unpacking logic where it goes to send a qso record to Cloudlog. Alot of people don't use Cloudlog. So not so terrible. I do, so it was a little irksome to me. I've already fixed this and pushed the changes with in 20 minutes of the start of Field Day.
+Crash cause #2, I some how left off a database field in the unpacking logic where it goes to send a qso record to Cloudlog. Alot of people don't use Cloudlog. So not so terrible. I do, so it was very terrible for me. I've already fixed this and pushed the changes with in 20 minutes of the start of Field Day.
 
 Not a great start, but lessons learned.
 
@@ -129,7 +130,7 @@ If you have worked this person before on another band/mode the program will load
 
 ## CW Macros
 
-The program will check in the current working directory for a file called `cwmacros.txt` it will parse the file and configure the new row of 12 buttons along the bottom half of the window. The macros can be activated by either pressing the corresponding function key, or by directly clicking on the button. You can check the file to glean it's structure, but it's pretty straight forward. Each line has 3 sections separated by the pipe `|` character. Here's an example line.
+The program will check in the current working directory for a file called `cwmacros_fd.txt` it will parse the file and configure the new row of 12 buttons along the bottom half of the window. The macros can be activated by either pressing the corresponding function key, or by directly clicking on the button. You can check the file to glean it's structure, but it's pretty straight forward. Each line has 3 sections separated by the pipe `|` character. Here's an example line.
 
 `F2|Run Exch|{HISCALL} {MYCLASS} {MYSECT}`
 
