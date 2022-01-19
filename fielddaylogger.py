@@ -372,7 +372,7 @@ class MainWindow(QtWidgets.QMainWindow):
             and not Path("./cwmacros_fd.txt").exists()
         ):
             logging.debug("readCWmacros: copying default macro file.")
-            copyfile(relpath("cwmacros_fd.txt"), "./cwmacros.txt")
+            copyfile(relpath("cwmacros_fd.txt"), "./cwmacros_fd.txt")
         with open("./cwmacros_fd.txt", "r") as f:
             for line in f:
                 try:
