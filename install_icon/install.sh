@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -f "../dist/fielddaylogger"]; then
+if [ -f "../dist/fielddaylogger" ]; then
 	cp ../dist/fielddaylogger ~/.local/bin/
 fi
 
