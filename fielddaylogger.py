@@ -1437,12 +1437,15 @@ class MainWindow(QtWidgets.QMainWindow):
                     c.execute("select DISTINCT grid from contacts")
                     x = c.fetchall()
                 if x:
+                    lastcolor = ""
                     with open(filename, "w", encoding="ascii") as f:
-                        for count in x:
-                            grid = count[0]
-                            if len(grid) > 1 and not len(grid) % 2:
-                                lat, lon = self.gridtolatlon(grid)
-                                print(f'{lat} {lon} ""', end="\r\n", file=f)
+                        islast = len(x) - 1
+                        for count, grid in enumerate(x):
+                            if count == islast:
+                                lastcolor = "color=Orange"
+                            if len(grid[0]) > 1:
+                                lat, lon = self.gridtolatlon(grid[0])
+                                print(f'{lat} {lon} "" {lastcolor}', end="\r\n", file=f)
             except IOError as e:
                 logging.warning(f"updatemarker: error {e} writing to {filename}")
                 self.infobox.setTextColor(QtGui.QColor(245, 121, 0))
