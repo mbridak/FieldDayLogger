@@ -134,3 +134,4 @@ dmypy.json
 *.backup
 debug
 spots.db
+.vscode/
