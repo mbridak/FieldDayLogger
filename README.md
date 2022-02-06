@@ -10,15 +10,21 @@ The log is stored in an sqlite3 database file 'FieldDay.db'. If you need to wipe
 
 The logger will generate a cabrillo file 'YOURCALL.log' and a 'Statistics.txt' file with a band/mode/power breakdown which you can use when you submit your logs to the ARRL online [here](http://field-day.arrl.org/fdentry.php). An ADIF file will also be generated so you can merge contacts into your normal Log.
 
-![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/loggerscreenshot.png)
+![Picture of main screen](pics/loggerscreenshot.png)
+
+## Changes since 21.2.26
+
+* Feat: Added CW macro function keys, It will make an XMLRPC call on port 8000 to my [PyWinKeyerSerial](https://github.com/mbridak/PyWinKeyerSerial) program, also on github. 
+* Feat: Added a terminal mode [bandmap](bandmad.md), which pulls from 'local' skimmers. and watches the log database to mark calls already worked. Highlights those close to your VFO if you use flrig.
+* Fixed text entry field issues. Overrode internal TAB focus behavior, since that caused the per-existing text to be selected on focus. Which, in turn, caused the text to be deleted if a key was pressed after the TAB. This led to an increase in operator swearing of 80%. Also if you tried to edit the text in the middle of the callsign field, each character typed would cause the field to be reevaluated and the cursor placed at the end of the string. This accounted for the remaining 20% of swearing. 
 
 ## 2021 Field Day, what was learned.
 
-I didn't test my shack computer prior to Field Day. Why? Well I'm an idiot, and that's what idiots do. I start up a pre built binary and all is good. I make my first contact. I submit the contact and it crashes straight away... Ooooo I think... That's not good.
+I didn't test my shack computer prior to Field Day 2021. Why? Well I'm an idiot, and that's what idiots do. I start up a pre built binary and all is good. I make my first contact. I submit the contact and it crashes straight away... Ooooo, I think... That's not optimal.
 
 This is something another user might not experience. I didn't have xplanet installed and configured and the app tried to write to a non existing folder/file. Who needs error checking... We do. I'll fix that pretty soon now.
 
-Crash cause #2, I some how left off a database field in the unpacking logic where it goes to send a qso record to Cloudlog. Alot of people don't use Cloudlog. So not so terrible. I do, so it was a little irksome to me. I've already fixed this and pushed the changes with in 20 minutes of the start of Field Day.
+Crash cause #2, I some how left off a database field in the unpacking logic where it goes to send a qso record to Cloudlog. Alot of people don't use Cloudlog. So not so terrible. I do, so it was very terrible for me. I've already fixed this and pushed the changes with in 20 minutes of the start of Field Day.
 
 Not a great start, but lessons learned.
 
@@ -60,7 +66,7 @@ Just make fielddaylogger.py executable and run it within the same folder, or typ
 
 When run for the first time, you will need to set your callsign, class, section, band, mode and power used for the contacts. This can be found at the bottom of the screen. There is a gear icon where you can change some settings described below.
 
-![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/yourstuff.png)
+![Picture showing bottom of screen](pics/yourstuff.png)
 
 ## Logging
 
@@ -73,7 +79,7 @@ Okay you've made a contact. Enter the call in the call field. As you type it in,
 
 If you run flrig on a computer connected to the radio, it can be polled for band/mode updates automatically. Click the gear icon at the bottom of the screen to set the IP and port for flrig. There is a radio icon at the bottom of the logging window to indicate polling status.
 
-![Alt text](pics/loggerSettingsDialog.png)
+![Picture showing settings screen](pics/loggerSettingsDialog.png)
 
 ## Cloudlog, QRZ, HamDB useage
 
@@ -86,7 +92,7 @@ If you have no internet connection leave these unchecked since it might cause a 
 
 If you use QRZ/HamdDB lookups you can also generate an [XPlanet](http://xplanet.sourceforge.net/) markerfile which will show little pips on the map as contacts are logged.
 
-![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/xplanet.png)
+![Picture showing xplanet](pics/xplanet.png)
 
 The above launched with an example command:
 
@@ -98,35 +104,52 @@ xplanet -body earth -window -longitude -117 -latitude 38 -config Default -projec
 
 Double click a contact in the upper portion of the screen to edit or delete it.
 
-![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/editqso.png)
+![Picture showing edit qso dialog](pics/editqso.png)
 
 ## Super Check Partial
 
 If you type more than two characters in the callsign field the program will filter the input through a "Super Check Partial" routine and show you possible matches to known contesting call signs. Is this useful? Doubt it.
 
-![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/scp.png)
+![Picture showing super check partial](pics/scp.png)
 
 ## Section partial check
 
 As you type the section abbreviation you are presented with a list of all possible sections that start with what you have typed.
 
-![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/sectioncheck.png)
+![Picture showing section check partial](pics/sectioncheck.png)
 
 ## DUP checking
 
 Once you type a complete callsign and press TAB or SPACE to advance to the next field. The callsign is checked against previous callsigns in your log. It will list any prior contact made showing the band and mode of the contact. If the band and mode are the same as the one you are currently using, the listing will be highlighted, the screen will flash, a bell will sound to alert you that this is a DUP. At this point you and the other OP can argue back and forth about who's wrong. In the end you'll put your big boy pants on and make a decision if you'll enter the call or not.
 
-![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/dupe.png)
+![Picture showing dup checking](pics/dupe.png)
 
 ## Autofill
 
 If you have worked this person before on another band/mode the program will load the class and section used previously for this call so you will not have to enter this info again.
 
+## CW Macros
+
+The program will check in the current working directory for a file called `cwmacros_fd.txt` it will parse the file and configure the new row of 12 buttons along the bottom half of the window. The macros can be activated by either pressing the corresponding function key, or by directly clicking on the button. You can check the file to glean it's structure, but it's pretty straight forward. Each line has 3 sections separated by the pipe `|` character. Here's an example line.
+
+`F2|Run Exch|{HISCALL} {MYCLASS} {MYSECT}`
+
+The first field is the function key to program. The second is the name of the button. And lastly the third is the text you would like to send.
+
+A limited set of substitution macros are offered.
+
+`{MYCALL}`
+`{HISCALL}`
+`{MYCLASS}`
+`{MYSECT}`
+
+These are pulled straight from the onscreen input fields. Combined with normal text this should have you covered for most of your exchange needs.
+
 ## When the event is over
 
 After the big weekend, once you've swept up all the broken beer bottles and wiped the BBQ sauce off your chin, go ahead and click the Generate Logs button.
 
-![Alt text](https://github.com/mbridak/FieldDayLogger/raw/main/pics/genlog.png)
+![Picture showing generate log button](pics/genlog.png)
 
 This will generate the following:
 
@@ -135,3 +158,6 @@ An ADIF log 'FieldDay.adi'.
 A Cabrillo log 'Yourcall.log'. Which you edit to fill in your address etc. If your not using Windows, you must ensure whatever editor you use uses CR/LF line endings. Cause whatever they use at the ARRL will choke with out them. To be safe you might want to run it through 'unix2dos' before submitting it.
 
 A 'Statistics.txt' file which breaks down your band/mode/power usage.
+
+## The Bandmap program
+See [here](bandmap.md)

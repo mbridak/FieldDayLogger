@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>592</height>
+    <height>652</height>
    </rect>
   </property>
   <property name="font">
@@ -517,6 +517,9 @@ border-top-color: rgb(255, 255, 255);</string>
        <bold>false</bold>
       </font>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
      <property name="toolTip">
       <string>Enter other operators callsign.</string>
      </property>
@@ -553,6 +556,9 @@ border-top-color: rgb(255, 255, 255);</string>
        <bold>false</bold>
       </font>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
      <property name="placeholderText">
       <string>Class</string>
      </property>
@@ -573,6 +579,9 @@ border-top-color: rgb(255, 255, 255);</string>
        <weight>50</weight>
        <bold>false</bold>
       </font>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
      </property>
      <property name="placeholderText">
       <string>Section</string>
@@ -3124,7 +3133,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>559</y>
+      <y>620</y>
       <width>51</width>
       <height>25</height>
      </rect>
@@ -3145,7 +3154,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>559</y>
+      <y>620</y>
       <width>61</width>
       <height>25</height>
      </rect>
@@ -3205,7 +3214,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>559</y>
+      <y>620</y>
       <width>51</width>
       <height>25</height>
      </rect>
@@ -3226,7 +3235,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>179</x>
-      <y>559</y>
+      <y>620</y>
       <width>51</width>
       <height>25</height>
      </rect>
@@ -3261,7 +3270,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>645</x>
-      <y>559</y>
+      <y>620</y>
       <width>32</width>
       <height>25</height>
      </rect>
@@ -3285,7 +3294,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>645</x>
-      <y>530</y>
+      <y>591</y>
       <width>32</width>
       <height>25</height>
      </rect>
@@ -3309,7 +3318,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>681</x>
-      <y>530</y>
+      <y>591</y>
       <width>110</width>
       <height>25</height>
      </rect>
@@ -3330,7 +3339,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>681</x>
-      <y>559</y>
+      <y>620</y>
       <width>110</width>
       <height>25</height>
      </rect>
@@ -3351,7 +3360,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>348</x>
-      <y>559</y>
+      <y>620</y>
       <width>91</width>
       <height>25</height>
      </rect>
@@ -3387,7 +3396,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>446</x>
-      <y>559</y>
+      <y>620</y>
       <width>61</width>
       <height>25</height>
      </rect>
@@ -3423,7 +3432,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>516</x>
-      <y>559</y>
+      <y>620</y>
       <width>61</width>
       <height>25</height>
      </rect>
@@ -3462,7 +3471,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>238</x>
-      <y>559</y>
+      <y>620</y>
       <width>39</width>
       <height>25</height>
      </rect>
@@ -3483,7 +3492,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>280</x>
-      <y>559</y>
+      <y>620</y>
       <width>61</width>
       <height>25</height>
      </rect>
@@ -3509,7 +3518,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>528</x>
-      <y>530</y>
+      <y>591</y>
       <width>111</width>
       <height>25</height>
      </rect>
@@ -3536,7 +3545,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>441</x>
-      <y>530</y>
+      <y>591</y>
       <width>36</width>
       <height>25</height>
      </rect>
@@ -3559,7 +3568,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>398</x>
-      <y>530</y>
+      <y>591</y>
       <width>31</width>
       <height>25</height>
      </rect>
@@ -3583,7 +3592,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>490</x>
-      <y>530</y>
+      <y>591</y>
       <width>25</width>
       <height>25</height>
      </rect>
@@ -3599,7 +3608,7 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>590</x>
-      <y>559</y>
+      <y>620</y>
       <width>28</width>
       <height>25</height>
      </rect>
@@ -3620,6 +3629,198 @@ color: rgb(0, 0, 0);</string>
     <property name="icon">
      <iconset>
       <normaloff>icon/gear16x16.png</normaloff>icon/gear16x16.png</iconset>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="F1">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>530</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>F1</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="F2">
+    <property name="geometry">
+     <rect>
+      <x>144</x>
+      <y>530</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>F2</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="F3">
+    <property name="geometry">
+     <rect>
+      <x>278</x>
+      <y>530</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>F3</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="F4">
+    <property name="geometry">
+     <rect>
+      <x>412</x>
+      <y>530</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>F4</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="F5">
+    <property name="geometry">
+     <rect>
+      <x>546</x>
+      <y>530</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>F5</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="F6">
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>530</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>F6</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="F7">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>560</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>F7</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="F10">
+    <property name="geometry">
+     <rect>
+      <x>412</x>
+      <y>560</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>F10</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="F8">
+    <property name="geometry">
+     <rect>
+      <x>144</x>
+      <y>560</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>F8</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="F12">
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>560</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>F12</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="F9">
+    <property name="geometry">
+     <rect>
+      <x>278</x>
+      <y>560</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>F9</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="F11">
+    <property name="geometry">
+     <rect>
+      <x>546</x>
+      <y>560</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>F11</string>
     </property>
    </widget>
    <zorder>frame_2</zorder>
@@ -3649,6 +3850,18 @@ color: rgb(0, 0, 0);</string>
    <zorder>cloudlog_icon</zorder>
    <zorder>settingsbutton</zorder>
    <zorder>frame</zorder>
+   <zorder>F1</zorder>
+   <zorder>F2</zorder>
+   <zorder>F3</zorder>
+   <zorder>F4</zorder>
+   <zorder>F5</zorder>
+   <zorder>F6</zorder>
+   <zorder>F7</zorder>
+   <zorder>F10</zorder>
+   <zorder>F8</zorder>
+   <zorder>F12</zorder>
+   <zorder>F9</zorder>
+   <zorder>F11</zorder>
   </widget>
  </widget>
  <tabstops>

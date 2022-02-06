@@ -1,0 +1,13 @@
+F1|Run CQ|cq fd {MYCALL} {MYCALL} k
+F2|Run Exch|{HISCALL} {MYCLASS} {MYSECT}
+F3|Run TU|tu {MYCALL} qrz
+F4|MyCall|{MYCALL}
+F5|Exch|{MYCLASS} {MYSECT}
+F6|MyClass|{MYCLASS}
+F7|MySect|{MYSECT}
+F8|Roger|r
+F9|AGN?|agn?
+F10|Call?|call?
+F11|Class?|class?
+F12|Sect?|sect?
+

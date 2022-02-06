@@ -12,7 +12,8 @@ a = Analysis(['fielddaylogger.py'],
              ('arrl_sect.dat','.'),
              ('dialog.ui','.'),
              ('settings.ui','.'),
-             ('startup.ui','.')
+             ('startup.ui','.'),
+             ('cwmacros_fd.txt','.')
              ],
              hiddenimports=[],
              hookspath=[],
