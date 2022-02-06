@@ -629,8 +629,8 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         app.processEvents()
 
-    def key_press_event(self, event):
-        """Process key presses"""
+    def keyPressEvent(self, event):
+        """This extends QT's KeyPressEvent, handle tab, esc and function keys"""
         event_key = event.key()
         if event_key == Qt.Key_Escape:
             self.clearinputs()
