@@ -1090,7 +1090,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.qrp:
             self.powermult = 5
             self.score = self.score * 5
-        elif not (self.highpower):
+        elif not self.highpower:
             self.powermult = 2
             self.score = self.score * 2
         return self.score
@@ -1120,7 +1120,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
                 log = cursor.fetchall()
                 self.highpower = bool(list(log[0])[0])
-                self.qrp = not (qrpc + qrpp + qrpd)
+                self.qrp = not qrpc + qrpp + qrpd
         except Error as exception:
             logging.critical("qrpcheck: %s", exception)
 
