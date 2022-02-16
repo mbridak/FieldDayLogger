@@ -436,9 +436,9 @@ class MainWindow(QtWidgets.QMainWindow):
         settingsdialog = Settings(self)
         settingsdialog.exec()
         self.infobox.clear()
-        self.readpreferences()
         self.look_up = None
         self.cat_control = None
+        self.readpreferences()
         if self.preference["useqrz"]:
             self.look_up = QRZlookup(
                 self.preference["lookupusername"], self.preference["lookuppassword"]
@@ -620,7 +620,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.setmode(str(self.getmode(newmode)))
                 self.radio_icon.setPixmap(self.radio_green)
         else:
-            self.radio_icon.setPixmap(QtGui.QPixmap(self.radio_red))
+            logging.info("cat_control %s", self.cat_control)
+            self.radio_icon.setPixmap(QtGui.QPixmap(self.radio_grey))
 
     def flash(self):
         """Flash the screen"""
