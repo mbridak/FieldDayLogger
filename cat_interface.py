@@ -16,7 +16,7 @@ class CAT:
         self.port = port
         if self.interface == "flrig":
             target = f"http://{host}:{port}"
-            logging.warning("cat_init: %s", target)
+            logging.info("cat_init: %s", target)
             self.server = xmlrpc.client.ServerProxy(target)
         if self.interface == "rigctld":
             self.__initialize_rigctrld()
@@ -47,6 +47,10 @@ class CAT:
             return self.server.rig.get_vfo()
         except ConnectionRefusedError as exception:
             logging.warning("getvfo_flrig: %s", exception)
+        except xmlrpc.client.Fault as exception:
+            logging.warning(
+                "getvfo_flrig: %d, %s", exception.faultCode, exception.faultString
+            )
         return ""
 
     def __getvfo_rigctld(self) -> str:
