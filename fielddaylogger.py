@@ -29,6 +29,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
 from lookup import HamDBlookup, HamQTH, QRZlookup
 from cat_interface import CAT
+from settings import Settings
 
 
 def relpath(filename):
@@ -146,25 +147,20 @@ class MainWindow(QtWidgets.QMainWindow):
             "mysection": "",
             "power": "0",
             "usehamdb": 0,
-            "hamdburl": "https://api.hamdb.org",
             "useqrz": 0,
-            "qrzusername": "",
-            "qrzpassword": "",
-            "qrzurl": "https://xmldata.qrz.com/xml/134",
             "usehamqth": 0,
-            "hamqthusername": "",
-            "hamqthpassword": "",
-            "hamqthurl": "",
+            "lookupusername": "w1aw",
+            "lookuppassword": "secret",
             "userigctld": 0,
             "useflrig": 0,
             "CAT_ip": "localhost",
             "CAT_port": 12345,
-            "cloudlog": 1,
+            "cloudlog": 0,
             "cloudlogapi": "c01234567890123456789",
             "cloudlogurl": "https://www.cloudlog.com/Cloudlog/index.php/api/",
             "cloudlogstationid": "",
             "usemarker": 0,
-            "markerfile": "",
+            "markerfile": ".xplanet/markers/ham",
         }
         self.look_up = None
         self.cat_control = None
@@ -445,14 +441,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cat_control = None
         if self.preference["useqrz"]:
             self.look_up = QRZlookup(
-                self.preference["qrzusername"], self.preference["qrzpassword"]
+                self.preference["lookupusername"], self.preference["lookuppassword"]
             )
             if self.preference["usehamdb"]:
                 self.look_up = HamDBlookup()
             if self.preference["usehamqth"]:
                 self.look_up = HamQTH(
-                    self.preference["hamqthusername"],
-                    self.preference["hamqthpassword"],
+                    self.preference["lookupusername"],
+                    self.preference["lookuppassword"],
                 )
             if self.preference["useflrig"]:
                 self.cat_control = CAT(
@@ -960,7 +956,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if self.preference["useqrz"]:
             self.look_up = QRZlookup(
-                self.preference["qrzusername"], self.preference["qrzpassword"]
+                self.preference["lookupusername"], self.preference["lookuppassword"]
             )
             if self.look_up.session:
                 self.QRZ_icon.setStyleSheet("color: rgb(128, 128, 0);")
@@ -971,8 +967,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.look_up = HamDBlookup()
         if self.preference["usehamqth"]:
             self.look_up = HamQTH(
-                self.preference["hamqthusername"],
-                self.preference["hamqthpassword"],
+                self.preference["lookupusername"],
+                self.preference["lookuppassword"],
             )
 
         self.cloudlogauth()
@@ -1973,64 +1969,6 @@ class EditQSODialog(QtWidgets.QDialog):
             logging.critical("delete_contact: db error: %s", exception)
         self.change.lineChanged.emit()
         self.close()
-
-
-class Settings(QtWidgets.QDialog):
-    """Settings dialog"""
-
-    def __init__(self, parent=None):
-        """initialize dialog"""
-        super().__init__(parent)
-        uic.loadUi(self.relpath("settings.ui"), self)
-        self.buttonBox.accepted.connect(self.save_changes)
-        self.preference = None
-        self.setup()
-
-    def setup(self):
-        """setup dialog"""
-        with open("./fd_preferences.json", "rt", encoding="utf-8") as file_descriptor:
-            self.preference = loads(file_descriptor.read())
-            logging.info("reading: %s", self.preference)
-            self.qrzname_field.setText(self.preference["qrzusername"])
-            self.qrzpass_field.setText(self.preference["qrzpassword"])
-            self.qrzurl_field.setText(self.preference["qrzurl"])
-            self.cloudlogapi_field.setText(self.preference["cloudlogapi"])
-            self.cloudlogurl_field.setText(self.preference["cloudlogurl"])
-            self.rigcontrolip_field.setText(self.preference["CAT_ip"])
-            self.rigcontrolport_field.setText(str(self.preference["CAT_port"]))
-            self.usecloudlog_checkBox.setChecked(bool(self.preference["cloudlog"]))
-            self.useqrz_checkBox.setChecked(bool(self.preference["useqrz"]))
-            self.userigcontrol_checkBox.setChecked(bool(self.preference["useflrig"]))
-            self.markerfile_field.setText(self.preference["markerfile"])
-            self.generatemarker_checkbox.setChecked(bool(self.preference["usemarker"]))
-            self.usehamdb_checkBox.setChecked(bool(self.preference["usehamdb"]))
-
-    @staticmethod
-    def relpath(filename: str) -> str:
-        """
-        If the program is packaged with pyinstaller,
-        this is needed since all files will be in a temp
-        folder during execution.
-        """
-        if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-            base_path = getattr(sys, "_MEIPASS")
-        else:
-            base_path = os.path.abspath(".")
-        return os.path.join(base_path, filename)
-
-    def save_changes(self):
-        """
-        Write preferences to json file.
-        """
-        try:
-            logging.info("save_changes:")
-            with open(
-                "./fd_preferences.json", "wt", encoding="utf-8"
-            ) as file_descriptor:
-                file_descriptor.write(dumps(self.preference, indent=4))
-                logging.info("writing: %s", self.preference)
-        except IOError as exception:
-            logging.critical("save_changes: %s", exception)
 
 
 class StartUp(QtWidgets.QDialog):
