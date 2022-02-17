@@ -8,6 +8,7 @@ K6GTE
 # xplanet -body earth -window -longitude -117 -latitude 38
 # -config Default -projection azmithal -radius 200 -wait 5
 
+from math import radians, sin, cos, atan2, sqrt, asin, pi
 from pathlib import Path
 from datetime import datetime
 
@@ -21,6 +22,7 @@ import socket
 import sqlite3
 import sys
 import logging
+import threading
 import requests
 from PyQt5.QtNetwork import QUdpSocket, QHostAddress
 from PyQt5.QtGui import QFontDatabase
@@ -98,6 +100,7 @@ class MainWindow(QtWidgets.QMainWindow):
     ft8dupe = ""
     fkeys = dict()
     keyerserver = "http://localhost:8000"
+    mygrid = None
 
     def __init__(self, *args, **kwargs):
         """Initialize"""
@@ -141,6 +144,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.F10.clicked.connect(self.sendf10)
         self.F11.clicked.connect(self.sendf11)
         self.F12.clicked.connect(self.sendf12)
+        self.contactlookup = {
+            "call": "",
+            "grid": "",
+            "bearing": "",
+            "name": "",
+            "nickname": "",
+            "error": "",
+            "distance": "",
+        }
         self.preference = {
             "mycall": "",
             "myclass": "",
@@ -174,6 +186,82 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_socket = QUdpSocket()
         self.udp_socket.bind(QHostAddress.LocalHost, 2237)
         self.udp_socket.readyRead.connect(self.on_udp_socket_ready_read)
+
+    def clearcontactlookup(self):
+        """clearout the contact lookup"""
+        self.contactlookup["call"] = ""
+        self.contactlookup["grid"] = ""
+        self.contactlookup["name"] = ""
+        self.contactlookup["nickname"] = ""
+        self.contactlookup["error"] = ""
+        self.contactlookup["distance"] = ""
+        self.contactlookup["bearing"] = ""
+
+    def lazy_lookup(self, acall: str):
+        """El Lookup De Lazy"""
+        if self.look_up:
+            if acall == self.contactlookup["call"]:
+                return
+
+            self.contactlookup["call"] = acall
+            (
+                self.contactlookup["grid"],
+                self.contactlookup["name"],
+                self.contactlookup["nickname"],
+                self.contactlookup["error"],
+            ) = self.look_up.lookup(acall)
+            if self.contactlookup["grid"] and self.mygrid:
+                self.contactlookup["distance"] = self.distance(
+                    self.mygrid, self.contactlookup["grid"]
+                )
+                self.contactlookup["bearing"] = self.bearing(
+                    self.mygrid, self.contactlookup["grid"]
+                )
+            logging.info("%s", self.contactlookup)
+
+    def distance(self, grid1: str, grid2: str) -> float:
+        """
+        Takes two maidenhead gridsquares and returns the distance between the two in kilometers.
+        """
+        lat1, lon1 = self.gridtolatlon(grid1)
+        lat2, lon2 = self.gridtolatlon(grid2)
+        return round(self.haversine(lon1, lat1, lon2, lat2))
+
+    def bearing(self, grid1: str, grid2: str) -> float:
+        """calculate bearing to contact"""
+        lat1, lon1 = self.gridtolatlon(grid1)
+        lat2, lon2 = self.gridtolatlon(grid2)
+        lat1 = radians(lat1)
+        lon1 = radians(lon1)
+        lat2 = radians(lat2)
+        lon2 = radians(lon2)
+        londelta = lon2 - lon1
+        why = sin(londelta) * cos(lat2)
+        exs = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(londelta)
+        brng = atan2(why, exs)
+        brng *= 180 / pi
+
+        if brng < 0:
+            brng += 360
+
+        return round(brng)
+
+    @staticmethod
+    def haversine(lon1, lat1, lon2, lat2):
+        """
+        Calculate the great circle distance in kilometers between two points
+        on the earth (specified in decimal degrees)
+        """
+        # convert degrees to radians
+        lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+
+        # haversine formula
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
+        aye = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+        cee = 2 * asin(sqrt(aye))
+        arrgh = 6372.8  # Radius of earth in kilometers.
+        return cee * arrgh
 
     @staticmethod
     def getint(bytestring):
@@ -292,7 +380,12 @@ class MainWindow(QtWidgets.QMainWindow):
             grid = self.getvalue("GRIDSQUARE")
             name = self.getvalue("NAME")
             if grid == "NOT_FOUND" or name == "NOT_FOUND":
-                grid, name, _, _ = self.look_up.lookup(call)
+                if grid == "NOT_FOUND":
+                    grid = ""
+                if name == "NOT_FOUND":
+                    name = ""
+                if self.look_up:
+                    grid, name, _, _ = self.look_up.lookup(call)
             hisclass, hissect = self.getvalue("SRX_STRING").split(" ")
             # power = int(float(self.getvalue("TX_PWR")))
             contact = (
@@ -517,7 +610,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
                 logging.warning("Cloudlog: %s", exception)
 
-    def fakefreq(self, band, mode):
+    @staticmethod
+    def fakefreq(band, mode):
         """
         If unable to obtain a frequency from the rig,
         This will return a sane value for a frequency mainly for the cabrillo and adif log.
@@ -546,7 +640,8 @@ class MainWindow(QtWidgets.QMainWindow):
         logging.debug("fakefreq: returning:%s", freqtoreturn)
         return freqtoreturn
 
-    def getband(self, freq):
+    @staticmethod
+    def getband(freq):
         """
         Takes a frequency in hz and returns the band.
         """
@@ -579,7 +674,8 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             return "0"
 
-    def getmode(self, rigmode):
+    @staticmethod
+    def getmode(rigmode):
         """
         Takes the mode returned from the radio and returns a normalized value,
         CW for CW, PH for voice, DI for digital
@@ -639,6 +735,7 @@ class MainWindow(QtWidgets.QMainWindow):
         event_key = event.key()
         if event_key == Qt.Key_Escape:
             self.clearinputs()
+            self.clearcontactlookup()
             return
         if event_key == Qt.Key_Tab:
             if self.section_entry.hasFocus():
@@ -655,6 +752,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
             if self.callsign_entry.hasFocus():
                 logging.debug("From callsign")
+                _thethread = threading.Thread(
+                    target=self.lazy_lookup,
+                    args=(self.callsign_entry.text(),),
+                    daemon=True,
+                )
+                _thethread.start()
                 self.class_entry.setFocus()
                 self.class_entry.deselect()
                 self.class_entry.end(False)
@@ -774,6 +877,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.preference["power"] = str(self.power_selector.value())
         self.writepreferences()
 
+    def lookupmygrid(self):
+        """lookup my own gridsquare"""
+        if self.look_up:
+            self.mygrid, _, _, _ = self.look_up.lookup(self.mycallEntry.text())
+            logging.info("my grid: %s", self.mygrid)
+
     def changemycall(self):
         """change my call"""
         text = self.mycallEntry.text()
@@ -788,6 +897,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.preference["mycall"] = self.mycallEntry.text()
         if self.preference["mycall"] != "":
             self.mycallEntry.setStyleSheet("border: 1px solid green;")
+            _thethread = threading.Thread(
+                target=self.lookupmygrid,
+                daemon=True,
+            )
+            _thethread.start()
         else:
             self.mycallEntry.setStyleSheet("border: 1px solid red;")
         self.writepreferences()
@@ -832,6 +946,12 @@ class MainWindow(QtWidgets.QMainWindow):
         if len(text):
             if text[-1] == " ":
                 self.callsign_entry.setText(text.strip())
+                _thethread = threading.Thread(
+                    target=self.lazy_lookup,
+                    args=(self.callsign_entry.text(),),
+                    daemon=True,
+                )
+                _thethread.start()
                 self.class_entry.setFocus()
                 self.class_entry.deselect()
             else:
@@ -996,7 +1116,6 @@ class MainWindow(QtWidgets.QMainWindow):
             or len(self.section_entry.text()) == 0
         ):
             return
-        grid, opname, _, _ = self.look_up.lookup(self.callsign_entry.text())
         if not self.cat_control:
             self.oldfreq = int(float(self.fakefreq(self.band, self.mode)) * 1000)
         contact = (
@@ -1007,8 +1126,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.band,
             self.mode,
             int(self.power_selector.value()),
-            grid,
-            opname,
+            self.contactlookup["grid"],
+            self.contactlookup["name"],
         )
         try:
             with sqlite3.connect(self.database) as conn:
@@ -1031,6 +1150,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.logwindow()
         self.clearinputs()
         self.postcloudlog()
+        self.clearcontactlookup()
 
     def stats(self):
         """
@@ -1483,7 +1603,8 @@ class MainWindow(QtWidgets.QMainWindow):
             return False
         return False
 
-    def gridtolatlon(self, maiden):
+    @staticmethod
+    def gridtolatlon(maiden):
         """
         Converts a maidenhead gridsquare to a latitude longitude pair.
         """
@@ -2050,6 +2171,12 @@ if __name__ == "__main__":
 
     window.changeband()
     window.changemode()
+    if window.preference["mycall"] != "":
+        thethread = threading.Thread(
+            target=window.lookupmygrid,
+            daemon=True,
+        )
+        thethread.start()
     if (
         window.preference["mycall"] == ""
         or window.preference["myclass"] == ""
