@@ -17,6 +17,11 @@ The logger will generate a cabrillo file 'YOURCALL.log' and a 'Statistics.txt' f
 * Feat: Added CW macro function keys, It will make an XMLRPC call on port 8000 to my [PyWinKeyerSerial](https://github.com/mbridak/PyWinKeyerSerial) program, also on github. 
 * Feat: Added a terminal mode [bandmap](bandmad.md), which pulls from 'local' skimmers. and watches the log database to mark calls already worked. Highlights those close to your VFO if you use flrig.
 * Fixed text entry field issues. Overrode internal TAB focus behavior, since that caused the per-existing text to be selected on focus. Which, in turn, caused the text to be deleted if a key was pressed after the TAB. This led to an increase in operator swearing of 80%. Also if you tried to edit the text in the middle of the callsign field, each character typed would cause the field to be reevaluated and the cursor placed at the end of the string. This accounted for the remaining 20% of swearing. 
+* Preference storage has moved from a table in the sqlite db, to an external json file.
+* CAT control abstraction class: Means you now have a choice of either rigctld or flrig.
+* Callbook lookup abstraction class: Means you have a choice of QRZ, HamDB or HamQTH for name and gridsquare lookups.
+* Callbook lookups are now executed in their own thread, as to not slow the interface down.
+ 
 
 ## 2021 Field Day, what was learned.
 
@@ -75,18 +80,23 @@ Okay you've made a contact. Enter the call in the call field. As you type it in,
 
 # Features
 
-## Radio Polling via flrig
+## Radio Polling
 
-If you run flrig on a computer connected to the radio, it can be polled for band/mode updates automatically. Click the gear icon at the bottom of the screen to set the IP and port for flrig. There is a radio icon at the bottom of the logging window to indicate polling status.
+If you run flrig or rigctld on a computer connected to the radio, it can be polled for band/mode updates automatically. Click the gear icon at the bottom of the screen to set the IP and port and choose flrig or rigctld. There is a radio icon at the bottom of the logging window to indicate polling status.
 
 ![Picture showing settings screen](pics/loggerSettingsDialog.png)
 
 ## Cloudlog, QRZ, HamDB useage
 
-If you use either Cloudlog logging or QRZ/HamDB lookup you can click the gear icon to enter your credentials. Q's are pushed to CloudLog as soon as they are logged.
+If you use Cloudlog for your main logging you can click the gear icon to enter your credentials. Q's are pushed to CloudLog as soon as they are logged.
 
-The QRZ/HamDB lookup is only used to get the name and gridsquare for the call. Mainly because when a Q is pushed to [CloudLog](https://github.com/magicbug/Cloudlog) it will not show as a pin on the map unless it has a gridsquare. So this is a scratch my own itch feature. Just place a check in either box to use them. If both are checked it will it will use QRZ.
-If you have no internet connection leave these unchecked since it might cause a delayafter entering your Q.
+## QRZ, HamDB or HamQTH
+
+The QRZ/HamDB/HamQTH lookup is only used to get the name and gridsquare for the call. Mainly because when a Q is pushed to [CloudLog](https://github.com/magicbug/Cloudlog) it will not show as a pin on the map unless it has a gridsquare. So this is a scratch my own itch feature.
+
+The call to the lookup service is made anytime you exit the call entry field by pressing a TAB or Space key. This call is done in it's own thread so it will not slow down the GUI interface.
+
+Distance and bearing to contact is also calculated at this time, though I haven't made use of the data. 
 
 ## XPlanet marker file
 
