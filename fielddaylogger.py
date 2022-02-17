@@ -306,7 +306,7 @@ class MainWindow(QtWidgets.QMainWindow):
         datagram, sender_host, sender_port_number = self.udp_socket.readDatagram(
             self.udp_socket.pendingDatagramSize()
         )
-        logging.debug("%s %s %s", sender_host, sender_port_number, datagram)
+        logging.info("%s %s %s", sender_host, sender_port_number, datagram)
 
         if datagram[0:4] != b"\xad\xbc\xcb\xda":
             return  # bail if no wsjt-x magic number
@@ -333,7 +333,7 @@ class MainWindow(QtWidgets.QMainWindow):
             payload = payload[12 + modelen :]
             dxcalllen = self.getint(payload[0:4])
             dxcall = payload[4 : 4 + dxcalllen].decode()
-            logging.debug(
+            logging.info(
                 "Status: sv:%s p:%s u:%s df:%s m:%s dxc:%s",
                 version,
                 packettype,
@@ -458,59 +458,49 @@ class MainWindow(QtWidgets.QMainWindow):
             and hasattr(sys, "_MEIPASS")
             and not Path("./cwmacros_fd.txt").exists()
         ):
-            logging.debug("read_cw_macros: copying default macro file.")
+            logging.info("read_cw_macros: copying default macro file.")
             copyfile(relpath("cwmacros_fd.txt"), "./cwmacros_fd.txt")
         with open("./cwmacros_fd.txt", "r", encoding="utf-8") as file_descriptor:
             for line in file_descriptor:
                 try:
                     fkey, buttonname, cwtext = line.split("|")
                     self.fkeys[fkey.strip()] = (buttonname.strip(), cwtext.strip())
-                except ValueError:
-                    break
+                except ValueError as err:
+                    logging.info("read_cw_macros: %s", err)
         fkeys_keys = self.fkeys.keys()
         if "F1" in fkeys_keys:
             self.F1.setText(f"F1: {self.fkeys['F1'][0]}")
             self.F1.setToolTip(self.fkeys["F1"][1])
-            return
         if "F2" in fkeys_keys:
             self.F2.setText(f"F2: {self.fkeys['F2'][0]}")
             self.F2.setToolTip(self.fkeys["F2"][1])
-            return
         if "F3" in fkeys_keys:
             self.F3.setText(f"F3: {self.fkeys['F3'][0]}")
             self.F3.setToolTip(self.fkeys["F3"][1])
-            return
         if "F4" in fkeys_keys:
             self.F4.setText(f"F4: {self.fkeys['F4'][0]}")
             self.F4.setToolTip(self.fkeys["F4"][1])
-            return
         if "F5" in fkeys_keys:
             self.F5.setText(f"F5: {self.fkeys['F5'][0]}")
             self.F5.setToolTip(self.fkeys["F5"][1])
-            return
         if "F6" in fkeys_keys:
             self.F6.setText(f"F6: {self.fkeys['F6'][0]}")
             self.F6.setToolTip(self.fkeys["F6"][1])
-            return
         if "F7" in fkeys_keys:
             self.F7.setText(f"F7: {self.fkeys['F7'][0]}")
             self.F7.setToolTip(self.fkeys["F7"][1])
-            return
         if "F8" in fkeys_keys:
             self.F8.setText(f"F8: {self.fkeys['F8'][0]}")
             self.F8.setToolTip(self.fkeys["F8"][1])
-            return
         if "F9" in fkeys_keys:
             self.F9.setText(f"F9: {self.fkeys['F9'][0]}")
             self.F9.setToolTip(self.fkeys["F9"][1])
         if "F10" in fkeys_keys:
             self.F10.setText(f"F10: {self.fkeys['F10'][0]}")
             self.F10.setToolTip(self.fkeys["F10"][1])
-            return
         if "F11" in fkeys_keys:
             self.F11.setText(f"F11: {self.fkeys['F11'][0]}")
             self.F11.setToolTip(self.fkeys["F11"][1])
-            return
         if "F12" in fkeys_keys:
             self.F12.setText(f"F12: {self.fkeys['F12'][0]}")
             self.F12.setToolTip(self.fkeys["F12"][1])
@@ -617,7 +607,7 @@ class MainWindow(QtWidgets.QMainWindow):
         This will return a sane value for a frequency mainly for the cabrillo and adif log.
         Takes a band and mode as input and returns freq in khz.
         """
-        logging.debug("fakefreq: band:%s mode:%s", band, mode)
+        logging.info("fakefreq: band:%s mode:%s", band, mode)
         modes = {"CW": 0, "DI": 1, "PH": 2, "FT8": 1, "SSB": 2}
         fakefreqs = {
             "160": ["1830", "1805", "1840"],
@@ -637,7 +627,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "SAT": ["144144", "144144", "144144"],
         }
         freqtoreturn = fakefreqs[band][modes[mode]]
-        logging.debug("fakefreq: returning:%s", freqtoreturn)
+        logging.info("fakefreq: returning:%s", freqtoreturn)
         return freqtoreturn
 
     @staticmethod
@@ -739,19 +729,19 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if event_key == Qt.Key_Tab:
             if self.section_entry.hasFocus():
-                logging.debug("From section")
+                logging.info("From section")
                 self.callsign_entry.setFocus()
                 self.callsign_entry.deselect()
                 self.callsign_entry.end(False)
                 return
             if self.class_entry.hasFocus():
-                logging.debug("From class")
+                logging.info("From class")
                 self.section_entry.setFocus()
                 self.section_entry.deselect()
                 self.section_entry.end(False)
                 return
             if self.callsign_entry.hasFocus():
-                logging.debug("From callsign")
+                logging.info("From callsign")
                 _thethread = threading.Thread(
                     target=self.lazy_lookup,
                     args=(self.callsign_entry.text(),),
@@ -800,14 +790,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def sendcw(self, texttosend):
         """sends cw to k1el"""
-        logging.debug("sendcw: %s", texttosend)
+        logging.info("sendcw: %s", texttosend)
         with ServerProxy(self.keyerserver) as proxy:
             try:
                 proxy.k1elsendstring(texttosend)
             except Error as exception:
-                logging.debug("%s, xmlrpc error: %s", self.keyerserver, exception)
+                logging.info("%s, xmlrpc error: %s", self.keyerserver, exception)
             except ConnectionRefusedError:
-                logging.debug("%s, xmlrpc Connection Refused", self.keyerserver)
+                logging.info("%s, xmlrpc Connection Refused", self.keyerserver)
 
     def sendf1(self):
         """send f1"""
@@ -2177,7 +2167,7 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
     window.create_db()
-
+    window.read_cw_macros()
     window.changeband()
     window.changemode()
     if window.preference["mycall"] != "":
@@ -2197,7 +2187,6 @@ if __name__ == "__main__":
         startupdialog.set_call_sign(window.preference["mycall"])
         startupdialog.set_class(window.preference["myclass"])
         startupdialog.set_section(window.preference["mysection"])
-    window.read_cw_macros()
     window.cloudlogauth()
     window.stats()
     window.read_sections()
