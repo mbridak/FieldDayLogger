@@ -28,7 +28,7 @@ class HamDBlookup:
         name = False
         error_text = False
         nickname = False
-        query_result = requests.get(self.url + call + "/xml/wfd_logger", timeout=3.0)
+        query_result = requests.get(self.url + call + "/xml/wfd_logger", timeout=10.0)
         if query_result.status_code == 200:
             root = bs(query_result.text, "html.parser")
             if root.messages.find("status"):
@@ -115,7 +115,7 @@ class QRZlookup:
         nickname = False
         if self.session:
             payload = {"s": self.session, "callsign": call}
-            query_result = requests.get(self.qrzurl, params=payload, timeout=3.0)
+            query_result = requests.get(self.qrzurl, params=payload, timeout=10.0)
             root = bs(query_result.text, "html.parser")
             if not root.session.key:  # key expired get a new one
                 logging.info("QRZlookup-lookup: no key, getting new one.")
@@ -123,7 +123,7 @@ class QRZlookup:
                 if self.session:
                     payload = {"s": self.session, "callsign": call}
                     query_result = requests.get(
-                        self.qrzurl, params=payload, timeout=3.0
+                        self.qrzurl, params=payload, timeout=10.0
                     )
             grid, name, nickname, error_text = self.parse_lookup(query_result)
         return grid, name, nickname, error_text
