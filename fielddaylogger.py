@@ -130,7 +130,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cloud_green = QtGui.QPixmap(self.relpath("icon/cloud_green.png"))
         self.radio_icon.setPixmap(self.radio_grey)
         self.cloudlog_icon.setPixmap(self.cloud_grey)
-        self.QRZ_icon.setStyleSheet("color: rgb(136, 138, 133);")
+        self.callbook_icon.setStyleSheet("color: rgb(136, 138, 133);")
         self.settingsbutton.clicked.connect(self.settings_pressed)
         self.F1.clicked.connect(self.sendf1)
         self.F2.clicked.connect(self.sendf2)
@@ -1079,18 +1079,27 @@ class MainWindow(QtWidgets.QMainWindow):
             self.look_up = QRZlookup(
                 self.preference["lookupusername"], self.preference["lookuppassword"]
             )
+            self.callbook_icon.setText("QRZ")
             if self.look_up.session:
-                self.QRZ_icon.setStyleSheet("color: rgb(128, 128, 0);")
+                self.callbook_icon.setStyleSheet("color: rgb(128, 128, 0);")
             else:
-                self.QRZ_icon.setStyleSheet("color: rgb(136, 138, 133);")
+                self.callbook_icon.setStyleSheet("color: rgb(136, 138, 133);")
 
         if self.preference["usehamdb"]:
             self.look_up = HamDBlookup()
+            self.callbook_icon.setText("HamDB")
+            self.callbook_icon.setStyleSheet("color: rgb(128, 128, 0);")
+
         if self.preference["usehamqth"]:
             self.look_up = HamQTH(
                 self.preference["lookupusername"],
                 self.preference["lookuppassword"],
             )
+            self.callbook_icon.setText("HamQTH")
+            if self.look_up.session:
+                self.callbook_icon.setStyleSheet("color: rgb(128, 128, 0);")
+            else:
+                self.callbook_icon.setStyleSheet("color: rgb(136, 138, 133);")
 
         self.cloudlogauth()
 
