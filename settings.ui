@@ -522,7 +522,7 @@ color: rgb(211, 215, 207);</string>
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">border: 1px solid red;</string>
+    <string notr="true"/>
    </property>
    <property name="text">
     <string>Generate Marker</string>
