@@ -3564,12 +3564,12 @@ color: rgb(0, 0, 0);</string>
      <pixmap>radio_green.png</pixmap>
     </property>
    </widget>
-   <widget class="QLabel" name="QRZ_icon">
+   <widget class="QLabel" name="callbook_icon">
     <property name="geometry">
      <rect>
-      <x>398</x>
+      <x>338</x>
       <y>591</y>
-      <width>31</width>
+      <width>91</width>
       <height>25</height>
      </rect>
     </property>
@@ -3585,7 +3585,10 @@ color: rgb(0, 0, 0);</string>
      <string notr="true">color: rgb(26, 26, 26);</string>
     </property>
     <property name="text">
-     <string>QRZ</string>
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
    <widget class="QLabel" name="cloudlog_icon">
@@ -3846,7 +3849,7 @@ color: rgb(0, 0, 0);</string>
    <zorder>power_selector</zorder>
    <zorder>genLogButton</zorder>
    <zorder>radio_icon</zorder>
-   <zorder>QRZ_icon</zorder>
+   <zorder>callbook_icon</zorder>
    <zorder>cloudlog_icon</zorder>
    <zorder>settingsbutton</zorder>
    <zorder>frame</zorder>

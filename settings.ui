@@ -56,31 +56,7 @@ color: rgb(211, 215, 207);</string>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>59</x>
-     <y>20</y>
-     <width>101</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>JetBrains Mono</family>
-     <pointsize>12</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>QRZ Name:</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>28</x>
+     <x>29</x>
      <y>60</y>
      <width>131</width>
      <height>25</height>
@@ -95,18 +71,18 @@ color: rgb(211, 215, 207);</string>
     </font>
    </property>
    <property name="text">
-    <string>QRZ Password:</string>
+    <string>User Name:</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label_3">
+  <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>69</x>
+     <x>28</x>
      <y>100</y>
-     <width>91</width>
+     <width>131</width>
      <height>25</height>
     </rect>
    </property>
@@ -119,7 +95,7 @@ color: rgb(211, 215, 207);</string>
     </font>
    </property>
    <property name="text">
-    <string>QRZ URL:</string>
+    <string>Password:</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -143,7 +119,7 @@ color: rgb(211, 215, 207);</string>
     </font>
    </property>
    <property name="text">
-    <string>CloudLog API:</string>
+    <string>API Key:</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -176,9 +152,9 @@ color: rgb(211, 215, 207);</string>
   <widget class="QLabel" name="label_6">
    <property name="geometry">
     <rect>
-     <x>34</x>
-     <y>336</y>
-     <width>126</width>
+     <x>40</x>
+     <y>380</y>
+     <width>161</width>
      <height>25</height>
     </rect>
    </property>
@@ -191,7 +167,7 @@ color: rgb(211, 215, 207);</string>
     </font>
    </property>
    <property name="text">
-    <string>XMLRPC IP:</string>
+    <string>Rig Control IP:</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -200,8 +176,8 @@ color: rgb(211, 215, 207);</string>
   <widget class="QLabel" name="label_7">
    <property name="geometry">
     <rect>
-     <x>89</x>
-     <y>376</y>
+     <x>380</x>
+     <y>380</y>
      <width>71</width>
      <height>25</height>
     </rect>
@@ -221,10 +197,10 @@ color: rgb(211, 215, 207);</string>
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
    </property>
   </widget>
-  <widget class="QCheckBox" name="useqrz_checkBox">
+  <widget class="QRadioButton" name="useqrz_radioButton">
    <property name="geometry">
     <rect>
-     <x>190</x>
+     <x>62</x>
      <y>140</y>
      <width>101</width>
      <height>25</height>
@@ -242,11 +218,14 @@ color: rgb(211, 215, 207);</string>
     <bool>false</bool>
    </property>
    <property name="styleSheet">
-    <string notr="true">border: 1px solid red;</string>
+    <string notr="true"/>
    </property>
    <property name="text">
     <string>Use QRZ</string>
    </property>
+   <attribute name="buttonGroup">
+    <string notr="true">buttonGroup_2</string>
+   </attribute>
   </widget>
   <widget class="QCheckBox" name="usecloudlog_checkBox">
    <property name="geometry">
@@ -266,18 +245,18 @@ color: rgb(211, 215, 207);</string>
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">border: 1px solid red;</string>
+    <string notr="true"/>
    </property>
    <property name="text">
     <string>Use CloudLog</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="userigcontrol_checkBox">
+  <widget class="QRadioButton" name="userigctld_radioButton">
    <property name="geometry">
     <rect>
-     <x>230</x>
+     <x>140</x>
      <y>420</y>
-     <width>161</width>
+     <width>101</width>
      <height>25</height>
     </rect>
    </property>
@@ -290,18 +269,21 @@ color: rgb(211, 215, 207);</string>
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">border: 1px solid red;</string>
+    <string notr="true"/>
    </property>
    <property name="text">
-    <string>Use RigControl</string>
+    <string>rigctld</string>
    </property>
+   <attribute name="buttonGroup">
+    <string notr="true">buttonGroup</string>
+   </attribute>
   </widget>
-  <widget class="QLineEdit" name="qrzname_field">
+  <widget class="QLineEdit" name="lookup_user_name_field">
    <property name="geometry">
     <rect>
      <x>170</x>
-     <y>20</y>
-     <width>142</width>
+     <y>60</y>
+     <width>411</width>
      <height>25</height>
     </rect>
    </property>
@@ -317,12 +299,12 @@ color: rgb(211, 215, 207);</string>
     <string>W1AW</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="qrzpass_field">
+  <widget class="QLineEdit" name="lookup_password_field">
    <property name="geometry">
     <rect>
      <x>170</x>
-     <y>60</y>
-     <width>142</width>
+     <y>100</y>
+     <width>411</width>
      <height>25</height>
     </rect>
    </property>
@@ -336,27 +318,6 @@ color: rgb(211, 215, 207);</string>
    </property>
    <property name="text">
     <string>Secret</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="qrzurl_field">
-   <property name="geometry">
-    <rect>
-     <x>170</x>
-     <y>100</y>
-     <width>311</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>JetBrains Mono</family>
-     <pointsize>12</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>http://xmldata.qrz.com/xml/</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="cloudlogapi_field">
@@ -404,9 +365,9 @@ color: rgb(211, 215, 207);</string>
   <widget class="QLineEdit" name="rigcontrolip_field">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>336</y>
-     <width>142</width>
+     <x>211</x>
+     <y>380</y>
+     <width>171</width>
      <height>25</height>
     </rect>
    </property>
@@ -425,9 +386,9 @@ color: rgb(211, 215, 207);</string>
   <widget class="QLineEdit" name="rigcontrolport_field">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>376</y>
-     <width>142</width>
+     <x>461</x>
+     <y>380</y>
+     <width>101</width>
      <height>25</height>
     </rect>
    </property>
@@ -507,9 +468,9 @@ color: rgb(211, 215, 207);</string>
   <widget class="QLabel" name="label_8">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>10</x>
      <y>486</y>
-     <width>137</width>
+     <width>151</width>
      <height>25</height>
     </rect>
    </property>
@@ -520,7 +481,10 @@ color: rgb(211, 215, 207);</string>
     </font>
    </property>
    <property name="text">
-    <string>XPlanet Marker File:</string>
+    <string>XPlanet Marker:</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
    </property>
   </widget>
   <widget class="QLineEdit" name="markerfile_field">
@@ -558,16 +522,16 @@ color: rgb(211, 215, 207);</string>
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">border: 1px solid red;</string>
+    <string notr="true"/>
    </property>
    <property name="text">
     <string>Generate Marker</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="usehamdb_checkBox">
+  <widget class="QRadioButton" name="usehamdb_radioButton">
    <property name="geometry">
     <rect>
-     <x>310</x>
+     <x>182</x>
      <y>140</y>
      <width>121</width>
      <height>25</height>
@@ -580,11 +544,152 @@ color: rgb(211, 215, 207);</string>
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">border: 1px solid red;</string>
+    <string notr="true"/>
    </property>
    <property name="text">
     <string>Use HamDB</string>
    </property>
+   <attribute name="buttonGroup">
+    <string notr="true">buttonGroup_2</string>
+   </attribute>
+  </widget>
+  <widget class="QRadioButton" name="usehamqth_radioButton">
+   <property name="geometry">
+    <rect>
+     <x>322</x>
+     <y>140</y>
+     <width>121</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Use HamQTH</string>
+   </property>
+   <attribute name="buttonGroup">
+    <string notr="true">buttonGroup_2</string>
+   </attribute>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>20</y>
+     <width>561</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Callbook lookup service</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="useflrig_radioButton">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>420</y>
+     <width>92</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>flrig</string>
+   </property>
+   <attribute name="buttonGroup">
+    <string notr="true">buttonGroup</string>
+   </attribute>
+  </widget>
+  <widget class="QLabel" name="label_9">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>340</y>
+     <width>561</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Rig Control Options</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="radioButton">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>420</y>
+     <width>71</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>None</string>
+   </property>
+   <attribute name="buttonGroup">
+    <string notr="true">buttonGroup</string>
+   </attribute>
+  </widget>
+  <widget class="QRadioButton" name="radioButton_3">
+   <property name="geometry">
+    <rect>
+     <x>462</x>
+     <y>140</y>
+     <width>71</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>None</string>
+   </property>
+   <attribute name="buttonGroup">
+    <string notr="true">buttonGroup_2</string>
+   </attribute>
   </widget>
  </widget>
  <resources/>
@@ -622,4 +727,8 @@ color: rgb(211, 215, 207);</string>
    </hints>
   </connection>
  </connections>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
+ </buttongroups>
 </ui>
