@@ -1,3 +1,4 @@
-PyQt5>=5.15.4
-requests>=2.26.0
-bs4
+beautifulsoup4~=4.10.0
+PyQt5~=5.15.6
+requests~=2.22.0
+rich~=11.2.0
