@@ -24,9 +24,9 @@ class CAT:
     def __initialize_rigctrld(self):
         try:
             self.rigctrlsocket = socket.socket()
-            self.rigctrlsocket.settimeout(0.1)
+            self.rigctrlsocket.settimeout(0.5)
             self.rigctrlsocket.connect((self.host, self.port))
-        except ConnectionRefusedError as exception:
+        except socket.error as exception:
             self.rigctrlsocket = None
             logging.warning("CAT __initialize_rigctrld: %s", exception)
 
