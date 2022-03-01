@@ -158,6 +158,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "myclass": "",
             "mysection": "",
             "power": "0",
+            "altpower": 0,
             "usehamdb": 0,
             "useqrz": 0,
             "usehamqth": 0,
@@ -1182,32 +1183,37 @@ class MainWindow(QtWidgets.QMainWindow):
     def calcscore(self):
         """
         Return our current score based on operating power,
-        band / mode multipliers and types of contacts.
+        altpower and types of contacts.
+
+        2022 scoring: contacts over 100w are disallowed.
+        QRP and Low Power (<100W) have base multiplier of 2.
+        QRP with Alt Power has base multiplier of 5
         """
         self.qrpcheck()
         try:
             with sqlite3.connect(self.database) as conn:
                 cursor = conn.cursor()
-                cursor.execute("select count(*) as cw from contacts where mode = 'CW'")
+                cursor.execute(
+                    "select count(*) as cw from contacts where mode = 'CW' and power < 101"
+                )
                 c_dubs = str(cursor.fetchone()[0])
-                cursor.execute("select count(*) as ph from contacts where mode = 'PH'")
+                cursor.execute(
+                    "select count(*) as ph from contacts where mode = 'PH' and power < 101"
+                )
                 phone = str(cursor.fetchone()[0])
-                cursor.execute("select count(*) as di from contacts where mode = 'DI'")
+                cursor.execute(
+                    "select count(*) as di from contacts where mode = 'DI' and power < 101"
+                )
                 digital = str(cursor.fetchone()[0])
-                cursor.execute("select distinct band, mode from contacts")
-                self.bandmodemult = len(cursor.fetchall())
         except sqlite3.Error as exception:
             logging.critical("calcscore: %s", exception)
             return 0
         self.score = (int(c_dubs) * 2) + int(phone) + (int(digital) * 2)
         self.basescore = self.score
-        self.powermult = 1
-        if self.qrp:
-            self.powermult = 5
-            self.score = self.score * 5
-        elif not self.highpower:
-            self.powermult = 2
-            self.score = self.score * 2
+        multiplier = 2
+        if self.qrp and self.preference["altpower"]:
+            multiplier = 5
+        self.score = self.score * multiplier
         return self.score
 
     def qrpcheck(self):
