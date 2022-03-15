@@ -1,0 +1,22 @@
+{
+    "mycall": "K6GTE",
+    "myclass": "1B",
+    "mysection": "ORG",
+    "power": "0",
+    "altpower": 1,
+    "usehamdb": true,
+    "useqrz": false,
+    "usehamqth": false,
+    "lookupusername": "w1aw",
+    "lookuppassword": "secret",
+    "userigctld": false,
+    "useflrig": false,
+    "CAT_ip": "localhost",
+    "CAT_port": 12345,
+    "cloudlog": false,
+    "cloudlogapi": "c01234567890123456789",
+    "cloudlogurl": "https://www.cloudlog.com/Cloudlog/index.php/api/",
+    "cloudlogstationid": "",
+    "usemarker": false,
+    "markerfile": ".xplanet/markers/ham"
+}
