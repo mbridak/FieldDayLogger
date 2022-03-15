@@ -13,7 +13,7 @@ class DataBase:
 
     def create_db(self) -> None:
         """
-        create database tables contacts and preferences if they do not exist.
+        create database tables contacts if they do not exist.
         """
         try:
             with sqlite3.connect(self.database) as conn:
@@ -40,7 +40,7 @@ class DataBase:
     def log_contact(self, logme: tuple) -> None:
         """
         Inserts a contact into the db.
-        pass in (hiscall, hisclass, hissection, band, mode, int(power))
+        pass in (hiscall, hisclass, hissection, band, mode, int(power), grid, name)
         """
         try:
             with sqlite3.connect(self.database) as conn:
@@ -128,7 +128,7 @@ class DataBase:
             )
             log = cursor.fetchall()
             highpower = bool(list(log[0])[0])
-            qrp = not (qrpc + qrpp + qrpd)
+            qrp = not qrpc + qrpp + qrpd
 
             return (
                 cwcontacts,
@@ -140,6 +140,59 @@ class DataBase:
                 highpower,
                 qrp,
             )
+
+    def contacts_under_101watts(self) -> tuple:
+        """return contact tallies for contacts made below 101 watts."""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    "select count(*) as cw from contacts where mode = 'CW' and power < 101"
+                )
+                c_dubs = str(cursor.fetchone()[0])
+                cursor.execute(
+                    "select count(*) as ph from contacts where mode = 'PH' and power < 101"
+                )
+                phone = str(cursor.fetchone()[0])
+                cursor.execute(
+                    "select count(*) as di from contacts where mode = 'DI' and power < 101"
+                )
+                digital = str(cursor.fetchone()[0])
+        except sqlite3.Error as exception:
+            logging.critical("calcscore: %s", exception)
+            return 0, 0, 0
+        return c_dubs, phone, digital
+
+    def qrp_check(self) -> tuple:
+        """check to see if all contacts were QRP"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    "select count(*) as qrpc from contacts where mode = 'CW' and power > 5"
+                )
+                log = cursor.fetchall()
+                qrpc = list(log[0])[0]
+                cursor.execute(
+                    "select count(*) as qrpp from contacts where mode = 'PH' and power > 10"
+                )
+                log = cursor.fetchall()
+                qrpp = list(log[0])[0]
+                cursor.execute(
+                    "select count(*) as qrpd from contacts where mode = 'DI' and power > 10"
+                )
+                log = cursor.fetchall()
+                qrpd = list(log[0])[0]
+                cursor.execute(
+                    "select count(*) as highpower from contacts where power > 100"
+                )
+                log = cursor.fetchall()
+                highpower = bool(list(log[0])[0])
+                qrp = not qrpc + qrpp + qrpd
+        except sqlite3.Error as exception:
+            logging.critical("qrpcheck: %s", exception)
+            return 0, 0
+        return qrp, highpower
 
     def get_band_mode_tally(self, band, mode):
         """
