@@ -86,9 +86,9 @@ If you run flrig or rigctld on a computer connected to the radio, it can be poll
 
 ![Picture showing settings screen](pics/loggerSettingsDialog.png)
 
-## Cloudlog, QRZ, HamDB useage
+## Cloudlog useage
 
-If you use Cloudlog for your main logging you can click the gear icon to enter your credentials. Q's are pushed to CloudLog as soon as they are logged.
+If you use [CloudLog](https://github.com/magicbug/Cloudlog) for your main logging you can click the gear icon to enter your credentials. Q's are pushed to CloudLog as soon as they are logged.
 
 ## QRZ, HamDB or HamQTH
 

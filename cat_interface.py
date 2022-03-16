@@ -95,10 +95,11 @@ class CAT:
                 self.rigctrlsocket.settimeout(0.5)
                 self.rigctrlsocket.send(b"m\n")
                 return self.rigctrlsocket.recv(1024).decode().strip().split()[0]
+            except IndexError as exception:
+                logging.warning("getmode_rigctld: %s", exception)
             except socket.error as exception:
                 logging.warning("getmode_rigctld: %s", exception)
                 self.rigctrlsocket = None
-                return ""
         return ""
 
     def set_vfo(self, freq: str) -> bool:
