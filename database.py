@@ -161,7 +161,7 @@ class DataBase:
                 )
                 digital = str(cursor.fetchone()[0])
         except sqlite3.Error as exception:
-            logging.critical("calcscore: %s", exception)
+            logging.critical("DB-contacts_under_101watts: %s", exception)
             return 0, 0, 0
         return c_dubs, phone, digital
 
