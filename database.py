@@ -70,13 +70,15 @@ class DataBase:
 
     def change_contact(self, qso):
         """Update an existing contact."""
+        print(qso)
         try:
             with sqlite3.connect(self.database) as conn:
                 sql = (
-                    f"update contacts set callsign = '{qso[1]}', class = '{qso[2]}', "
-                    f"section = '{qso[3]}', date_time = '{qso[4]}', band = '{qso[5]}', "
-                    f"mode = '{qso[6]}', power = '{qso[7]}'  where id='{qso[0]}'"
+                    f"update contacts set callsign = '{qso[0]}', class = '{qso[1]}', "
+                    f"section = '{qso[2]}', date_time = '{qso[3]}', band = '{qso[4]}', "
+                    f"mode = '{qso[5]}', power = '{qso[6]}'  where id='{qso[7]}'"
                 )
+                print(sql)
                 cur = conn.cursor()
                 cur.execute(sql)
                 conn.commit()
@@ -232,7 +234,7 @@ class DataBase:
         """returns a tuple of all contacts in the database."""
         with sqlite3.connect(self.database) as conn:
             cursor = conn.cursor()
-            cursor.execute("select * from contacts order by date_time desc")
+            cursor.execute("select * from contacts order by id desc")
             return cursor.fetchone()
 
     def dup_check(self, acall: str) -> tuple:
@@ -257,4 +259,11 @@ class DataBase:
         with sqlite3.connect(self.database) as conn:
             cursor = conn.cursor()
             cursor.execute("select * from contacts where id=" + record)
+            return cursor.fetchall()
+
+    def get_grids(self) -> tuple:
+        """returns a tuple of unique grids in the log."""
+        with sqlite3.connect(self.database) as conn:
+            cursor = conn.cursor()
+            cursor.execute("select DISTINCT grid from contacts")
             return cursor.fetchall()

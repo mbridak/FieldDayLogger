@@ -12,18 +12,16 @@ K6GTE
 from math import radians, sin, cos, atan2, sqrt, asin, pi
 from pathlib import Path
 from datetime import datetime
-
 from json import dumps, loads
 from shutil import copyfile
 from xmlrpc.client import ServerProxy, Error
-
 import struct
 import os
 import socket
-import sqlite3
 import sys
 import logging
 import threading
+
 import requests
 from PyQt5.QtNetwork import QUdpSocket, QHostAddress
 from PyQt5.QtGui import QFontDatabase
@@ -404,21 +402,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 grid,
                 name,
             )
-            try:
-                with sqlite3.connect(self.database) as conn:
-                    sql = (
-                        "INSERT INTO contacts"
-                        "(callsign, class, section, date_time, frequency, "
-                        "band, mode, power, grid, opname) "
-                        "VALUES(?,?,?,?,?,?,?,?,?,?)"
-                    )
-                    cur = conn.cursor()
-                    cur.execute(sql, contact)
-                    conn.commit()
-            except sqlite3.Error as exception:
-                logging.critical("on_udp_socket_ready_read: %s", exception)
-                print(exception)
-
+            self.db.log_contact(contact)
             self.sections()
             self.stats()
             self.updatemarker()
@@ -1202,7 +1186,7 @@ class MainWindow(QtWidgets.QMainWindow):
         item = self.listWidget.currentItem()
         self.linetopass = item.text()
         dialog = EditQSODialog(self)
-        dialog.set_up(self.linetopass, self.database)
+        dialog.set_up(self.linetopass, self.db)
         dialog.change.lineChanged.connect(self.qsoedited)
         dialog.open()
 
@@ -1514,10 +1498,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.usemarker:
             filename = str(Path.home()) + "/" + self.markerfile
             try:
-                with sqlite3.connect(self.database) as conn:
-                    cursor = conn.cursor()
-                    cursor.execute("select DISTINCT grid from contacts")
-                    list_of_grids = cursor.fetchall()
+                list_of_grids = self.db.get_grids()
                 if list_of_grids:
                     lastcolor = ""
                     with open(filename, "w", encoding="ascii") as file_descriptor:
@@ -1538,8 +1519,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
                 self.infobox.setTextColor(QtGui.QColor(245, 121, 0))
                 self.infobox.insertPlainText(f"Unable to write to {filename}\n")
-            except sqlite3.Error as exception:
-                logging.critical("updatemarker: db error: %s", exception)
 
     def adif(self):
         """
@@ -1549,13 +1528,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.infobox.setTextColor(QtGui.QColor(211, 215, 207))
         self.infobox.insertPlainText(f"Saving ADIF to: {logname}\n")
         app.processEvents()
-        try:
-            with sqlite3.connect(self.database) as conn:
-                cursor = conn.cursor()
-                cursor.execute("select * from contacts order by date_time ASC")
-                log = cursor.fetchall()
-        except sqlite3.Error as exception:
-            logging.critical("adif: db error: %s", exception)
+        log = self.db.fetch_all_contacts_asc()
+        if not log:
             return
         grid = False
         opname = False
@@ -1686,13 +1660,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         if (not self.preference["cloudlog"]) or (not self.cloudlogauthenticated):
             return
-        try:
-            with sqlite3.connect(self.database) as conn:
-                cursor = conn.cursor()
-                cursor.execute("select * from contacts order by id DESC")
-                contact = cursor.fetchone()
-        except sqlite3.Error as exception:
-            logging.critical("postcloudlog: db error: %s", exception)
+        contact = self.db.fetch_last_contact()
+        if not contact:
             return
         (
             _,
@@ -1770,15 +1739,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.infobox.setTextColor(QtGui.QColor(211, 215, 207))
         self.infobox.insertPlainText(f"Saving cabrillo to: {filename}")
         app.processEvents()
-        try:
-            with sqlite3.connect(self.database) as conn:
-                cursor = conn.cursor()
-                cursor.execute("select * from contacts order by date_time ASC")
-                log = cursor.fetchall()
-        except sqlite3.Error as exception:
-            logging.critical("cabrillo: db error: %s", exception)
-            self.infobox.insertPlainText(" Failed\n\n")
-            app.processEvents()
+        log = self.db.fetch_all_contacts_asc()
+        if not log:
             return
         catpower = ""
         if self.qrp:
@@ -1883,7 +1845,7 @@ class EditQSODialog(QtWidgets.QDialog):
     """Edit QSO Dialog"""
 
     theitem = ""
-    database = ""
+    database = None
 
     def __init__(self, parent=None):
         """initialize dialog"""
@@ -1934,39 +1896,31 @@ class EditQSODialog(QtWidgets.QDialog):
 
     def save_changes(self):
         """Save update to db"""
-        try:
-            with sqlite3.connect(self.database) as conn:
-                sql = (
-                    f"update contacts set "
-                    f"callsign = '{self.editCallsign.text().upper()}', "
-                    f"class = '{self.editClass.text().upper()}', "
-                    f"section = '{self.editSection.text().upper()}', "
-                    f"date_time = '{self.editDateTime.text()}', "
-                    f"frequency = '{self.editFreq.text()}', "
-                    f"band = '{self.editBand.currentText()}', "
-                    f"mode = '{self.editMode.currentText().upper()}', "
-                    f"power = '{self.editPower.value()}' "
-                    f"where id={self.theitem}"
-                )
-                cur = conn.cursor()
-                cur.execute(sql)
-                conn.commit()
-        except sqlite3.Error as exception:
-            logging.critical("save_changes: db error: %s", exception)
+        qso = [
+            self.editCallsign.text().upper(),
+            self.editClass.text().upper(),
+            self.editSection.text().upper(),
+            self.editDateTime.text(),
+            self.editBand.currentText(),
+            self.editMode.currentText().upper(),
+            self.editPower.value(),
+            self.theitem,
+        ]
+        self.database.change_contact(qso)
         self.change.lineChanged.emit()
 
     def delete_contact(self):
         """delete the contact"""
-        try:
-            with sqlite3.connect(self.database) as conn:
-                sql = f"delete from contacts where id={self.theitem}"
-                cur = conn.cursor()
-                cur.execute(sql)
-                conn.commit()
-        except sqlite3.Error as exception:
-            logging.critical("delete_contact: db error: %s", exception)
+        self.database.delete_contact(self.theitem)
         self.change.lineChanged.emit()
-        self.close()
+        self.close()  # try:
+        #     with sqlite3.connect(self.database) as conn:
+        #         sql = f"delete from contacts where id={self.theitem}"
+        #         cur = conn.cursor()
+        #         cur.execute(sql)
+        #         conn.commit()
+        # except sqlite3.Error as exception:
+        #     logging.critical("delete_contact: db error: %s", exception)
 
 
 class StartUp(QtWidgets.QDialog):
