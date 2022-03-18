@@ -32,6 +32,7 @@ from lookup import HamDBlookup, HamQTH, QRZlookup
 from cat_interface import CAT
 from settings import Settings
 from database import DataBase
+from cwinterface import CW
 
 
 def relpath(filename):
@@ -175,6 +176,9 @@ class MainWindow(QtWidgets.QMainWindow):
             "cloudlogstationid": "",
             "usemarker": 0,
             "markerfile": ".xplanet/markers/ham",
+            "cwtype": 0,
+            "cwip": "localhost",
+            "cwport": 6789,
         }
         self.look_up = None
         self.cat_control = None
