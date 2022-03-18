@@ -37,6 +37,14 @@ class Settings(QtWidgets.QDialog):
             self.useflrig_radioButton.setChecked(bool(self.preference["useflrig"]))
             self.markerfile_field.setText(self.preference["markerfile"])
             self.generatemarker_checkbox.setChecked(bool(self.preference["usemarker"]))
+            self.cwip_field.setText(self.preference["cwip"])
+            self.cwport_field.setText(str(self.preference["cwport"]))
+            self.usecwdaemon_radioButton.setChecked(
+                bool(self.preference["cwtype"] == 1)
+            )
+            self.usepywinkeyer_radioButton.setChecked(
+                bool(self.preference["cwtype"] == 2)
+            )
 
     @staticmethod
     def relpath(filename: str) -> str:
@@ -70,6 +78,13 @@ class Settings(QtWidgets.QDialog):
         self.preference["useflrig"] = self.useflrig_radioButton.isChecked()
         self.preference["markerfile"] = self.markerfile_field.text()
         self.preference["usemarker"] = self.generatemarker_checkbox.isChecked()
+        self.preference["cwip"] = self.cwip_field.text()
+        self.preference["cwport"] = int(self.cwport_field.text())
+        self.preference["cwtype"] = 0
+        if self.usecwdaemon_radioButton.isChecked():
+            self.preference["cwtype"] = 1
+        if self.usepywinkeyer_radioButton.isChecked():
+            self.preference["cwtype"] = 2
         try:
             logging.info("save_changes:")
             with open(

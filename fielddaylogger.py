@@ -32,6 +32,7 @@ from lookup import HamDBlookup, HamQTH, QRZlookup
 from cat_interface import CAT
 from settings import Settings
 from database import DataBase
+from cwinterface import CW
 
 
 def relpath(filename):
@@ -99,8 +100,8 @@ class MainWindow(QtWidgets.QMainWindow):
     dupdict = {}
     ft8dupe = ""
     fkeys = dict()
-    keyerserver = "http://localhost:8000"
     mygrid = None
+    # cw = None
 
     def __init__(self, *args, **kwargs):
         """Initialize"""
@@ -175,9 +176,13 @@ class MainWindow(QtWidgets.QMainWindow):
             "cloudlogstationid": "",
             "usemarker": 0,
             "markerfile": ".xplanet/markers/ham",
+            "cwtype": 0,
+            "cwip": "localhost",
+            "cwport": 6789,
         }
         self.look_up = None
         self.cat_control = None
+        self.cw = None
         self.readpreferences()
         self.radiochecktimer = QtCore.QTimer()
         self.radiochecktimer.timeout.connect(self.poll_radio)
@@ -789,51 +794,51 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def sendf1(self):
         """send f1"""
-        self.sendcw(self.process_macro(self.F1.toolTip()))
+        self.cw.sendcw(self.process_macro(self.F1.toolTip()))
 
     def sendf2(self):
         """send f2"""
-        self.sendcw(self.process_macro(self.F2.toolTip()))
+        self.cw.sendcw(self.process_macro(self.F2.toolTip()))
 
     def sendf3(self):
         """send f3"""
-        self.sendcw(self.process_macro(self.F3.toolTip()))
+        self.cw.sendcw(self.process_macro(self.F3.toolTip()))
 
     def sendf4(self):
         """send f4"""
-        self.sendcw(self.process_macro(self.F4.toolTip()))
+        self.cw.sendcw(self.process_macro(self.F4.toolTip()))
 
     def sendf5(self):
         """send f5"""
-        self.sendcw(self.process_macro(self.F5.toolTip()))
+        self.cw.sendcw(self.process_macro(self.F5.toolTip()))
 
     def sendf6(self):
         """send f6"""
-        self.sendcw(self.process_macro(self.F6.toolTip()))
+        self.cw.sendcw(self.process_macro(self.F6.toolTip()))
 
     def sendf7(self):
         """send f7"""
-        self.sendcw(self.process_macro(self.F7.toolTip()))
+        self.cw.sendcw(self.process_macro(self.F7.toolTip()))
 
     def sendf8(self):
         """send f8"""
-        self.sendcw(self.process_macro(self.F8.toolTip()))
+        self.cw.sendcw(self.process_macro(self.F8.toolTip()))
 
     def sendf9(self):
         """send f9"""
-        self.sendcw(self.process_macro(self.F9.toolTip()))
+        self.cw.sendcw(self.process_macro(self.F9.toolTip()))
 
     def sendf10(self):
         """send f10"""
-        self.sendcw(self.process_macro(self.F10.toolTip()))
+        self.cw.sendcw(self.process_macro(self.F10.toolTip()))
 
     def sendf11(self):
         """send f11"""
-        self.sendcw(self.process_macro(self.F11.toolTip()))
+        self.cw.sendcw(self.process_macro(self.F11.toolTip()))
 
     def sendf12(self):
         """send f12"""
-        self.sendcw(self.process_macro(self.F12.toolTip()))
+        self.cw.sendcw(self.process_macro(self.F12.toolTip()))
 
     def clearinputs(self):
         """clear text entry fields"""
@@ -1053,6 +1058,15 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.callbook_icon.setStyleSheet("color: rgb(136, 138, 133);")
 
         self.cloudlogauth()
+
+        if self.preference["cwtype"] == 0:
+            self.cw = None
+        else:
+            self.cw = CW(
+                self.preference["cwtype"],
+                self.preference["cwip"],
+                self.preference["cwport"],
+            )
 
     def writepreferences(self):
         """
@@ -1914,13 +1928,6 @@ class EditQSODialog(QtWidgets.QDialog):
         self.database.delete_contact(self.theitem)
         self.change.lineChanged.emit()
         self.close()  # try:
-        #     with sqlite3.connect(self.database) as conn:
-        #         sql = f"delete from contacts where id={self.theitem}"
-        #         cur = conn.cursor()
-        #         cur.execute(sql)
-        #         conn.commit()
-        # except sqlite3.Error as exception:
-        #     logging.critical("delete_contact: db error: %s", exception)
 
 
 class StartUp(QtWidgets.QDialog):
