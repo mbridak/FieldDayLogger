@@ -38,7 +38,7 @@ class Settings(QtWidgets.QDialog):
             self.markerfile_field.setText(self.preference["markerfile"])
             self.generatemarker_checkbox.setChecked(bool(self.preference["usemarker"]))
             self.cwip_field.setText(self.preference["cwip"])
-            self.cwport_field.setText("cwport")
+            self.cwport_field.setText(str(self.preference["cwport"]))
             self.usecwdaemon_radioButton.setChecked(
                 bool(self.preference["cwtype"] == 1)
             )
@@ -79,7 +79,7 @@ class Settings(QtWidgets.QDialog):
         self.preference["markerfile"] = self.markerfile_field.text()
         self.preference["usemarker"] = self.generatemarker_checkbox.isChecked()
         self.preference["cwip"] = self.cwip_field.text()
-        self.preference["cwport"] = self.cwport_field.text()
+        self.preference["cwport"] = int(self.cwport_field.text())
         self.preference["cwtype"] = 0
         if self.usecwdaemon_radioButton.isChecked():
             self.preference["cwtype"] = 1
