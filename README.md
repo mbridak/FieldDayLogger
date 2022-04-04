@@ -14,13 +14,14 @@ The logger will generate a cabrillo file 'YOURCALL.log' and a 'Statistics.txt' f
 
 ## Changes since 21.2.26
 
-* Feat: Added CW macro function keys, It will make an XMLRPC call on port 8000 to my [PyWinKeyerSerial](https://github.com/mbridak/PyWinKeyerSerial) program, also on github. 
+* Feat: Added CW macro function keys. It makes use of either cwdaemon or PyWinkeyer.
 * Feat: Added a terminal mode [bandmap](bandmad.md), which pulls from 'local' skimmers. and watches the log database to mark calls already worked. Highlights those close to your VFO if you use flrig.
 * Fixed text entry field issues. Overrode internal TAB focus behavior, since that caused the per-existing text to be selected on focus. Which, in turn, caused the text to be deleted if a key was pressed after the TAB. This led to an increase in operator swearing of 80%. Also if you tried to edit the text in the middle of the callsign field, each character typed would cause the field to be reevaluated and the cursor placed at the end of the string. This accounted for the remaining 20% of swearing. 
 * Preference storage has moved from a table in the sqlite db, to an external json file.
 * CAT control abstraction class: Means you now have a choice of either rigctld or flrig.
 * Callbook lookup abstraction class: Means you have a choice of QRZ, HamDB or HamQTH for name and gridsquare lookups.
 * Callbook lookups are now executed in their own thread, as to not slow the interface down.
+* Settings dialog was getting a bit crowded, so added a tabbed interface.
  
 
 ## 2021 Field Day, what was learned.
@@ -47,10 +48,6 @@ Right now it just adds a contact if WSJTx sends an ADIF logged packet. It monito
 This is a simple logger ment for single op, it's not usable for clubs.
 Field Day only has a generic digital mode designator 'DI', which gets exported to the cabrillo file. But ADIF and CloudLog needed something else, So I Chose FT8. Yes Yes, I know. FT8 is the spawn of Satan, and is killing Ham Radio... Blah Blah Blah... But I needed it for the ~~experiment~~ fully baked feature mentioned above. Flames will be directed to the /dev/null dept. Feel free to change it to what ever you will use. Just search for the two places in the code 'FT8' is used and Bob's your dads brother.
 
-## Running the binary
-
-In the [releases](https://github.com/mbridak/FieldDayLogger/releases) you will find binaries for Linux, Windows and Raspberry Pi.
-
 ## Running from source
 
 Install Python 3, then two required libraries.
@@ -59,7 +56,7 @@ If you're the Ubuntu/Debian type you can:
 
 `sudo apt install python3-pyqt5 python3-requests`
 
-You can install librabies via pip:
+You can install libraries via pip:
 
 `python3 -m pip3 install -r requirements.txt`
 
@@ -69,7 +66,7 @@ Just make fielddaylogger.py executable and run it within the same folder, or typ
 
 ## What to do first
 
-When run for the first time, you will need to set your callsign, class, section, band, mode and power used for the contacts. This can be found at the bottom of the screen. There is a gear icon where you can change some settings described below.
+When run for the first time, you will be greeted by a dialog asking for your Callsign class and Section. There is a gear icon where you can change your CAT, CW interface, callsign lookup service etc.
 
 ![Picture showing bottom of screen](pics/yourstuff.png)
 
