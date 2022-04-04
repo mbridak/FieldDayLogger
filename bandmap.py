@@ -10,7 +10,6 @@ It does no good to get WFD CW spots from Italy if you're in Texas...
 """
 
 import logging
-import xmlrpc.client
 
 import sqlite3
 import re
@@ -26,6 +25,7 @@ from rich.logging import RichHandler
 from rich.traceback import install
 from bs4 import BeautifulSoup as bs
 import requests
+from cat_interface import CAT
 
 
 logging.basicConfig(
@@ -73,9 +73,15 @@ parser.add_argument(
     help="Space separated list of bands to receive spots about. Default is: 160 80 40 20 15 10 6",
 )
 parser.add_argument(
-    "-f", "--flrighost", type=str, help="Hostname/IP of flrig. Default is: localhost"
+    "-C",
+    "--cat",
+    type=str,
+    help="Type of CAT control flrig/rigctld. Default is: rigctld",
 )
-parser.add_argument("-P", "--flrigport", type=int, help="flrig port. Default is: 12345")
+parser.add_argument(
+    "-f", "--cathost", type=str, help="Hostname/IP of flrig. Default is: localhost"
+)
+parser.add_argument("-P", "--catport", type=int, help="flrig port. Default is: 4532")
 parser.add_argument(
     "-l", "--log", type=str, help="Log DB file to monitor. Default is: FieldDay.db"
 )
@@ -122,22 +128,27 @@ if args.bands:
 else:
     limitband = ("160", "80", "40", "20", "15", "10", "6")
 
-if args.flrighost:
-    flrighost = args.flrighost
+if args.cat:
+    cattype = args.cat
 else:
-    flrighost = "localhost"
+    cattype = "rigctld"
 
-if args.flrigport:
-    flrigport = args.flrigport
+if args.cathost:
+    cathost = args.cathost
 else:
-    flrigport = 12345
+    cathost = "localhost"
+
+if args.catport:
+    catport = args.catport
+else:
+    catport = 4532
 
 if args.log:
     logdb = args.log
 else:
     logdb = "FieldDay.db"
 
-server = xmlrpc.client.ServerProxy(f"http://{flrighost}:{flrigport}")
+cat = CAT(cattype, cathost, catport)
 lock = Lock()
 console = Console(width=38)
 localspotters = list()
@@ -203,7 +214,7 @@ def getvfo():
     global vfo
     while True:
         try:
-            vfo = float(server.rig.get_vfo()) / 1000
+            vfo = float(cat.get_vfo()) / 1000
         except ConnectionRefusedError:
             vfo = 0.0
         time.sleep(0.25)
