@@ -33,6 +33,7 @@ from cat_interface import CAT
 from settings import Settings
 from database import DataBase
 from cwinterface import CW
+from version import __version__
 
 
 def relpath(filename):
@@ -2027,6 +2028,7 @@ if __name__ == "__main__":
     families = load_fonts_from_dir(os.fspath(font_dir))
     logging.info(families)
     window = MainWindow()
+    window.setWindowTitle(f"K6GTE Field Day Logger v{__version__}")
     window.show()
     window.read_cw_macros()
     window.changeband()
