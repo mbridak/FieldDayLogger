@@ -180,6 +180,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "cwip": "localhost",
             "cwport": 6789,
         }
+        self.reference_preference = self.preference.copy()
         self.look_up = None
         self.cat_control = None
         self.cw = None
@@ -1009,64 +1010,73 @@ class MainWindow(QtWidgets.QMainWindow):
         except IOError as exception:
             logging.critical("readpreferences: %s", exception)
         logging.info(self.preference)
-        self.mycallEntry.setText(self.preference["mycall"])
-        if self.preference["mycall"] != "":
-            self.mycallEntry.setStyleSheet("border: 1px solid green;")
-        self.myclassEntry.setText(self.preference["myclass"])
-        if self.preference["myclass"] != "":
-            self.myclassEntry.setStyleSheet("border: 1px solid green;")
-        self.mysectionEntry.setText(self.preference["mysection"])
-        if self.preference["mysection"] != "":
-            self.mysectionEntry.setStyleSheet("border: 1px solid green;")
+        try:
+            self.mycallEntry.setText(self.preference["mycall"])
+            if self.preference["mycall"] != "":
+                self.mycallEntry.setStyleSheet("border: 1px solid green;")
+            self.myclassEntry.setText(self.preference["myclass"])
+            if self.preference["myclass"] != "":
+                self.myclassEntry.setStyleSheet("border: 1px solid green;")
+            self.mysectionEntry.setText(self.preference["mysection"])
+            if self.preference["mysection"] != "":
+                self.mysectionEntry.setStyleSheet("border: 1px solid green;")
 
-        self.power_selector.setValue(int(self.preference["power"]))
+            self.power_selector.setValue(int(self.preference["power"]))
 
-        self.cat_control = None
-        if self.preference["useflrig"]:
-            self.cat_control = CAT(
-                "flrig", self.preference["CAT_ip"], self.preference["CAT_port"]
-            )
-        if self.preference["userigctld"]:
-            self.cat_control = CAT(
-                "rigctld", self.preference["CAT_ip"], self.preference["CAT_port"]
-            )
+            self.cat_control = None
+            if self.preference["useflrig"]:
+                self.cat_control = CAT(
+                    "flrig", self.preference["CAT_ip"], self.preference["CAT_port"]
+                )
+            if self.preference["userigctld"]:
+                self.cat_control = CAT(
+                    "rigctld", self.preference["CAT_ip"], self.preference["CAT_port"]
+                )
 
-        if self.preference["useqrz"]:
-            self.look_up = QRZlookup(
-                self.preference["lookupusername"], self.preference["lookuppassword"]
-            )
-            self.callbook_icon.setText("QRZ")
-            if self.look_up.session:
+            if self.preference["useqrz"]:
+                self.look_up = QRZlookup(
+                    self.preference["lookupusername"], self.preference["lookuppassword"]
+                )
+                self.callbook_icon.setText("QRZ")
+                if self.look_up.session:
+                    self.callbook_icon.setStyleSheet("color: rgb(128, 128, 0);")
+                else:
+                    self.callbook_icon.setStyleSheet("color: rgb(136, 138, 133);")
+
+            if self.preference["usehamdb"]:
+                self.look_up = HamDBlookup()
+                self.callbook_icon.setText("HamDB")
                 self.callbook_icon.setStyleSheet("color: rgb(128, 128, 0);")
+
+            if self.preference["usehamqth"]:
+                self.look_up = HamQTH(
+                    self.preference["lookupusername"],
+                    self.preference["lookuppassword"],
+                )
+                self.callbook_icon.setText("HamQTH")
+                if self.look_up.session:
+                    self.callbook_icon.setStyleSheet("color: rgb(128, 128, 0);")
+                else:
+                    self.callbook_icon.setStyleSheet("color: rgb(136, 138, 133);")
+
+            self.cloudlogauth()
+
+            if self.preference["cwtype"] == 0:
+                self.cw = None
             else:
-                self.callbook_icon.setStyleSheet("color: rgb(136, 138, 133);")
-
-        if self.preference["usehamdb"]:
-            self.look_up = HamDBlookup()
-            self.callbook_icon.setText("HamDB")
-            self.callbook_icon.setStyleSheet("color: rgb(128, 128, 0);")
-
-        if self.preference["usehamqth"]:
-            self.look_up = HamQTH(
-                self.preference["lookupusername"],
-                self.preference["lookuppassword"],
-            )
-            self.callbook_icon.setText("HamQTH")
-            if self.look_up.session:
-                self.callbook_icon.setStyleSheet("color: rgb(128, 128, 0);")
-            else:
-                self.callbook_icon.setStyleSheet("color: rgb(136, 138, 133);")
-
-        self.cloudlogauth()
-
-        if self.preference["cwtype"] == 0:
-            self.cw = None
-        else:
-            self.cw = CW(
-                self.preference["cwtype"],
-                self.preference["cwip"],
-                self.preference["cwport"],
-            )
+                self.cw = CW(
+                    self.preference["cwtype"],
+                    self.preference["cwip"],
+                    self.preference["cwport"],
+                )
+        except KeyError as err:
+            logging.warning("Corrupt preference, %s, loading clean version.", err)
+            self.preference = self.reference_preference.copy()
+            with open(
+                "./fd_preferences.json", "wt", encoding="utf-8"
+            ) as file_descriptor:
+                file_descriptor.write(dumps(self.preference, indent=4))
+                logging.info("writing: %s", self.preference)
 
     def writepreferences(self):
         """
@@ -1994,9 +2004,23 @@ def startup_dialog_finished():
 
 if __name__ == "__main__":
     if Path("./debug").exists():
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(
+            format=(
+                "[%(asctime)s] %(levelname)s %(module)s - "
+                "%(funcName)s Line %(lineno)d:\n%(message)s"
+            ),
+            datefmt="%H:%M:%S",
+            level=logging.INFO,
+        )
     else:
-        logging.basicConfig(level=logging.WARNING)
+        logging.basicConfig(
+            format=(
+                "[%(asctime)s] %(levelname)s %(module)s - "
+                "%(funcName)s Line %(lineno)d:\n%(message)s"
+            ),
+            datefmt="%H:%M:%S",
+            level=logging.WARNING,
+        )
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle("Fusion")
     font_dir = relpath("font")
