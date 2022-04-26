@@ -164,7 +164,7 @@ def updatecontactlist():
     so the spots can be flagged red so you know you can bypass them on the bandmap.
     """
     global contactlist
-    contactlist = dict()
+    contactlist = {}
     try:
         with sqlite3.connect(logdb) as conn:
             cursor = conn.cursor()
