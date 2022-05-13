@@ -12,37 +12,6 @@ The logger will generate a cabrillo file 'YOURCALL.log' and a 'Statistics.txt' f
 
 ![Picture of main screen](pics/loggerscreenshot.png)
 
-## Changes since 21.2.26
-
-* Feat: Added CW macro function keys. It makes use of either cwdaemon or PyWinkeyer.
-* Feat: Added a terminal mode [bandmap](bandmad.md), which pulls from 'local' skimmers. and watches the log database to mark calls already worked. Highlights those close to your VFO if you use flrig.
-* Fixed text entry field issues. Overrode internal TAB focus behavior, since that caused the per-existing text to be selected on focus. Which, in turn, caused the text to be deleted if a key was pressed after the TAB. This led to an increase in operator swearing of 80%. Also if you tried to edit the text in the middle of the callsign field, each character typed would cause the field to be reevaluated and the cursor placed at the end of the string. This accounted for the remaining 20% of swearing. 
-* Preference storage has moved from a table in the sqlite db, to an external json file.
-* CAT control abstraction class: Means you now have a choice of either rigctld or flrig.
-* Callbook lookup abstraction class: Means you have a choice of QRZ, HamDB or HamQTH for name and gridsquare lookups.
-* Callbook lookups are now executed in their own thread, as to not slow the interface down.
-* Settings dialog was getting a bit crowded, so added a tabbed interface.
- 
-
-## 2021 Field Day, what was learned.
-
-I didn't test my shack computer prior to Field Day 2021. Why? Well I'm an idiot, and that's what idiots do. I start up a pre built binary and all is good. I make my first contact. I submit the contact and it crashes straight away... Ooooo, I think... That's not optimal.
-
-This is something another user might not experience. I didn't have xplanet installed and configured and the app tried to write to a non existing folder/file. Who needs error checking... We do. I'll fix that pretty soon now.
-
-Crash cause #2, I some how left off a database field in the unpacking logic where it goes to send a qso record to Cloudlog. Alot of people don't use Cloudlog. So not so terrible. I do, so it was very terrible for me. I've already fixed this and pushed the changes with in 20 minutes of the start of Field Day.
-
-Not a great start, but lessons learned.
-
-Now some good news. That FT8 wsjt auto logging thing worked great out of the box. I was frankly amazed. Any time I needed to use the restroom, get a drink, a snack, whatever. I set up ft8 to call cq, check it every few minutes and rake in the points.
- 
-
-## FT8
-
-I've added a UDP server on port 2237 to accept UDP datagrams from WSJT-X. It's totally unicast, and "Hey thats my port, get your own port." So it won't play nice with others on the port playground.
-
-Right now it just adds a contact if WSJTx sends an ADIF logged packet. It monitors the status packets looking for the dxcall field and flags dupes in the logging window. 
-
 ## Caveats
 
 This is a simple logger ment for single op, it's not usable for clubs.
