@@ -14,7 +14,8 @@ from pathlib import Path
 from datetime import datetime
 from json import dumps, loads
 from shutil import copyfile
-from xmlrpc.client import ServerProxy, Error
+
+# from xmlrpc.client import ServerProxy, Error
 import struct
 import os
 import socket
@@ -521,35 +522,35 @@ class MainWindow(QtWidgets.QMainWindow):
             self.look_up = QRZlookup(
                 self.preference["lookupusername"], self.preference["lookuppassword"]
             )
-            if self.preference["usehamdb"]:
-                self.look_up = HamDBlookup()
-            if self.preference["usehamqth"]:
-                self.look_up = HamQTH(
-                    self.preference["lookupusername"],
-                    self.preference["lookuppassword"],
-                )
-            if self.preference["useflrig"]:
-                self.cat_control = CAT(
-                    "flrig", self.preference["CAT_ip"], self.preference["CAT_port"]
-                )
-            if self.preference["userigctld"]:
-                self.cat_control = CAT(
-                    "rigctld", self.preference["CAT_ip"], self.preference["CAT_port"]
-                )
+        if self.preference["usehamdb"]:
+            self.look_up = HamDBlookup()
+        if self.preference["usehamqth"]:
+            self.look_up = HamQTH(
+                self.preference["lookupusername"],
+                self.preference["lookuppassword"],
+            )
+        if self.preference["useflrig"]:
+            self.cat_control = CAT(
+                "flrig", self.preference["CAT_ip"], self.preference["CAT_port"]
+            )
+        if self.preference["userigctld"]:
+            self.cat_control = CAT(
+                "rigctld", self.preference["CAT_ip"], self.preference["CAT_port"]
+            )
 
-            if self.preference["cloudlog"]:
-                cloudlogapi = self.preference["cloudlogapi"]
-                cloudlogurl = self.preference["cloudlogurl"]
+        if self.preference["cloudlog"]:
+            cloudlogapi = self.preference["cloudlogapi"]
+            cloudlogurl = self.preference["cloudlogurl"]
 
-                payload = "/validate/key=" + cloudlogapi
-                logging.info("%s", cloudlogurl + payload)
-                try:
-                    result = requests.get(cloudlogurl + payload)
-                    self.cloudlogauthenticated = False
-                    if result.status_code == 200 or result.status_code == 400:
-                        self.cloudlogauthenticated = True
-                except requests.exceptions.ConnectionError as exception:
-                    logging.warning("cloudlog authentication: %s", exception)
+            payload = "/validate/key=" + cloudlogapi
+            logging.info("%s", cloudlogurl + payload)
+            try:
+                result = requests.get(cloudlogurl + payload)
+                self.cloudlogauthenticated = False
+                if result.status_code == 200 or result.status_code == 400:
+                    self.cloudlogauthenticated = True
+            except requests.exceptions.ConnectionError as exception:
+                logging.warning("cloudlog authentication: %s", exception)
 
     @staticmethod
     def has_internet():
@@ -783,64 +784,65 @@ class MainWindow(QtWidgets.QMainWindow):
         if event_key == Qt.Key_F12:
             self.sendf12()
 
-    def sendcw(self, texttosend):
-        """sends cw to k1el"""
-        logging.info("sendcw: %s", texttosend)
-        with ServerProxy(self.keyerserver) as proxy:
-            try:
-                proxy.k1elsendstring(texttosend)
-            except Error as exception:
-                logging.info("%s, xmlrpc error: %s", self.keyerserver, exception)
-            except ConnectionRefusedError:
-                logging.info("%s, xmlrpc Connection Refused", self.keyerserver)
-
     def sendf1(self):
         """send f1"""
-        self.cw.sendcw(self.process_macro(self.F1.toolTip()))
+        if self.cw is not None:
+            self.cw.sendcw(self.process_macro(self.F1.toolTip()))
 
     def sendf2(self):
         """send f2"""
-        self.cw.sendcw(self.process_macro(self.F2.toolTip()))
+        if self.cw is not None:
+            self.cw.sendcw(self.process_macro(self.F2.toolTip()))
 
     def sendf3(self):
         """send f3"""
-        self.cw.sendcw(self.process_macro(self.F3.toolTip()))
+        if self.cw is not None:
+            self.cw.sendcw(self.process_macro(self.F3.toolTip()))
 
     def sendf4(self):
         """send f4"""
-        self.cw.sendcw(self.process_macro(self.F4.toolTip()))
+        if self.cw is not None:
+            self.cw.sendcw(self.process_macro(self.F4.toolTip()))
 
     def sendf5(self):
         """send f5"""
-        self.cw.sendcw(self.process_macro(self.F5.toolTip()))
+        if self.cw is not None:
+            self.cw.sendcw(self.process_macro(self.F5.toolTip()))
 
     def sendf6(self):
         """send f6"""
-        self.cw.sendcw(self.process_macro(self.F6.toolTip()))
+        if self.cw is not None:
+            self.cw.sendcw(self.process_macro(self.F6.toolTip()))
 
     def sendf7(self):
         """send f7"""
-        self.cw.sendcw(self.process_macro(self.F7.toolTip()))
+        if self.cw is not None:
+            self.cw.sendcw(self.process_macro(self.F7.toolTip()))
 
     def sendf8(self):
         """send f8"""
-        self.cw.sendcw(self.process_macro(self.F8.toolTip()))
+        if self.cw is not None:
+            self.cw.sendcw(self.process_macro(self.F8.toolTip()))
 
     def sendf9(self):
         """send f9"""
-        self.cw.sendcw(self.process_macro(self.F9.toolTip()))
+        if self.cw is not None:
+            self.cw.sendcw(self.process_macro(self.F9.toolTip()))
 
     def sendf10(self):
         """send f10"""
-        self.cw.sendcw(self.process_macro(self.F10.toolTip()))
+        if self.cw is not None:
+            self.cw.sendcw(self.process_macro(self.F10.toolTip()))
 
     def sendf11(self):
         """send f11"""
-        self.cw.sendcw(self.process_macro(self.F11.toolTip()))
+        if self.cw is not None:
+            self.cw.sendcw(self.process_macro(self.F11.toolTip()))
 
     def sendf12(self):
         """send f12"""
-        self.cw.sendcw(self.process_macro(self.F12.toolTip()))
+        if self.cw is not None:
+            self.cw.sendcw(self.process_macro(self.F12.toolTip()))
 
     def clearinputs(self):
         """clear text entry fields"""
