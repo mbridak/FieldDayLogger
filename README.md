@@ -121,6 +121,10 @@ A limited set of substitution macros are offered.
 
 These are pulled straight from the onscreen input fields. Combined with normal text this should have you covered for most of your exchange needs.
 
+## CWDAEMON speed changes.
+
+If you use cwdaemon for your cw macro sending, you can press the PageUp and PageDown keys on your keyboard to increase/decrease the cw sending speed.
+
 ## When the event is over
 
 After the big weekend, once you've swept up all the broken beer bottles and wiped the BBQ sauce off your chin, go ahead and click the Generate Logs button.
