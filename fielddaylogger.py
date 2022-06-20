@@ -723,6 +723,18 @@ class MainWindow(QtWidgets.QMainWindow):
             self.clearinputs()
             self.clearcontactlookup()
             return
+        if event_key == Qt.Key.Key_PageUp:
+            if self.cw is not None:
+                if self.cw.servertype == 1:
+                    self.cw.speed += 1
+                    self.cw.sendcw(f"\x1b2{self.cw.speed}")
+                    self.infoline.setText(f"CW speed set to {self.cw.speed}")
+        if event_key == Qt.Key.Key_PageDown:
+            if self.cw is not None:
+                if self.cw.servertype == 1:
+                    self.cw.speed -= 1
+                    self.cw.sendcw(f"\x1b2{self.cw.speed}")
+                    self.infoline.setText(f"CW speed set to {self.cw.speed}")
         if event_key == Qt.Key_Tab:
             if self.section_entry.hasFocus():
                 logging.info("From section")
@@ -787,61 +799,73 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf1(self):
         """send f1"""
         if self.cw is not None:
+            self.infoline.setText(f"Sending {self.process_macro(self.F1.toolTip())}")
             self.cw.sendcw(self.process_macro(self.F1.toolTip()))
 
     def sendf2(self):
         """send f2"""
         if self.cw is not None:
+            self.infoline.setText(f"Sending {self.process_macro(self.F2.toolTip())}")
             self.cw.sendcw(self.process_macro(self.F2.toolTip()))
 
     def sendf3(self):
         """send f3"""
         if self.cw is not None:
+            self.infoline.setText(f"Sending {self.process_macro(self.F3.toolTip())}")
             self.cw.sendcw(self.process_macro(self.F3.toolTip()))
 
     def sendf4(self):
         """send f4"""
         if self.cw is not None:
+            self.infoline.setText(f"Sending {self.process_macro(self.F4.toolTip())}")
             self.cw.sendcw(self.process_macro(self.F4.toolTip()))
 
     def sendf5(self):
         """send f5"""
         if self.cw is not None:
+            self.infoline.setText(f"Sending {self.process_macro(self.F5.toolTip())}")
             self.cw.sendcw(self.process_macro(self.F5.toolTip()))
 
     def sendf6(self):
         """send f6"""
         if self.cw is not None:
+            self.infoline.setText(f"Sending {self.process_macro(self.F6.toolTip())}")
             self.cw.sendcw(self.process_macro(self.F6.toolTip()))
 
     def sendf7(self):
         """send f7"""
         if self.cw is not None:
+            self.infoline.setText(f"Sending {self.process_macro(self.F7.toolTip())}")
             self.cw.sendcw(self.process_macro(self.F7.toolTip()))
 
     def sendf8(self):
         """send f8"""
         if self.cw is not None:
+            self.infoline.setText(f"Sending {self.process_macro(self.F8.toolTip())}")
             self.cw.sendcw(self.process_macro(self.F8.toolTip()))
 
     def sendf9(self):
         """send f9"""
         if self.cw is not None:
+            self.infoline.setText(f"Sending {self.process_macro(self.F9.toolTip())}")
             self.cw.sendcw(self.process_macro(self.F9.toolTip()))
 
     def sendf10(self):
         """send f10"""
         if self.cw is not None:
+            self.infoline.setText(f"Sending {self.process_macro(self.F10.toolTip())}")
             self.cw.sendcw(self.process_macro(self.F10.toolTip()))
 
     def sendf11(self):
         """send f11"""
         if self.cw is not None:
+            self.infoline.setText(f"Sending {self.process_macro(self.F11.toolTip())}")
             self.cw.sendcw(self.process_macro(self.F11.toolTip()))
 
     def sendf12(self):
         """send f12"""
         if self.cw is not None:
+            self.infoline.setText(f"Sending {self.process_macro(self.F12.toolTip())}")
             self.cw.sendcw(self.process_macro(self.F12.toolTip()))
 
     def clearinputs(self):
@@ -1072,6 +1096,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.preference["cwip"],
                     self.preference["cwport"],
                 )
+                self.cw.speed = 20
         except KeyError as err:
             logging.warning("Corrupt preference, %s, loading clean version.", err)
             self.preference = self.reference_preference.copy()
