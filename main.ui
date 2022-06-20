@@ -3826,6 +3826,24 @@ color: rgb(0, 0, 0);</string>
      <string>F11</string>
     </property>
    </widget>
+   <widget class="QLabel" name="infoline">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>592</y>
+      <width>300</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>JetBrains Mono</family>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
    <zorder>frame_2</zorder>
    <zorder>frame_3</zorder>
    <zorder>frame_4</zorder>
@@ -3865,6 +3883,7 @@ color: rgb(0, 0, 0);</string>
    <zorder>F12</zorder>
    <zorder>F9</zorder>
    <zorder>F11</zorder>
+   <zorder>infoline</zorder>
   </widget>
  </widget>
  <tabstops>
