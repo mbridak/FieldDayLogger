@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """
-Field Day Logger
-K6GTE
+K6GTE Field Day logger
+Email: michael.bridak@gmail.com
+https://github.com/mbridak/FieldDayLogger
+GPL V3
 """
 # pylint: disable=too-many-lines
 # pylint: disable=invalid-name
+# pylint: disable=no-member
 # Nothing to see here move along.
 # xplanet -body earth -window -longitude -117 -latitude 38
 # -config Default -projection azmithal -radius 200 -wait 5
@@ -29,12 +32,13 @@ from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtCore import QDir, Qt
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
-from lookup import HamDBlookup, HamQTH, QRZlookup
-from cat_interface import CAT
-from settings import Settings
-from database import DataBase
-from cwinterface import CW
-from version import __version__
+from lib.lookup import HamDBlookup, HamQTH, QRZlookup
+from lib.cat_interface import CAT
+from lib.settings import Settings
+from lib.database import DataBase
+from lib.cwinterface import CW
+from lib.version import __version__
+
 
 
 def relpath(filename):
@@ -108,7 +112,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         """Initialize"""
         super().__init__(*args, **kwargs)
-        uic.loadUi(self.relpath("main.ui"), self)
+        uic.loadUi(self.relpath("data/main.ui"), self)
         self.db = DataBase(self.database)
         self.listWidget.itemDoubleClicked.connect(self.qsoclicked)
         self.callsign_entry.textEdited.connect(self.calltest)
@@ -450,12 +454,10 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         if (
-            getattr(sys, "frozen", False)
-            and hasattr(sys, "_MEIPASS")
-            and not Path("./cwmacros_fd.txt").exists()
+            not Path("./cwmacros_fd.txt").exists()
         ):
             logging.info("read_cw_macros: copying default macro file.")
-            copyfile(relpath("cwmacros_fd.txt"), "./cwmacros_fd.txt")
+            copyfile(self.relpath("data/cwmacros_fd.txt"), "./cwmacros_fd.txt")
         with open("./cwmacros_fd.txt", "r", encoding="utf-8") as file_descriptor:
             for line in file_descriptor:
                 try:
@@ -1248,7 +1250,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         try:
             with open(
-                self.relpath("arrl_sect.dat"), "r", encoding="utf-8"
+                self.relpath("data/arrl_sect.dat"), "r", encoding="utf-8"
             ) as file_descriptor:
                 while 1:
                     line = (
@@ -1291,7 +1293,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         try:
             with open(
-                self.relpath("MASTER.SCP"), "r", encoding="utf-8"
+                self.relpath("data/MASTER.SCP"), "r", encoding="utf-8"
             ) as file_descriptor:
                 self.scp = file_descriptor.readlines()
                 self.scp = list(map(lambda x: x.strip(), self.scp))
@@ -1902,7 +1904,7 @@ class EditQSODialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
         """initialize dialog"""
         super().__init__(parent)
-        uic.loadUi(self.relpath("dialog.ui"), self)
+        uic.loadUi(self.relpath("data/dialog.ui"), self)
         self.deleteButton.clicked.connect(self.delete_contact)
         self.buttonBox.accepted.connect(self.save_changes)
         self.change = QsoEdit()
@@ -1974,7 +1976,7 @@ class StartUp(QtWidgets.QDialog):
     def __init__(self, parent=None):
         """initialize dialog"""
         super().__init__(parent)
-        uic.loadUi(self.relpath("startup.ui"), self)
+        uic.loadUi(self.relpath("data/startup.ui"), self)
         self.continue_pushButton.clicked.connect(self.store)
 
     @staticmethod

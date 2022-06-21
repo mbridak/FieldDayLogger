@@ -38,7 +38,7 @@ color: rgb(211, 215, 207);</string>
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap>icon/logo.png</pixmap>
+    <pixmap>../icon/logo.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>

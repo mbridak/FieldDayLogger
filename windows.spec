@@ -6,14 +6,8 @@ block_cipher = None
 a = Analysis(['fielddaylogger.py'],
              pathex=['.'],
              binaries=[('icon\\*.png','icon'),
-             ('font/*.ttf','font')],
-             datas=[('main.ui','.'),
-             ('MASTER.SCP','.'),
-             ('arrl_sect.dat','.'),
-             ('dialog.ui','.'),
-             ('settings.ui','.'),
-             ('startup.ui','.'),
-             ('cwmacros_fd.txt','.')
+             ('font\\*.ttf','font')],
+             datas=[datas=[('data\\*','data')
              ],
              hiddenimports=[],
              hookspath=[],
