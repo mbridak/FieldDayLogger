@@ -217,6 +217,8 @@ def getvfo():
             vfo = float(cat.get_vfo()) / 1000
         except ConnectionRefusedError:
             vfo = 0.0
+        except ValueError:
+            vfo = 0.0
         time.sleep(0.25)
 
 
