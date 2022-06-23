@@ -25,7 +25,7 @@ from rich.logging import RichHandler
 from rich.traceback import install
 from bs4 import BeautifulSoup as bs
 import requests
-from cat_interface import CAT
+from lib.cat_interface import CAT
 
 
 logging.basicConfig(
