@@ -724,6 +724,11 @@ class MainWindow(QtWidgets.QMainWindow):
         if event_key == Qt.Key_Escape:
             self.clearinputs()
             self.clearcontactlookup()
+            if self.cw is not None:
+                if self.cw.servertype == 1:
+                    self.cw.speed += 1
+                    self.cw.sendcw("\x1b4")
+                    self.infoline.setText("")
             return
         if event_key == Qt.Key.Key_PageUp:
             if self.cw is not None:
