@@ -76,12 +76,12 @@ parser.add_argument(
     "-C",
     "--cat",
     type=str,
-    help="Type of CAT control flrig/rigctld. Default is: rigctld",
+    help="Type of CAT control flrig/rigctld. Default is: flrig",
 )
 parser.add_argument(
     "-f", "--cathost", type=str, help="Hostname/IP of flrig. Default is: localhost"
 )
-parser.add_argument("-P", "--catport", type=int, help="flrig port. Default is: 4532")
+parser.add_argument("-P", "--catport", type=int, help="flrig port. Default is: 12345")
 parser.add_argument(
     "-l", "--log", type=str, help="Log DB file to monitor. Default is: FieldDay.db"
 )
@@ -131,7 +131,7 @@ else:
 if args.cat:
     cattype = args.cat
 else:
-    cattype = "rigctld"
+    cattype = "flrig"
 
 if args.cathost:
     cathost = args.cathost
@@ -141,7 +141,7 @@ else:
 if args.catport:
     catport = args.catport
 else:
-    catport = 4532
+    catport = 12345
 
 if args.log:
     logdb = args.log
@@ -183,10 +183,10 @@ def updatecontactlist():
             result = cursor.fetchall()
             for contact in result:
                 if hascolumn:
-                    if logdb == "FieldDay.db":
+                    if logdb in "FieldDay.db":
                         _, callsign, _, _, _, _, band, _, _, _, _ = contact
                     else:
-                        _, callsign, _, _, _, band, _, _, _, _ = contact
+                        _, callsign, _, _, _, _, band, _, _, _, _ = contact
                 else:
                     _, callsign, _, _, _, _, band, _, _ = contact
                 if band in contactlist:
