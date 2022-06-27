@@ -158,17 +158,20 @@ to enter this info again.
 ## CW Macros
 
 The program will check in the current working directory for a file called 
-`cwmacros_fd.txt` it will parse the file and configure the new row of 12 
-buttons along the bottom half of the window. The macros can be activated 
-by either pressing the corresponding function key, or by directly clicking 
-on the button. You can check the file to glean it's structure, but it's pretty 
-straight forward. Each line has 3 sections separated by the pipe `|` character. 
+`cwmacros_fd.txt`. If not present it will be created. It will parse the file
+and configure the row of 12 buttons along the bottom half of the window.
+The macros can be activated by either pressing the corresponding function key,
+or by directly clicking on the button. You can check the file to glean it's 
+structure, but it's pretty straight forward. Each line has 4 sections separated
+by the pipe `|` character. 
 Here's an example line.
 
-`F2|Run Exch|{HISCALL} {MYCLASS} {MYSECT}`
+`R|F2|Run Exch|{HISCALL} {MYCLASS} {MYSECT}`
 
-The first field is the function key to program. The second is the name of the
-button. And lastly the third is the text you would like to send.
+The first field is an `R` if the macro is to be shown while in Run mode.
+Otherwise an `S` for Search and Pounce. The second field is the function key
+to program. The third is the text label to put in the button. Lastly the
+fourth is the text you would like to send.
 
 A limited set of substitution macros are offered.
 
@@ -179,6 +182,17 @@ A limited set of substitution macros are offered.
 
 These are pulled straight from the onscreen input fields. Combined with normal
 text this should have you covered for most of your exchange needs.
+
+## CW Macros (Run vs S&P)
+
+You can toggle the macros in use between Run and Search and Pounce by clicking
+the button to the left of the settings/gear button at the botton right portion
+of the screen.
+
+![Picture showing buttons](pics/run_sp.png)
+
+This can also be used to reload the macros if you edit them while the program
+is running.
 
 ## CWDAEMON speed changes.
 
