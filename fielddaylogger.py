@@ -107,7 +107,7 @@ class MainWindow(QtWidgets.QMainWindow):
     ft8dupe = ""
     fkeys = dict()
     mygrid = None
-    # cw = None
+    run_state = False
 
     def __init__(self, *args, **kwargs):
         """Initialize"""
@@ -130,6 +130,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.callsign_entry.editingFinished.connect(self.dup_check)
         self.section_entry.textEdited.connect(self.section_check)
         self.genLogButton.clicked.connect(self.generate_logs)
+        self.run_button.clicked.connect(self.run_button_pressed)
         self.radio_grey = QtGui.QPixmap(self.relpath("icon/radio_grey.png"))
         self.radio_red = QtGui.QPixmap(self.relpath("icon/radio_red.png"))
         self.radio_green = QtGui.QPixmap(self.relpath("icon/radio_green.png"))
@@ -446,6 +447,18 @@ class MainWindow(QtWidgets.QMainWindow):
             base_path = os.path.abspath(".")
         return os.path.join(base_path, filename)
 
+    def run_button_pressed(self):
+        """The run/S&P button was pressed."""
+        if self.run_button.text() == "Run":
+            self.run_state = False
+            self.run_button.setText("SP")
+        else:
+            self.run_state = True
+            self.run_button.setText("Run")
+        self.read_cw_macros()
+
+
+
     def read_cw_macros(self):
         """
         Reads in the CW macros, firsts it checks to see if the file exists. If it does not,
@@ -461,8 +474,11 @@ class MainWindow(QtWidgets.QMainWindow):
         with open("./cwmacros_fd.txt", "r", encoding="utf-8") as file_descriptor:
             for line in file_descriptor:
                 try:
-                    fkey, buttonname, cwtext = line.split("|")
-                    self.fkeys[fkey.strip()] = (buttonname.strip(), cwtext.strip())
+                    mode, fkey, buttonname, cwtext = line.split("|")
+                    if mode.strip().upper() == "R" and self.run_state:
+                        self.fkeys[fkey.strip()] = (buttonname.strip(), cwtext.strip())
+                    if mode.strip().upper() != "R" and not self.run_state:
+                        self.fkeys[fkey.strip()] = (buttonname.strip(), cwtext.strip())
                 except ValueError as err:
                     logging.info("read_cw_macros: %s", err)
         fkeys_keys = self.fkeys.keys()
@@ -807,73 +823,73 @@ class MainWindow(QtWidgets.QMainWindow):
         """send f1"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F1.toolTip())}")
-            self.cw.sendcw(self.process_macro(self.F1.toolTip()))
+            self.cw.sendcw(f"{self.process_macro(self.F1.toolTip())} ")
 
     def sendf2(self):
         """send f2"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F2.toolTip())}")
-            self.cw.sendcw(self.process_macro(self.F2.toolTip()))
+            self.cw.sendcw(f"{self.process_macro(self.F2.toolTip())} ")
 
     def sendf3(self):
         """send f3"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F3.toolTip())}")
-            self.cw.sendcw(self.process_macro(self.F3.toolTip()))
+            self.cw.sendcw(f"{self.process_macro(self.F3.toolTip())} ")
 
     def sendf4(self):
         """send f4"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F4.toolTip())}")
-            self.cw.sendcw(self.process_macro(self.F4.toolTip()))
+            self.cw.sendcw(f"{self.process_macro(self.F4.toolTip())} ")
 
     def sendf5(self):
         """send f5"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F5.toolTip())}")
-            self.cw.sendcw(self.process_macro(self.F5.toolTip()))
+            self.cw.sendcw(f"{self.process_macro(self.F5.toolTip())} ")
 
     def sendf6(self):
         """send f6"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F6.toolTip())}")
-            self.cw.sendcw(self.process_macro(self.F6.toolTip()))
+            self.cw.sendcw(f"{self.process_macro(self.F6.toolTip())} ")
 
     def sendf7(self):
         """send f7"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F7.toolTip())}")
-            self.cw.sendcw(self.process_macro(self.F7.toolTip()))
+            self.cw.sendcw(f"{self.process_macro(self.F7.toolTip())} ")
 
     def sendf8(self):
         """send f8"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F8.toolTip())}")
-            self.cw.sendcw(self.process_macro(self.F8.toolTip()))
+            self.cw.sendcw(f"{self.process_macro(self.F8.toolTip())} ")
 
     def sendf9(self):
         """send f9"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F9.toolTip())}")
-            self.cw.sendcw(self.process_macro(self.F9.toolTip()))
+            self.cw.sendcw(f"{self.process_macro(self.F9.toolTip())} ")
 
     def sendf10(self):
         """send f10"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F10.toolTip())}")
-            self.cw.sendcw(self.process_macro(self.F10.toolTip()))
+            self.cw.sendcw(f"{self.process_macro(self.F10.toolTip())} ")
 
     def sendf11(self):
         """send f11"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F11.toolTip())}")
-            self.cw.sendcw(self.process_macro(self.F11.toolTip()))
+            self.cw.sendcw(f"{self.process_macro(self.F11.toolTip())} ")
 
     def sendf12(self):
         """send f12"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F12.toolTip())}")
-            self.cw.sendcw(self.process_macro(self.F12.toolTip()))
+            self.cw.sendcw(f"{self.process_macro(self.F12.toolTip())} ")
 
     def clearinputs(self):
         """clear text entry fields"""

@@ -3567,9 +3567,9 @@ color: rgb(0, 0, 0);</string>
    <widget class="QLabel" name="callbook_icon">
     <property name="geometry">
      <rect>
-      <x>338</x>
+      <x>347</x>
       <y>591</y>
-      <width>91</width>
+      <width>90</width>
       <height>25</height>
      </rect>
     </property>
@@ -3610,9 +3610,9 @@ color: rgb(0, 0, 0);</string>
    <widget class="QPushButton" name="settingsbutton">
     <property name="geometry">
      <rect>
-      <x>590</x>
+      <x>615</x>
       <y>620</y>
-      <width>28</width>
+      <width>25</width>
       <height>25</height>
      </rect>
     </property>
@@ -3831,7 +3831,7 @@ color: rgb(0, 0, 0);</string>
      <rect>
       <x>10</x>
       <y>592</y>
-      <width>300</width>
+      <width>321</width>
       <height>20</height>
      </rect>
     </property>
@@ -3842,6 +3842,28 @@ color: rgb(0, 0, 0);</string>
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="run_button">
+    <property name="geometry">
+     <rect>
+      <x>582</x>
+      <y>620</y>
+      <width>30</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>JetBrains Mono</family>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>SP</string>
     </property>
    </widget>
    <zorder>frame_2</zorder>
@@ -3884,6 +3906,7 @@ color: rgb(0, 0, 0);</string>
    <zorder>F9</zorder>
    <zorder>F11</zorder>
    <zorder>infoline</zorder>
+   <zorder>run_button</zorder>
   </widget>
  </widget>
  <tabstops>
