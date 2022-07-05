@@ -39,6 +39,9 @@ class CAT:
         if self.interface == "rigctld":
             vfo = self.__getvfo_rigctld()
             logging.warning("get_vfo: %s", vfo)
+            if vfo == "RPRT -1":
+                vfo = ""
+                self.rigctrlsocket = None
         return vfo
 
     def __getvfo_flrig(self) -> str:
@@ -87,7 +90,7 @@ class CAT:
         return ""
 
     def __getmode_rigctld(self) -> str:
-        """Returns mode vai rigctld"""
+        """Returns mode via rigctld"""
         if self.rigctrlsocket is None:
             self.__initialize_rigctrld()
         if not self.rigctrlsocket is None:
