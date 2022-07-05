@@ -1636,9 +1636,11 @@ class MainWindow(QtWidgets.QMainWindow):
                         rst = "59"
                     loggeddate = the_datetime[:10]
                     loggedtime = the_datetime[11:13] + the_datetime[14:16]
-
-                    temp = str(freq / 1000000).split(".")
-                    freq = temp[0] + "." + temp[1].ljust(3, "0")
+                    try:
+                        temp = str(freq / 1000000).split(".")
+                        freq = temp[0] + "." + temp[1].ljust(3, "0")
+                    except TypeError:
+                        freq = "UNKNOWN"
 
                     if freq == "0.000":  # incase no freq was logged
                         freq = int(self.fakefreq(band, mode))
@@ -1885,8 +1887,11 @@ class MainWindow(QtWidgets.QMainWindow):
                         mode = "DG"
                     loggeddate = the_datetime[:10]
                     loggedtime = the_datetime[11:13] + the_datetime[14:16]
-                    temp = str(freq / 1000000).split(".")
-                    freq = temp[0] + temp[1].ljust(3, "0")[:3]
+                    try:
+                        temp = str(freq / 1000000).split(".")
+                        freq = temp[0] + temp[1].ljust(3, "0")[:3]
+                    except TypeError:
+                        freq = "UNKNOWN"
                     if freq == "0000":
                         freq = self.fakefreq(band, mode)
                     print(
