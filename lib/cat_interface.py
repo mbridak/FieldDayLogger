@@ -22,23 +22,24 @@ class CAT:
             self.__initialize_rigctrld()
 
     def __initialize_rigctrld(self):
+        logging.warning("initializing rigctrld")
         try:
             self.rigctrlsocket = socket.socket()
             self.rigctrlsocket.settimeout(0.5)
             self.rigctrlsocket.connect((self.host, self.port))
         except socket.error as exception:
             self.rigctrlsocket = None
-            logging.warning("CAT __initialize_rigctrld: %s", exception)
+            logging.warning("Socket Error %s", exception)
 
     def get_vfo(self) -> str:
         """Poll the radio for current vfo using the interface"""
         vfo = ""
         if self.interface == "flrig":
             vfo = self.__getvfo_flrig()
-            logging.warning("get_vfo: %s", vfo)
+            logging.warning("%s", vfo)
         if self.interface == "rigctld":
             vfo = self.__getvfo_rigctld()
-            logging.warning("get_vfo: %s", vfo)
+            logging.warning("%s", vfo)
             if "RPRT -" in vfo:
                 vfo = ""
                 self.rigctrlsocket = None
@@ -49,10 +50,10 @@ class CAT:
         try:
             return self.server.rig.get_vfo()
         except ConnectionRefusedError as exception:
-            logging.warning("getvfo_flrig: %s", exception)
+            logging.warning("%s", exception)
         except xmlrpc.client.Fault as exception:
             logging.warning(
-                "getvfo_flrig: %d, %s", exception.faultCode, exception.faultString
+                "%d, %s", exception.faultCode, exception.faultString
             )
         return ""
 
@@ -66,7 +67,7 @@ class CAT:
                 self.rigctrlsocket.send(b"f\n")
                 return self.rigctrlsocket.recv(1024).decode().strip()
             except socket.error as exception:
-                logging.warning("getvfo_rigctld: %s", exception)
+                logging.warning("Socket Error %s", exception)
                 self.rigctrlsocket = None
             return ""
 
@@ -86,7 +87,7 @@ class CAT:
         try:
             return self.server.rig.get_mode()
         except ConnectionRefusedError as exception:
-            logging.warning("getmode_flrig: %s", exception)
+            logging.warning("%s", exception)
         return ""
 
     def __getmode_rigctld(self) -> str:
@@ -99,10 +100,10 @@ class CAT:
                 self.rigctrlsocket.send(b"m\n")
                 return self.rigctrlsocket.recv(1024).decode().strip().split()[0]
             except IndexError as exception:
-                logging.warning("getmode_rigctld: %s", exception)
+                logging.warning("IndexError %s", exception)
                 self.rigctrlsocket = None
             except socket.error as exception:
-                logging.warning("getmode_rigctld: %s", exception)
+                logging.warning("Socket Error %s", exception)
                 self.rigctrlsocket = None
         return ""
 
@@ -119,7 +120,7 @@ class CAT:
         try:
             return self.server.rig.set_frequency(float(freq))
         except ConnectionRefusedError as exception:
-            logging.warning("setvfo_flrig: %s", exception)
+            logging.warning("%s", exception)
         return False
 
     def __setvfo_rigctld(self, freq: str) -> bool:
@@ -133,7 +134,7 @@ class CAT:
                 _ = self.rigctrlsocket.recv(1024).decode().strip()
                 return True
             except socket.error as exception:
-                logging.warning("setvfo_rigctld: %s", exception)
+                logging.warning("Socket Error %s", exception)
                 self.rigctrlsocket = None
                 return False
         return False
@@ -151,7 +152,7 @@ class CAT:
         try:
             return self.server.rig.set_mode(mode)
         except ConnectionRefusedError as exception:
-            logging.warning("setmode_flrig: %s", exception)
+            logging.warning("%s", exception)
         return False
 
     def __setmode_rigctld(self, mode: str) -> bool:
@@ -160,12 +161,12 @@ class CAT:
             self.__initialize_rigctrld()
         if not self.rigctrlsocket is None:
             try:
-                self.rigctrlsocket.settimeout(0.5)
+                self.rigctrlsocket.settimeout(1)
                 self.rigctrlsocket.send(bytes(f"M {mode} 0\n", "utf-8"))
                 _ = self.rigctrlsocket.recv(1024).decode().strip()
                 return True
             except socket.error as exception:
-                logging.warning("setmode_rigctld: %s", exception)
+                logging.warning("Socket Error %s", exception)
                 self.rigctrlsocket = None
                 return False
         return False
