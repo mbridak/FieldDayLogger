@@ -39,7 +39,7 @@ class CAT:
         if self.interface == "rigctld":
             vfo = self.__getvfo_rigctld()
             logging.warning("get_vfo: %s", vfo)
-            if vfo == "RPRT -1":
+            if "RPRT -" in vfo:
                 vfo = ""
                 self.rigctrlsocket = None
         return vfo
@@ -100,6 +100,7 @@ class CAT:
                 return self.rigctrlsocket.recv(1024).decode().strip().split()[0]
             except IndexError as exception:
                 logging.warning("getmode_rigctld: %s", exception)
+                self.rigctrlsocket = None
             except socket.error as exception:
                 logging.warning("getmode_rigctld: %s", exception)
                 self.rigctrlsocket = None
