@@ -27,6 +27,9 @@ class CAT:
             self.rigctrlsocket = socket.socket()
             self.rigctrlsocket.settimeout(0.5)
             self.rigctrlsocket.connect((self.host, self.port))
+        except socket.timeout as exception:
+            self.rigctrlsocket = None
+            logging.warning("Socket TimeOut %s", exception)
         except socket.error as exception:
             self.rigctrlsocket = None
             logging.warning("Socket Error %s", exception)
@@ -64,8 +67,11 @@ class CAT:
         if not self.rigctrlsocket is None:
             try:
                 self.rigctrlsocket.settimeout(0.5)
-                self.rigctrlsocket.send(b"f\n")
+                self.rigctrlsocket.sendall(b"f\n")
                 return self.rigctrlsocket.recv(1024).decode().strip()
+            except socket.timeout as exception:
+                self.rigctrlsocket = None
+                logging.warning("Socket TimeOut %s", exception)
             except socket.error as exception:
                 logging.warning("Socket Error %s", exception)
                 self.rigctrlsocket = None
@@ -97,11 +103,14 @@ class CAT:
         if not self.rigctrlsocket is None:
             try:
                 self.rigctrlsocket.settimeout(0.5)
-                self.rigctrlsocket.send(b"m\n")
+                self.rigctrlsocket.sendall(b"m\n")
                 return self.rigctrlsocket.recv(1024).decode().strip().split()[0]
             except IndexError as exception:
                 logging.warning("IndexError %s", exception)
                 self.rigctrlsocket = None
+            except socket.timeout as exception:
+                self.rigctrlsocket = None
+                logging.warning("Socket TimeOut %s", exception)
             except socket.error as exception:
                 logging.warning("Socket Error %s", exception)
                 self.rigctrlsocket = None
@@ -130,9 +139,13 @@ class CAT:
         if not self.rigctrlsocket is None:
             try:
                 self.rigctrlsocket.settimeout(0.5)
-                self.rigctrlsocket.send(bytes(f"F {freq}\n", "utf-8"))
+                self.rigctrlsocket.sendall(bytes(f"F {freq}\n", "utf-8"))
                 _ = self.rigctrlsocket.recv(1024).decode().strip()
                 return True
+            except socket.timeout as exception:
+                self.rigctrlsocket = None
+                logging.warning("Socket TimeOut %s", exception)
+                return False
             except socket.error as exception:
                 logging.warning("Socket Error %s", exception)
                 self.rigctrlsocket = None
@@ -162,9 +175,13 @@ class CAT:
         if not self.rigctrlsocket is None:
             try:
                 self.rigctrlsocket.settimeout(1)
-                self.rigctrlsocket.send(bytes(f"M {mode} 0\n", "utf-8"))
+                self.rigctrlsocket.sendall(bytes(f"M {mode} 0\n", "utf-8"))
                 _ = self.rigctrlsocket.recv(1024).decode().strip()
                 return True
+            except socket.timeout as exception:
+                self.rigctrlsocket = None
+                logging.warning("Socket TimeOut %s", exception)
+                return False
             except socket.error as exception:
                 logging.warning("Socket Error %s", exception)
                 self.rigctrlsocket = None
