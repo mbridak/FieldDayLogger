@@ -28,11 +28,18 @@ class CAT:
             self.rigctrlsocket.settimeout(0.5)
             self.rigctrlsocket.connect((self.host, self.port))
         except socket.timeout as exception:
-            self.rigctrlsocket = None
             logging.warning("Socket TimeOut %s", exception)
-        except socket.error as exception:
+            if self.rigctrlsocket is not None:
+                logging.warning("Closing Socket")
+                self.rigctrlsocket.close()
             self.rigctrlsocket = None
+
+        except socket.error as exception:
             logging.warning("Socket Error %s", exception)
+            if self.rigctrlsocket is not None:
+                logging.warning("Closing Socket")
+                self.rigctrlsocket.close()
+            self.rigctrlsocket = None
 
     def get_vfo(self) -> str:
         """Poll the radio for current vfo using the interface"""
@@ -55,9 +62,7 @@ class CAT:
         except ConnectionRefusedError as exception:
             logging.warning("%s", exception)
         except xmlrpc.client.Fault as exception:
-            logging.warning(
-                "%d, %s", exception.faultCode, exception.faultString
-            )
+            logging.warning("%d, %s", exception.faultCode, exception.faultString)
         return ""
 
     def __getvfo_rigctld(self) -> str:
@@ -70,10 +75,16 @@ class CAT:
                 self.rigctrlsocket.sendall(b"f\n")
                 return self.rigctrlsocket.recv(1024).decode().strip()
             except socket.timeout as exception:
-                self.rigctrlsocket = None
                 logging.warning("Socket TimeOut %s", exception)
+                if self.rigctrlsocket is not None:
+                    logging.warning("Closing Socket")
+                    self.rigctrlsocket.close()
+                self.rigctrlsocket = None
             except socket.error as exception:
                 logging.warning("Socket Error %s", exception)
+                if self.rigctrlsocket is not None:
+                    logging.warning("Closing Socket")
+                    self.rigctrlsocket.close()
                 self.rigctrlsocket = None
             return ""
 
@@ -107,12 +118,21 @@ class CAT:
                 return self.rigctrlsocket.recv(1024).decode().strip().split()[0]
             except IndexError as exception:
                 logging.warning("IndexError %s", exception)
+                if self.rigctrlsocket is not None:
+                    logging.warning("Closing Socket")
+                    self.rigctrlsocket.close()
                 self.rigctrlsocket = None
             except socket.timeout as exception:
-                self.rigctrlsocket = None
                 logging.warning("Socket TimeOut %s", exception)
+                if self.rigctrlsocket is not None:
+                    logging.warning("Closing Socket")
+                    self.rigctrlsocket.close()
+                self.rigctrlsocket = None
             except socket.error as exception:
                 logging.warning("Socket Error %s", exception)
+                if self.rigctrlsocket is not None:
+                    logging.warning("Closing Socket")
+                    self.rigctrlsocket.close()
                 self.rigctrlsocket = None
         return ""
 
