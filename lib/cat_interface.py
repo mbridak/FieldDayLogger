@@ -71,9 +71,11 @@ class CAT:
             self.__initialize_rigctrld()
         if not self.rigctrlsocket is None:
             try:
-                self.rigctrlsocket.settimeout(0.5)
+                self.rigctrlsocket.settimeout(1)
                 self.rigctrlsocket.sendall(b"f\n")
-                return self.rigctrlsocket.recv(1024).decode().strip()
+                output = self.rigctrlsocket.recv(1024).decode().strip()
+                self.rigctrlsocket.sendall(b"\n")
+                return output
             except socket.timeout as exception:
                 logging.warning("Socket TimeOut %s", exception)
                 if self.rigctrlsocket is not None:
@@ -113,9 +115,11 @@ class CAT:
             self.__initialize_rigctrld()
         if not self.rigctrlsocket is None:
             try:
-                self.rigctrlsocket.settimeout(0.5)
+                self.rigctrlsocket.settimeout(1)
                 self.rigctrlsocket.sendall(b"m\n")
-                return self.rigctrlsocket.recv(1024).decode().strip().split()[0]
+                output = self.rigctrlsocket.recv(1024).decode().strip().split()[0]
+                self.rigctrlsocket.sendall(b"\n")
+                return output
             except IndexError as exception:
                 logging.warning("IndexError %s", exception)
                 if self.rigctrlsocket is not None:
@@ -158,9 +162,10 @@ class CAT:
             self.__initialize_rigctrld()
         if not self.rigctrlsocket is None:
             try:
-                self.rigctrlsocket.settimeout(0.5)
+                self.rigctrlsocket.settimeout(1)
                 self.rigctrlsocket.sendall(bytes(f"F {freq}\n", "utf-8"))
                 _ = self.rigctrlsocket.recv(1024).decode().strip()
+                self.rigctrlsocket.sendall(b"\n")
                 return True
             except socket.timeout as exception:
                 self.rigctrlsocket = None
@@ -197,6 +202,7 @@ class CAT:
                 self.rigctrlsocket.settimeout(1)
                 self.rigctrlsocket.sendall(bytes(f"M {mode} 0\n", "utf-8"))
                 _ = self.rigctrlsocket.recv(1024).decode().strip()
+                self.rigctrlsocket.sendall(b"\n")
                 return True
             except socket.timeout as exception:
                 self.rigctrlsocket = None
