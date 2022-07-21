@@ -1,4 +1,4 @@
-"""library to handle cat control"""
+"""CAT interface abstraction"""
 import logging
 import socket
 import xmlrpc.client
@@ -8,85 +8,94 @@ class CAT:
     """CAT control rigctld or flrig"""
 
     def __init__(self, interface: str, host: str, port: int) -> None:
-        """initializes cat"""
+        """
+        Computer Aided Tranceiver abstraction class.
+        Offers a normalized rigctld or flrig interface.
+
+        Takes 3 inputs to setup the class.
+
+        A string defining the type of interface, either 'flrig' or 'rigctld'.
+
+        A string defining the host, example: 'localhost' or '127.0.0.1'
+
+        An interger defining the network port used.
+        Commonly 12345 for flrig, or 4532 for rigctld.
+
+        Exposed methods are:
+
+        get_vfo()
+
+        get_mode()
+
+        get_power()
+
+        set_vfo()
+
+        set_mode()
+
+        set_power()
+
+        A variable 'online' is set to True if no error was encountered,
+        otherwise False.
+        """
         self.server = None
         self.rigctrlsocket = None
         self.interface = interface.lower()
         self.host = host
         self.port = port
+        self.online = False
         if self.interface == "flrig":
             target = f"http://{host}:{port}"
-            logging.info("cat_init: %s", target)
+            logging.debug("%s", target)
             self.server = xmlrpc.client.ServerProxy(target)
         if self.interface == "rigctld":
             self.__initialize_rigctrld()
 
     def __initialize_rigctrld(self):
-        logging.warning("initializing rigctrld")
         try:
             self.rigctrlsocket = socket.socket()
             self.rigctrlsocket.settimeout(0.5)
             self.rigctrlsocket.connect((self.host, self.port))
-        except socket.timeout as exception:
-            logging.warning("Socket TimeOut %s", exception)
-            if self.rigctrlsocket is not None:
-                logging.warning("Closing Socket")
-                self.rigctrlsocket.close()
+            logging.debug("Connected to rigctrld")
+            self.online = True
+        except ConnectionRefusedError as exception:
             self.rigctrlsocket = None
-
-        except socket.error as exception:
-            logging.warning("Socket Error %s", exception)
-            if self.rigctrlsocket is not None:
-                logging.warning("Closing Socket")
-                self.rigctrlsocket.close()
-            self.rigctrlsocket = None
+            self.online = False
+            logging.debug("%s", exception)
 
     def get_vfo(self) -> str:
         """Poll the radio for current vfo using the interface"""
         vfo = ""
         if self.interface == "flrig":
             vfo = self.__getvfo_flrig()
-            logging.warning("%s", vfo)
+            logging.debug("%s", vfo)
         if self.interface == "rigctld":
             vfo = self.__getvfo_rigctld()
-            logging.warning("%s", vfo)
+            logging.debug("%s", vfo)
             if "RPRT -" in vfo:
                 vfo = ""
-                self.rigctrlsocket = None
         return vfo
 
     def __getvfo_flrig(self) -> str:
         """Poll the radio using flrig"""
         try:
+            self.online = True
             return self.server.rig.get_vfo()
         except ConnectionRefusedError as exception:
-            logging.warning("%s", exception)
-        except xmlrpc.client.Fault as exception:
-            logging.warning("%d, %s", exception.faultCode, exception.faultString)
+            self.online = False
+            logging.debug("getvfo_flrig: %s", exception)
         return ""
 
     def __getvfo_rigctld(self) -> str:
         """Returns VFO freq returned from rigctld"""
-        if self.rigctrlsocket is None:
-            self.__initialize_rigctrld()
-        if not self.rigctrlsocket is None:
+        if self.rigctrlsocket:
             try:
-                self.rigctrlsocket.settimeout(1)
-                self.rigctrlsocket.sendall(b"f\n")
-                output = self.rigctrlsocket.recv(1024).decode().strip()
-                self.rigctrlsocket.sendall(b"\n")
-                return output
-            except socket.timeout as exception:
-                logging.warning("Socket TimeOut %s", exception)
-                if self.rigctrlsocket is not None:
-                    logging.warning("Closing Socket")
-                    self.rigctrlsocket.close()
-                self.rigctrlsocket = None
+                self.online = True
+                self.rigctrlsocket.send(b"\nf\n")
+                return self.rigctrlsocket.recv(1024).decode().strip()
             except socket.error as exception:
-                logging.warning("Socket Error %s", exception)
-                if self.rigctrlsocket is not None:
-                    logging.warning("Closing Socket")
-                    self.rigctrlsocket.close()
+                self.online = False
+                logging.debug("getvfo_rigctld: %s", exception)
                 self.rigctrlsocket = None
             return ""
 
@@ -95,50 +104,72 @@ class CAT:
 
     def get_mode(self) -> str:
         """Returns the current mode filter width of the radio"""
+        mode = ""
         if self.interface == "flrig":
-            return self.__getmode_flrig()
+            mode = self.__getmode_flrig()
         if self.interface == "rigctld":
-            return self.__getmode_rigctld()
-        return ""
+            mode = self.__getmode_rigctld()
+        logging.debug("%s", mode)
+        return mode
 
     def __getmode_flrig(self) -> str:
         """Returns mode via flrig"""
         try:
+            self.online = True
             return self.server.rig.get_mode()
         except ConnectionRefusedError as exception:
-            logging.warning("%s", exception)
+            self.online = False
+            logging.debug("%s", exception)
         return ""
 
     def __getmode_rigctld(self) -> str:
-        """Returns mode via rigctld"""
-        if self.rigctrlsocket is None:
-            self.__initialize_rigctrld()
-        if not self.rigctrlsocket is None:
+        """Returns mode vai rigctld"""
+        if self.rigctrlsocket:
             try:
-                self.rigctrlsocket.settimeout(1)
-                self.rigctrlsocket.sendall(b"m\n")
-                output = self.rigctrlsocket.recv(1024).decode().strip().split()[0]
-                self.rigctrlsocket.sendall(b"\n")
-                return output
+                self.online = True
+                self.rigctrlsocket.send(b"m\n")
+                mode = self.rigctrlsocket.recv(1024).decode()
+                logging.debug("%s", mode)
+                mode = mode.strip().split()[0]
+                return mode
             except IndexError as exception:
-                logging.warning("IndexError %s", exception)
-                if self.rigctrlsocket is not None:
-                    logging.warning("Closing Socket")
-                    self.rigctrlsocket.close()
-                self.rigctrlsocket = None
-            except socket.timeout as exception:
-                logging.warning("Socket TimeOut %s", exception)
-                if self.rigctrlsocket is not None:
-                    logging.warning("Closing Socket")
-                    self.rigctrlsocket.close()
-                self.rigctrlsocket = None
+                logging.debug("%s", exception)
             except socket.error as exception:
-                logging.warning("Socket Error %s", exception)
-                if self.rigctrlsocket is not None:
-                    logging.warning("Closing Socket")
-                    self.rigctrlsocket.close()
+                self.online = False
+                logging.debug("%s", exception)
                 self.rigctrlsocket = None
+            return ""
+        self.__initialize_rigctrld()
         return ""
+
+    def get_power(self):
+        """Get power level from rig"""
+        if self.interface == "flrig":
+            return self.__getpower_flrig()
+        if self.interface == "rigctld":
+            return self.__getpower_rigctld()
+        return False
+
+    def __getpower_flrig(self):
+        try:
+            self.online = True
+            return self.server.rig.get_power()
+        except ConnectionRefusedError as exception:
+            self.online = False
+            logging.debug("getpower_flrig: %s", exception)
+            return ""
+
+    def __getpower_rigctld(self):
+        if self.rigctrlsocket:
+            try:
+                self.online = True
+                self.rigctrlsocket.send(b"l RFPOWER\n")
+                return int(float(self.rigctrlsocket.recv(1024).decode().strip()) * 100)
+            except socket.error as exception:
+                self.online = False
+                logging.debug("getpower_rigctld: %s", exception)
+                self.rigctrlsocket = None
+            return ""
 
     def set_vfo(self, freq: str) -> bool:
         """Sets the radios vfo"""
@@ -151,30 +182,27 @@ class CAT:
     def __setvfo_flrig(self, freq: str) -> bool:
         """Sets the radios vfo"""
         try:
+            self.online = True
             return self.server.rig.set_frequency(float(freq))
         except ConnectionRefusedError as exception:
-            logging.warning("%s", exception)
+            self.online = False
+            logging.debug("setvfo_flrig: %s", exception)
         return False
 
     def __setvfo_rigctld(self, freq: str) -> bool:
         """sets the radios vfo"""
-        if self.rigctrlsocket is None:
-            self.__initialize_rigctrld()
-        if not self.rigctrlsocket is None:
+        if self.rigctrlsocket:
             try:
-                self.rigctrlsocket.settimeout(1)
-                self.rigctrlsocket.sendall(bytes(f"F {freq}\n", "utf-8"))
+                self.online = True
+                self.rigctrlsocket.send(bytes(f"F {freq}\n", "utf-8"))
                 _ = self.rigctrlsocket.recv(1024).decode().strip()
-                self.rigctrlsocket.sendall(b"\n")
                 return True
-            except socket.timeout as exception:
-                self.rigctrlsocket = None
-                logging.warning("Socket TimeOut %s", exception)
-                return False
             except socket.error as exception:
-                logging.warning("Socket Error %s", exception)
+                self.online = False
+                logging.debug("setvfo_rigctld: %s", exception)
                 self.rigctrlsocket = None
                 return False
+        self.__initialize_rigctrld()
         return False
 
     def set_mode(self, mode: str) -> bool:
@@ -188,28 +216,53 @@ class CAT:
     def __setmode_flrig(self, mode: str) -> bool:
         """Sets the radios mode"""
         try:
+            self.online = True
             return self.server.rig.set_mode(mode)
         except ConnectionRefusedError as exception:
-            logging.warning("%s", exception)
+            self.online = False
+            logging.debug("setmode_flrig: %s", exception)
         return False
 
     def __setmode_rigctld(self, mode: str) -> bool:
         """sets the radios mode"""
-        if self.rigctrlsocket is None:
-            self.__initialize_rigctrld()
-        if not self.rigctrlsocket is None:
+        if self.rigctrlsocket:
             try:
-                self.rigctrlsocket.settimeout(1)
-                self.rigctrlsocket.sendall(bytes(f"M {mode} 0\n", "utf-8"))
+                self.online = True
+                self.rigctrlsocket.send(bytes(f"M {mode} 0\n", "utf-8"))
                 _ = self.rigctrlsocket.recv(1024).decode().strip()
-                self.rigctrlsocket.sendall(b"\n")
                 return True
-            except socket.timeout as exception:
-                self.rigctrlsocket = None
-                logging.warning("Socket TimeOut %s", exception)
-                return False
             except socket.error as exception:
-                logging.warning("Socket Error %s", exception)
+                self.online = False
+                logging.debug("setmode_rigctld: %s", exception)
                 self.rigctrlsocket = None
                 return False
+        self.__initialize_rigctrld()
         return False
+
+    def set_power(self, power):
+        """Sets the radios power"""
+        if self.interface == "flrig":
+            return self.__setpower_flrig(power)
+        if self.interface == "rigctld":
+            return self.__setpower_rigctld(power)
+        return False
+
+    def __setpower_flrig(self, power):
+        try:
+            self.online = True
+            return self.server.rig.set_power(power)
+        except ConnectionRefusedError as exception:
+            self.online = False
+            logging.debug("setmode_flrig: %s", exception)
+            return False
+
+    def __setpower_rigctld(self, power):
+        if power.isnumeric() and int(power) >= 1 and int(power) <= 100:
+            rig_cmd = bytes(f"L RFPOWER {str(float(power) / 100)}\n", "utf-8")
+            try:
+                self.online = True
+                self.rigctrlsocket.send(rig_cmd)
+                _ = self.rigctrlsocket.recv(1024).decode().strip()
+            except socket.error:
+                self.online = False
+                self.rigctrlsocket = None
