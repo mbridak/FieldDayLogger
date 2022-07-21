@@ -22,5 +22,7 @@ file with a band/mode/power breakdown which you can use when you submit your
 logs to the ARRL online [here](http://field-day.arrl.org/fdentry.php). An ADIF 
 file will also be generated so you can merge contacts into your normal Log.
 
+Read the manual [here](Manual.md)
+
 ![Picture of main screen](pics/loggerscreenshot.png)
 
