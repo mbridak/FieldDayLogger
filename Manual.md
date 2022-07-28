@@ -30,7 +30,7 @@ Install Python 3, then two required libraries.
 
 If you're the Ubuntu/Debian type you can:
 
-`sudo apt install python3-pyqt5 python3-requests`
+`sudo apt install python3-pyqt5 python3-requests python3-bs4`
 
 You can install libraries via pip:
 
