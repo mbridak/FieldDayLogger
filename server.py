@@ -42,7 +42,7 @@ def send_pulse():
 
 DB = DataBase("server_database.db")
 
-MULTICAST_PORT = 2237
+MULTICAST_PORT = 2239
 MULTICAST_GROUP = "224.1.1.1"
 INTERFACE_IP = "0.0.0.0"
 

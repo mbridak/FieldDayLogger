@@ -11,7 +11,7 @@ from json import dumps, loads
 def main():
     """Wee"""
     MULTICAST_GROUP = "224.1.1.1"
-    MULTICAST_PORT = 2237
+    MULTICAST_PORT = 2239
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     while True:

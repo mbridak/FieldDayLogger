@@ -25,6 +25,9 @@ import socket
 import sys
 import logging
 import threading
+import uuid
+import queue
+import time
 
 import requests
 from PyQt5.QtNetwork import QUdpSocket, QHostAddress
@@ -38,7 +41,6 @@ from lib.settings import Settings
 from lib.database import DataBase
 from lib.cwinterface import CW
 from lib.version import __version__
-
 
 
 def relpath(filename):
@@ -114,6 +116,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__(*args, **kwargs)
         uic.loadUi(self.relpath("data/main.ui"), self)
         self.db = DataBase(self.database)
+        self.udp_fifo = queue.Queue()
         self.listWidget.itemDoubleClicked.connect(self.qsoclicked)
         self.callsign_entry.textEdited.connect(self.calltest)
         self.class_entry.textEdited.connect(self.classtest)
@@ -198,9 +201,47 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ft8dupechecktimer = QtCore.QTimer()
         self.ft8dupechecktimer.timeout.connect(self.ft8dupecheck)
         self.ft8dupechecktimer.start(1000)
+
+        # ft8 udp server
         self.udp_socket = QUdpSocket()
         self.udp_socket.bind(QHostAddress.LocalHost, 2237)
         self.udp_socket.readyRead.connect(self.on_udp_socket_ready_read)
+
+        # group upd server
+        multicast_port = 2239
+        multicast_group = "224.1.1.1"
+        interface_ip = "0.0.0.0"
+
+        self.server_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.server_udp.bind(("", multicast_port))
+        mreq = socket.inet_aton(multicast_group) + socket.inet_aton(interface_ip)
+        self.server_udp.setsockopt(
+            socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, bytes(mreq)
+        )
+        self.server_udp.settimeout(0.01)
+
+        self._udpwatch = threading.Thread(
+            target=self.watch_udp,
+            daemon=True,
+        )
+        self._udpwatch.start()
+
+    def watch_udp(self):
+        """watch udp"""
+        while True:
+            try:
+                datagram = self.server_udp.recv(1500)
+            except TimeoutError:
+                time.sleep(1)
+                continue
+            if datagram:
+                self.udp_fifo.put(datagram)
+
+    def check_udp_queue(self):
+        """check the upd queue"""
+        while not self.udp_fifo.empty():
+            print(f"[{time.time()}] {self.udp_fifo.get()}")
 
     def clearcontactlookup(self):
         """clearout the contact lookup"""
@@ -457,8 +498,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.run_button.setText("Run")
         self.read_cw_macros()
 
-
-
     def read_cw_macros(self):
         """
         Reads in the CW macros, firsts it checks to see if the file exists. If it does not,
@@ -466,9 +505,7 @@ class MainWindow(QtWidgets.QMainWindow):
         temp directory this is running from... In theory.
         """
 
-        if (
-            not Path("./cwmacros_fd.txt").exists()
-        ):
+        if not Path("./cwmacros_fd.txt").exists():
             logging.info("read_cw_macros: copying default macro file.")
             copyfile(self.relpath("data/cwmacros_fd.txt"), "./cwmacros_fd.txt")
         with open("./cwmacros_fd.txt", "r", encoding="utf-8") as file_descriptor:
@@ -1570,7 +1607,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Updates the xplanet marker file with a list of logged contact lat & lon
         """
-        if self.preference['usemarker']:
+        if self.preference["usemarker"]:
             filename = str(Path.home()) + "/" + self.markerfile
             try:
                 list_of_grids = self.db.get_grids()
@@ -2116,5 +2153,9 @@ if __name__ == "__main__":
     timer = QtCore.QTimer()
     timer.timeout.connect(window.update_time)
     timer.start(1000)
+
+    timer2 = QtCore.QTimer()
+    timer2.timeout.connect(window.check_udp_queue)
+    timer2.start(1000)
 
     app.exec()
