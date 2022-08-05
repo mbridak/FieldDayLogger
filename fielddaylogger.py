@@ -208,14 +208,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_socket.readyRead.connect(self.on_udp_socket_ready_read)
 
         # group upd server
-        multicast_port = 2239
-        multicast_group = "224.1.1.1"
+        self.multicast_port = 2239
+        self.multicast_group = "224.1.1.1"
         interface_ip = "0.0.0.0"
 
         self.server_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.server_udp.bind(("", multicast_port))
-        mreq = socket.inet_aton(multicast_group) + socket.inet_aton(interface_ip)
+        self.server_udp.bind(("", self.multicast_port))
+        mreq = socket.inet_aton(self.multicast_group) + socket.inet_aton(interface_ip)
         self.server_udp.setsockopt(
             socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, bytes(mreq)
         )
@@ -1190,6 +1190,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if not self.cat_control:
             self.oldfreq = int(float(self.fakefreq(self.band, self.mode)) * 1000)
+        unique_id = uuid.uuid4().hex
         contact = (
             self.callsign_entry.text(),
             self.class_entry.text(),
@@ -1200,8 +1201,27 @@ class MainWindow(QtWidgets.QMainWindow):
             int(self.power_selector.value()),
             self.contactlookup["grid"],
             self.contactlookup["name"],
+            unique_id,
         )
         self.db.log_contact(contact)
+
+        contact = {
+            "cmd": "POST",
+            "hiscall": self.callsign_entry.text(),
+            "class": self.class_entry.text(),
+            "section": self.section_entry.text(),
+            "mode": self.mode,
+            "band": self.band,
+            "frequency": self.oldfreq,
+            "power": int(self.power_selector.value()),
+            "grid": self.contactlookup["grid"],
+            "opname": self.contactlookup["name"],
+            "station": self.preference["mycall"],
+            "unique_id": unique_id,
+        }
+        bytesToSend = bytes(dumps(contact, indent=4), encoding="ascii")
+        self.server_udp.sendto(bytesToSend, (self.multicast_group, self.multicast_port))
+
         self.sections()
         self.stats()
         self.updatemarker()
@@ -1272,6 +1292,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 band,
                 mode,
                 power,
+                _,
                 _,
                 _,
             ) = contact
