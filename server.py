@@ -113,7 +113,8 @@ while 1:
             )
 
         if json_data.get("cmd") == "PING":
-            print(f"[{timestamp}] {json_data}\n")
+            if not json_data.get("host"):
+                print(f"[{timestamp}] {json_data}\n")
             if json_data.get("call"):
                 people[
                     json_data.get("call")
