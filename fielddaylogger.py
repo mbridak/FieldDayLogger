@@ -228,7 +228,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._udpwatch.start()
 
     def watch_udp(self):
-        """watch udp"""
+        """Puts UDP datagrams in a FIFO queue"""
         while True:
             try:
                 datagram = self.server_udp.recv(1500)
@@ -239,7 +239,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.udp_fifo.put(datagram)
 
     def check_udp_queue(self):
-        """check the upd queue"""
+        """checks the UDP datagram queue."""
         while not self.udp_fifo.empty():
             print(f"[{time.time()}] {self.udp_fifo.get()}")
 
