@@ -30,7 +30,8 @@ class DataBase:
                     "mode text NOT NULL, "
                     "power INTEGER NOT NULL, "
                     "grid text NOT NULL, "
-                    "opname text NOT NULL);"
+                    "opname text NOT NULL, "
+                    "unique_id text NOT NULL);"
                 )
                 cursor.execute(sql_table)
                 conn.commit()
@@ -47,14 +48,28 @@ class DataBase:
                 sql = (
                     "INSERT INTO contacts"
                     "(callsign, class, section, date_time, frequency, "
-                    "band, mode, power, grid, opname) "
-                    "VALUES(?,?,?,datetime('now'),?,?,?,?,?,?)"
+                    "band, mode, power, grid, opname, unique_id) "
+                    "VALUES(?,?,?,datetime('now'),?,?,?,?,?,?,?)"
                 )
                 cur = conn.cursor()
                 cur.execute(sql, logme)
                 conn.commit()
         except sqlite3.Error as exception:
             logging.debug("DataBase log_contact: %s", exception)
+
+    def get_unique_id(self, contact) -> str:
+        """get unique id"""
+        unique_id = ""
+        if contact:
+            try:
+                with sqlite3.connect(self.database) as conn:
+                    sql = f"select unique_id from contacts where id={int(contact)}"
+                    cursor = conn.cursor()
+                    cursor.execute(sql)
+                    unique_id = str(cursor.fetchone()[0])
+            except sqlite3.Error as exception:
+                logging.debug("%s", exception)
+        return unique_id
 
     def delete_contact(self, contact) -> None:
         """Deletes a contact from the db."""
