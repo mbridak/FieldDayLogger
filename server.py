@@ -88,13 +88,16 @@ while 1:
                     json_data.get("station"),
                 )
             )
+            continue
 
         if json_data.get("cmd") == "GET":
             print(f"[{timestamp}] {json_data}\n")
+            continue
 
         if json_data.get("cmd") == "DELETE":
             print(f"[{timestamp}] {json_data}\n")
             DB.delete_contact(json_data.get("unique_id"))
+            continue
 
         if json_data.get("cmd") == "UPDATE":
             print(f"[{timestamp}] {json_data}\n")
@@ -108,9 +111,11 @@ while 1:
                     json_data.get("mode"),
                     json_data.get("power"),
                     json_data.get("station"),
+                    json_data.get("frequency"),
                     json_data.get("unique_id"),
                 )
             )
+            continue
 
         if json_data.get("cmd") == "PING":
             if not json_data.get("host"):
@@ -120,6 +125,7 @@ while 1:
                     json_data.get("call")
                 ] = f"{json_data.get('band')} {json_data.get('mode')}"
                 print(people)
+            continue
 
     except UnicodeDecodeError as err:
         print(f"Not JSON: {err}\n{payload}\n")
