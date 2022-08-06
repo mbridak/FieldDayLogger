@@ -1683,6 +1683,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         _,
                         grid,
                         opname,
+                        _,
                     ) = contact
                     if mode == "DI":
                         mode = "FT8"
@@ -1810,6 +1811,7 @@ class MainWindow(QtWidgets.QMainWindow):
             _,
             grid,
             opname,
+            _,
         ) = contact
         if mode == "DI":
             mode = "FT8"
@@ -1940,6 +1942,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         _,
                         _,
                         _,
+                        _,
                     ) = contact
                     if mode == "DI":
                         mode = "DG"
@@ -2018,6 +2021,7 @@ class EditQSODialog(QtWidgets.QDialog):
         now = QtCore.QDateTime.fromString(date_time, "yyyy-MM-dd hh:mm:ss")
         self.editDateTime.setDateTime(now)
         self.database = thedatabase
+        self.unique_id = self.database.get_unique_id(self.theitem)
 
     @staticmethod
     def relpath(filename: str) -> str:
@@ -2045,11 +2049,33 @@ class EditQSODialog(QtWidgets.QDialog):
             self.theitem,
         ]
         self.database.change_contact(qso)
+        command = {"cmd": "UPDATE"}
+        command["hiscall"] = self.editCallsign.text().upper()
+        command["class"] = self.editClass.text().upper()
+        command["section"] = self.editSection.text().upper()
+        command["date_time"] = self.editDateTime.text()
+        command["frequency"] = self.editFreq.text()
+        command["band"] = self.editBand.currentText()
+        command["mode"] = self.editMode.currentText().upper()
+        command["power"] = self.editPower.value()
+        command["station"] = window.preference["mycall"].upper()
+        command["unique_id"] = self.unique_id
+        bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
+        window.server_udp.sendto(
+            bytesToSend, (window.multicast_group, window.multicast_port)
+        )
         self.change.lineChanged.emit()
 
     def delete_contact(self):
         """delete the contact"""
         self.database.delete_contact(self.theitem)
+        command = {}
+        command["cmd"] = "DELETE"
+        command["unique_id"] = self.unique_id
+        bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
+        window.server_udp.sendto(
+            bytesToSend, (window.multicast_group, window.multicast_port)
+        )
         self.change.lineChanged.emit()
         self.close()  # try:
 
