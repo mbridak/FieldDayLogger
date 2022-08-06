@@ -4,6 +4,7 @@
 import logging
 import socket
 import time
+import os
 import threading
 
 from json import JSONDecodeError, dumps, loads
@@ -31,6 +32,36 @@ if Path("./debug").exists():
 else:
     logging.basicConfig(level=logging.CRITICAL)
 
+DB = DataBase("server_database.db")
+
+MULTICAST_PORT = 2239
+MULTICAST_GROUP = "224.1.1.1"
+INTERFACE_IP = "0.0.0.0"
+
+OURCALL = "XXXX"
+OURCLASS = "XX"
+OURSECTION = "XXX"
+ALTPOWER = 0
+
+try:
+    if os.path.exists("./server_preferences.json"):
+        with open(
+            "./server_preferences.json", "rt", encoding="utf-8"
+        ) as file_descriptor:
+            preference = loads(file_descriptor.read())
+            logging.info("%s", preference)
+            MULTICAST_PORT = preference.get("multicast_port")
+            MULTICAST_GROUP = preference.get("mullticast_group")
+            INTERFACE_IP = preference.get("interface_ip")
+            OURCALL = preference.get("ourcall")
+            OURCLASS = preference.get("ourclass")
+            OURSECTION = preference.get("oursection")
+            ALTPOWER = preference.get("altpower")
+    else:
+        print("-=* No Settings File Using Defaults *=-")
+except IOError as exception:
+    logging.critical("%s", exception)
+
 
 def send_pulse():
     """send heartbeat"""
@@ -39,12 +70,6 @@ def send_pulse():
         s.sendto(pulse, (MULTICAST_GROUP, MULTICAST_PORT))
         time.sleep(1)
 
-
-DB = DataBase("server_database.db")
-
-MULTICAST_PORT = 2239
-MULTICAST_GROUP = "224.1.1.1"
-INTERFACE_IP = "0.0.0.0"
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
