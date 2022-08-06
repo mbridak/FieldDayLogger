@@ -2,5 +2,8 @@
     "ourcall": "W1AW",
     "ourclass": "3A",
     "oursection": "ORG",
-    "altpower": 0
+    "altpower": 0,
+    "mullticast_group": "224.1.1.1",
+    "multicast_port": 2239,
+    "interface_ip": "0.0.0.0"
 }
