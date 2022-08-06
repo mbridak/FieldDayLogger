@@ -72,21 +72,19 @@ class DataBase:
 
     def change_contact(self, qso):
         """Update an existing contact."""
-        print(qso)
         try:
             with sqlite3.connect(self.database) as conn:
                 sql = (
                     f"update contacts set callsign = '{qso[0]}', class = '{qso[1]}', "
                     f"section = '{qso[2]}', date_time = '{qso[3]}', band = '{qso[4]}', "
-                    f"mode = '{qso[5]}', power = '{qso[6]}', station = '{qso[7]}' "
-                    f"where unique_id='{qso[8]}'"
+                    f"mode = '{qso[5]}', power = '{qso[6]}', station = '{qso[7]}', "
+                    f"frequency = '{qso[8]}' where unique_id='{qso[9]}';"
                 )
-                print(sql)
                 cur = conn.cursor()
                 cur.execute(sql)
                 conn.commit()
         except sqlite3.Error as exception:
-            logging.debug("DataBase change_contact: %s", exception)
+            logging.critical("DataBase change_contact: %s", exception)
 
     def stats(self) -> tuple:
         """
