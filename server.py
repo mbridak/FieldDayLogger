@@ -7,7 +7,7 @@ import time
 import os
 import threading
 
-from json import JSONDecodeError, dumps, loads
+from json import JSONDecodeError, loads
 from pathlib import Path
 from lib.server_database import DataBase
 from lib.version import __version__
@@ -62,11 +62,24 @@ try:
 except IOError as exception:
     logging.critical("%s", exception)
 
+print(
+    f"Field Day aggregation server v{__version__}\n\n"
+    f"          Network information\n"
+    f"Multicast Group: {MULTICAST_GROUP}\n"
+    f"Multicast Port:  {MULTICAST_PORT}\n"
+    f"Interface IP:    {INTERFACE_IP}\n\n"
+    f"           Group Information\n"
+    f"Call:     {OURCALL}\n"
+    f"Class:    {OURCLASS}\n"
+    f"Section:  {OURSECTION}\n"
+    f"AltPower: {bool(ALTPOWER)}\n"
+)
+
 
 def send_pulse():
     """send heartbeat"""
     while True:
-        pulse = b'{\n    "cmd": "PING",\n    "host": "server"\n}'
+        pulse = b'{"cmd": "PING", "host": "server"}'
         s.sendto(pulse, (MULTICAST_GROUP, MULTICAST_PORT))
         time.sleep(1)
 
@@ -89,14 +102,10 @@ people = {}
 while 1:
     try:
         payload = s.recv(1500)
-        if payload == b"Alive":
-            continue
         json_data = loads(payload.decode())
         timestamp = time.time()
 
         if json_data.get("cmd") == "POST":
-
-            print(f"[{timestamp}] {json_data}\n")
 
             DB.log_contact(
                 (
@@ -113,6 +122,10 @@ while 1:
                     json_data.get("station"),
                 )
             )
+            print(
+                f"[{timestamp}] New Contact {json_data.get('station')}: {json_data.get('hiscall')} "
+                f"{json_data.get('band')}M {json_data.get('mode')}"
+            )
             continue
 
         if json_data.get("cmd") == "GET":
@@ -120,12 +133,15 @@ while 1:
             continue
 
         if json_data.get("cmd") == "DELETE":
-            print(f"[{timestamp}] {json_data}\n")
+            print(f"[{timestamp}] Deleting: {json_data.get('unique_id')}")
             DB.delete_contact(json_data.get("unique_id"))
             continue
 
         if json_data.get("cmd") == "UPDATE":
-            print(f"[{timestamp}] {json_data}\n")
+            print(
+                f"[{timestamp}] Updating {json_data.get('unique_id')} {json_data.get('hiscall')} "
+                f"{json_data.get('band')} {json_data.get('mode')}"
+            )
             DB.change_contact(
                 (
                     json_data.get("hiscall"),
@@ -144,7 +160,10 @@ while 1:
 
         if json_data.get("cmd") == "PING":
             if not json_data.get("host"):
-                print(f"[{timestamp}] {json_data}\n")
+                print(
+                    f"[{timestamp}] Ping: {json_data.get('call')} "
+                    f"{json_data.get('band')}M {json_data.get('band')}"
+                )
             if json_data.get("call"):
                 people[
                     json_data.get("call")
@@ -153,6 +172,6 @@ while 1:
             continue
 
     except UnicodeDecodeError as err:
-        print(f"Not JSON: {err}\n{payload}\n")
+        print(f"[{timestamp}] Not JSON: {err}\n{payload}\n")
     except JSONDecodeError as err:
-        print(f"Not JSON: {err}\n{payload}\n")
+        print(f"[{timestamp}] Not JSON: {err}\n{payload}\n")
