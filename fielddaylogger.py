@@ -189,11 +189,20 @@ class MainWindow(QtWidgets.QMainWindow):
             "cwtype": 0,
             "cwip": "localhost",
             "cwport": 6789,
+            "useserver": 0,
+            "multicast_group": "224.1.1.1",
+            "multicast_port": 2239,
+            "interface_ip": "0.0.0.0"
         }
         self.reference_preference = self.preference.copy()
         self.look_up = None
         self.cat_control = None
         self.cw = None
+        self.connect_to_server = False
+        self.multicast_group = None
+        self.multicast_port = None
+        self.interface_ip = None
+        self._udpwatch = None
         self.readpreferences()
         self.radiochecktimer = QtCore.QTimer()
         self.radiochecktimer.timeout.connect(self.poll_radio)
@@ -207,29 +216,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_socket.bind(QHostAddress.LocalHost, 2237)
         self.udp_socket.readyRead.connect(self.on_udp_socket_ready_read)
 
-        # group upd server
-        self.multicast_port = 2239
-        self.multicast_group = "224.1.1.1"
-        interface_ip = "0.0.0.0"
-
-        self.server_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.server_udp.bind(("", self.multicast_port))
-        mreq = socket.inet_aton(self.multicast_group) + socket.inet_aton(interface_ip)
-        self.server_udp.setsockopt(
-            socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, bytes(mreq)
-        )
-        self.server_udp.settimeout(0.01)
-
-        self._udpwatch = threading.Thread(
-            target=self.watch_udp,
-            daemon=True,
-        )
-        self._udpwatch.start()
 
     def watch_udp(self):
         """Puts UDP datagrams in a FIFO queue"""
-        while True:
+        while self.connect_to_server:
             try:
                 datagram = self.server_udp.recv(1500)
             except TimeoutError:
@@ -1080,20 +1070,18 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Restore preferences if they exist, otherwise create some sane defaults.
         """
-        logging.info("readpreferences:")
         try:
             if os.path.exists("./fd_preferences.json"):
                 with open(
                     "./fd_preferences.json", "rt", encoding="utf-8"
                 ) as file_descriptor:
                     self.preference = loads(file_descriptor.read())
-                    logging.info("reading: %s", self.preference)
             else:
                 with open(
                     "./fd_preferences.json", "wt", encoding="utf-8"
                 ) as file_descriptor:
                     file_descriptor.write(dumps(self.preference, indent=4))
-                    logging.info("writing: %s", self.preference)
+                    logging.info("No preference, writing dafult.")
         except IOError as exception:
             logging.critical("readpreferences: %s", exception)
         logging.info(self.preference)
@@ -1157,6 +1145,36 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.preference["cwport"],
                 )
                 self.cw.speed = 20
+
+            self.connect_to_server = self.preference.get("useserver")
+            self.multicast_group = self.preference.get("multicast_group")
+            self.multicast_port = self.preference.get("multicast_port")
+            self.interface_ip = self.preference.get("interface_ip")
+            # group upd server
+            logging.info("Use group server: %s", self.connect_to_server)
+            if self.connect_to_server:
+                logging.info(
+                    "Connecting: %s:%s %s",
+                    self.multicast_group,
+                    self.multicast_port,
+                    self.interface_ip
+                    )
+                self.server_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                self.server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                self.server_udp.bind(("", int(self.multicast_port)))
+                mreq = socket.inet_aton(self.multicast_group) + socket.inet_aton(self.interface_ip)
+                self.server_udp.setsockopt(
+                    socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, bytes(mreq)
+                )
+                self.server_udp.settimeout(0.01)
+
+                if self._udpwatch is None:
+                    self._udpwatch = threading.Thread(
+                        target=self.watch_udp,
+                        daemon=True,
+                    )
+                    self._udpwatch.start()
+
         except KeyError as err:
             logging.warning("Corrupt preference, %s, loading clean version.", err)
             self.preference = self.reference_preference.copy()
@@ -1171,7 +1189,6 @@ class MainWindow(QtWidgets.QMainWindow):
         Write preferences to json file.
         """
         try:
-            logging.info("writepreferences:")
             with open(
                 "./fd_preferences.json", "wt", encoding="utf-8"
             ) as file_descriptor:
@@ -1995,6 +2012,7 @@ class EditQSODialog(QtWidgets.QDialog):
         self.deleteButton.clicked.connect(self.delete_contact)
         self.buttonBox.accepted.connect(self.save_changes)
         self.change = QsoEdit()
+        self.unique_id = None
 
     def set_up(self, linetopass, thedatabase):
         """Set up variables"""
@@ -2165,7 +2183,6 @@ if __name__ == "__main__":
     app.setStyle("Fusion")
     font_dir = relpath("font")
     families = load_fonts_from_dir(os.fspath(font_dir))
-    logging.info(families)
     window = MainWindow()
     window.setWindowTitle(f"K6GTE Field Day Logger v{__version__}")
     window.show()
