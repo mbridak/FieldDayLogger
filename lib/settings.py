@@ -49,7 +49,7 @@ class Settings(QtWidgets.QDialog):
                 bool(self.preference.get("useserver"))
             )
             self.multicast_group.setText(self.preference.get("multicast_group"))
-            self.multicast_port.setText(self.preference.get("multicast_port"))
+            self.multicast_port.setText(str(self.preference.get("multicast_port")))
             self.interface_ip.setText(self.preference.get("interface_ip"))
 
     @staticmethod
