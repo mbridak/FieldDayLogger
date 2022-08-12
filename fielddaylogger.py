@@ -1237,7 +1237,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "unique_id": unique_id,
         }
         bytesToSend = bytes(dumps(contact, indent=4), encoding="ascii")
-        self.server_udp.sendto(bytesToSend, (self.multicast_group, self.multicast_port))
+        self.server_udp.sendto(bytesToSend, (self.multicast_group, int(self.multicast_port)))
 
         self.sections()
         self.stats()
@@ -2080,7 +2080,7 @@ class EditQSODialog(QtWidgets.QDialog):
         command["unique_id"] = self.unique_id
         bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
         window.server_udp.sendto(
-            bytesToSend, (window.multicast_group, window.multicast_port)
+            bytesToSend, (window.multicast_group, int(window.multicast_port))
         )
         self.change.lineChanged.emit()
 
@@ -2092,7 +2092,7 @@ class EditQSODialog(QtWidgets.QDialog):
         command["unique_id"] = self.unique_id
         bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
         window.server_udp.sendto(
-            bytesToSend, (window.multicast_group, window.multicast_port)
+            bytesToSend, (window.multicast_group, int(window.multicast_port))
         )
         self.change.lineChanged.emit()
         self.close()  # try:
