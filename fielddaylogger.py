@@ -252,9 +252,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 "station": self.preference["mycall"],
             }
             bytesToSend = bytes(dumps(update), encoding="ascii")
-            self.server_udp.sendto(
-                bytesToSend, (self.multicast_group, int(self.multicast_port))
-            )
+            try:
+                self.server_udp.sendto(
+                    bytesToSend, (self.multicast_group, int(self.multicast_port))
+                )
+            except OSError as err:
+                logging.warning("%s", err)
 
     def clearcontactlookup(self):
         """clearout the contact lookup"""
@@ -1263,9 +1266,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 "unique_id": unique_id,
             }
             bytesToSend = bytes(dumps(contact, indent=4), encoding="ascii")
-            self.server_udp.sendto(
-                bytesToSend, (self.multicast_group, int(self.multicast_port))
-            )
+            try:
+                self.server_udp.sendto(
+                    bytesToSend, (self.multicast_group, int(self.multicast_port))
+                )
+            except OSError as err:
+                logging.warning("%s", err)
 
         self.sections()
         self.stats()
@@ -2108,9 +2114,12 @@ class EditQSODialog(QtWidgets.QDialog):
             command["station"] = window.preference["mycall"].upper()
             command["unique_id"] = self.unique_id
             bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
-            window.server_udp.sendto(
-                bytesToSend, (window.multicast_group, int(window.multicast_port))
-            )
+            try:
+                window.server_udp.sendto(
+                    bytesToSend, (window.multicast_group, int(window.multicast_port))
+                )
+            except OSError as err:
+                logging.warning("%s", err)
         self.change.lineChanged.emit()
 
     def delete_contact(self):
@@ -2121,9 +2130,12 @@ class EditQSODialog(QtWidgets.QDialog):
             command["cmd"] = "DELETE"
             command["unique_id"] = self.unique_id
             bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
-            window.server_udp.sendto(
-                bytesToSend, (window.multicast_group, int(window.multicast_port))
-            )
+            try:
+                window.server_udp.sendto(
+                    bytesToSend, (window.multicast_group, int(window.multicast_port))
+                )
+            except OSError as err:
+                logging.warning("%s", err)
         self.change.lineChanged.emit()
         self.close()  # try:
 
