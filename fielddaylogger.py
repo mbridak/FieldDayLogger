@@ -15,7 +15,7 @@ GPL V3
 from math import radians, sin, cos, atan2, sqrt, asin, pi
 from pathlib import Path
 from datetime import datetime
-from json import dumps, loads
+from json import dumps, loads, JSONDecodeError
 from shutil import copyfile
 
 # from xmlrpc.client import ServerProxy, Error
@@ -230,7 +230,18 @@ class MainWindow(QtWidgets.QMainWindow):
     def check_udp_queue(self):
         """checks the UDP datagram queue."""
         while not self.udp_fifo.empty():
-            print(f"[{time.time()}] {self.udp_fifo.get()}")
+            datagram = self.udp_fifo.get()
+            try:
+                json_data = loads(datagram.decode())
+                print(f"[{time.time()}] {json_data}")
+            except UnicodeDecodeError as err:
+                print(f"Not Unicode: {err}\n{datagram}\n")
+                continue
+            except JSONDecodeError as err:
+                print(f"Not JSON: {err}\n{datagram}\n")
+                continue
+            if json_data.get("cmd") == "PING":
+                print(f"[{time.time()}] {json_data}")
 
     def clearcontactlookup(self):
         """clearout the contact lookup"""
