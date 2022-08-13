@@ -161,12 +161,12 @@ while 1:
         if json_data.get("cmd") == "PING":
             if not json_data.get("host"):
                 print(
-                    f"[{timestamp}] Ping: {json_data.get('call')} "
+                    f"[{timestamp}] Ping: {json_data.get('station')} "
                     f"{json_data.get('band')}M {json_data.get('band')}"
                 )
-            if json_data.get("call"):
+            if json_data.get("station"):
                 people[
-                    json_data.get("call")
+                    json_data.get("station")
                 ] = f"{json_data.get('band')} {json_data.get('mode')}"
                 print(people)
             continue
