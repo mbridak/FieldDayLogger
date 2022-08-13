@@ -162,7 +162,7 @@ while 1:
             if not json_data.get("host"):
                 print(
                     f"[{timestamp}] Ping: {json_data.get('station')} "
-                    f"{json_data.get('band')}M {json_data.get('band')}"
+                    f"{json_data.get('band')}M {json_data.get('mode')}"
                 )
             if json_data.get("station"):
                 people[
