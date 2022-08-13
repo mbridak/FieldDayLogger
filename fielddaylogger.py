@@ -192,7 +192,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "useserver": 0,
             "multicast_group": "224.1.1.1",
             "multicast_port": 2239,
-            "interface_ip": "0.0.0.0"
+            "interface_ip": "0.0.0.0",
         }
         self.reference_preference = self.preference.copy()
         self.look_up = None
@@ -215,7 +215,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_socket = QUdpSocket()
         self.udp_socket.bind(QHostAddress.LocalHost, 2237)
         self.udp_socket.readyRead.connect(self.on_udp_socket_ready_read)
-
 
     def watch_udp(self):
         """Puts UDP datagrams in a FIFO queue"""
@@ -1157,12 +1156,14 @@ class MainWindow(QtWidgets.QMainWindow):
                     "Connecting: %s:%s %s",
                     self.multicast_group,
                     self.multicast_port,
-                    self.interface_ip
-                    )
+                    self.interface_ip,
+                )
                 self.server_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 self.server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 self.server_udp.bind(("", int(self.multicast_port)))
-                mreq = socket.inet_aton(self.multicast_group) + socket.inet_aton(self.interface_ip)
+                mreq = socket.inet_aton(self.multicast_group) + socket.inet_aton(
+                    self.interface_ip
+                )
                 self.server_udp.setsockopt(
                     socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, bytes(mreq)
                 )
@@ -1222,22 +1223,25 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.db.log_contact(contact)
 
-        contact = {
-            "cmd": "POST",
-            "hiscall": self.callsign_entry.text(),
-            "class": self.class_entry.text(),
-            "section": self.section_entry.text(),
-            "mode": self.mode,
-            "band": self.band,
-            "frequency": self.oldfreq,
-            "power": int(self.power_selector.value()),
-            "grid": self.contactlookup["grid"],
-            "opname": self.contactlookup["name"],
-            "station": self.preference["mycall"],
-            "unique_id": unique_id,
-        }
-        bytesToSend = bytes(dumps(contact, indent=4), encoding="ascii")
-        self.server_udp.sendto(bytesToSend, (self.multicast_group, int(self.multicast_port)))
+        if self.connect_to_server:
+            contact = {
+                "cmd": "POST",
+                "hiscall": self.callsign_entry.text(),
+                "class": self.class_entry.text(),
+                "section": self.section_entry.text(),
+                "mode": self.mode,
+                "band": self.band,
+                "frequency": self.oldfreq,
+                "power": int(self.power_selector.value()),
+                "grid": self.contactlookup["grid"],
+                "opname": self.contactlookup["name"],
+                "station": self.preference["mycall"],
+                "unique_id": unique_id,
+            }
+            bytesToSend = bytes(dumps(contact, indent=4), encoding="ascii")
+            self.server_udp.sendto(
+                bytesToSend, (self.multicast_group, int(self.multicast_port))
+            )
 
         self.sections()
         self.stats()
@@ -2067,33 +2071,35 @@ class EditQSODialog(QtWidgets.QDialog):
             self.theitem,
         ]
         self.database.change_contact(qso)
-        command = {"cmd": "UPDATE"}
-        command["hiscall"] = self.editCallsign.text().upper()
-        command["class"] = self.editClass.text().upper()
-        command["section"] = self.editSection.text().upper()
-        command["date_time"] = self.editDateTime.text()
-        command["frequency"] = self.editFreq.text()
-        command["band"] = self.editBand.currentText()
-        command["mode"] = self.editMode.currentText().upper()
-        command["power"] = self.editPower.value()
-        command["station"] = window.preference["mycall"].upper()
-        command["unique_id"] = self.unique_id
-        bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
-        window.server_udp.sendto(
-            bytesToSend, (window.multicast_group, int(window.multicast_port))
-        )
+        if window.connect_to_server:
+            command = {"cmd": "UPDATE"}
+            command["hiscall"] = self.editCallsign.text().upper()
+            command["class"] = self.editClass.text().upper()
+            command["section"] = self.editSection.text().upper()
+            command["date_time"] = self.editDateTime.text()
+            command["frequency"] = self.editFreq.text()
+            command["band"] = self.editBand.currentText()
+            command["mode"] = self.editMode.currentText().upper()
+            command["power"] = self.editPower.value()
+            command["station"] = window.preference["mycall"].upper()
+            command["unique_id"] = self.unique_id
+            bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
+            window.server_udp.sendto(
+                bytesToSend, (window.multicast_group, int(window.multicast_port))
+            )
         self.change.lineChanged.emit()
 
     def delete_contact(self):
         """delete the contact"""
         self.database.delete_contact(self.theitem)
-        command = {}
-        command["cmd"] = "DELETE"
-        command["unique_id"] = self.unique_id
-        bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
-        window.server_udp.sendto(
-            bytesToSend, (window.multicast_group, int(window.multicast_port))
-        )
+        if window.connect_to_server:
+            command = {}
+            command["cmd"] = "DELETE"
+            command["unique_id"] = self.unique_id
+            bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
+            window.server_udp.sendto(
+                bytesToSend, (window.multicast_group, int(window.multicast_port))
+            )
         self.change.lineChanged.emit()
         self.close()  # try:
 
