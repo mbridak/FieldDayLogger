@@ -233,7 +233,6 @@ class MainWindow(QtWidgets.QMainWindow):
             datagram = self.udp_fifo.get()
             try:
                 json_data = loads(datagram.decode())
-                print(f"[{time.time()}] {json_data}")
             except UnicodeDecodeError as err:
                 print(f"Not Unicode: {err}\n{datagram}\n")
                 continue
@@ -242,6 +241,20 @@ class MainWindow(QtWidgets.QMainWindow):
                 continue
             if json_data.get("cmd") == "PING":
                 print(f"[{time.time()}] {json_data}")
+
+    def send_status_udp(self):
+        """Send status update to server"""
+        if self.connect_to_server:
+            update = {
+                "cmd": "PING",
+                "mode": self.mode,
+                "band": self.band,
+                "station": self.preference["mycall"],
+            }
+            bytesToSend = bytes(dumps(update), encoding="ascii")
+            self.server_udp.sendto(
+                bytesToSend, (self.multicast_group, int(self.multicast_port))
+            )
 
     def clearcontactlookup(self):
         """clearout the contact lookup"""
@@ -2238,5 +2251,9 @@ if __name__ == "__main__":
     timer2 = QtCore.QTimer()
     timer2.timeout.connect(window.check_udp_queue)
     timer2.start(1000)
+
+    timer3 = QtCore.QTimer()
+    timer3.timeout.connect(window.send_status_udp)
+    timer3.start(10000)
 
     app.exec()
