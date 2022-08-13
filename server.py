@@ -81,7 +81,7 @@ def send_pulse():
     while True:
         pulse = b'{"cmd": "PING", "host": "server"}'
         s.sendto(pulse, (MULTICAST_GROUP, MULTICAST_PORT))
-        time.sleep(1)
+        time.sleep(10)
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
