@@ -107,9 +107,10 @@ class MainWindow(QtWidgets.QMainWindow):
     datadict = {}
     dupdict = {}
     ft8dupe = ""
-    fkeys = dict()
+    fkeys = {}
     mygrid = None
     run_state = False
+    groupcall = None
 
     def __init__(self, *args, **kwargs):
         """Initialize"""
@@ -244,10 +245,41 @@ class MainWindow(QtWidgets.QMainWindow):
                 continue
             if json_data.get("cmd") == "PING":
                 print(f"[{time.time()}] {json_data}")
+            if json_data.get("cmd") == "RESPONSE":
+                if json_data.get("recipient") == self.preference.get("mycall"):
+                    if json_data.get("subject") == "HOSTINFO":
+                        print(
+                            f"Group: {json_data.get('groupcall')} ",
+                            f"Class: {json_data.get('groupclass')} ",
+                            f"Section: {json_data.get('groupsection')}",
+                        )
+                        self.groupcall = str(json_data.get('groupcall'))
+                        self.myclassEntry.setText(str(json_data.get('groupclass')))
+                        self.mysectionEntry.setText(str(json_data.get('groupsection')))
+                        self.changemyclass()
+                        self.changemysection()
+
+    def query_group(self):
+        """Sends request to server asking for group call/class/section."""
+        update = {
+            "cmd": "GROUPQUERY",
+            "station": self.preference["mycall"],
+        }
+        bytesToSend = bytes(dumps(update), encoding="ascii")
+        try:
+            self.server_udp.sendto(
+                bytesToSend, (self.multicast_group, int(self.multicast_port))
+            )
+        except OSError as err:
+            logging.warning("%s", err)
 
     def send_status_udp(self):
-        """Send status update to server"""
+        """Send status update to server informing of our band and mode"""
         if self.connect_to_server:
+            if self.groupcall is None and self.preference["mycall"] != "":
+                self.query_group()
+                return
+
             update = {
                 "cmd": "PING",
                 "mode": self.mode,
