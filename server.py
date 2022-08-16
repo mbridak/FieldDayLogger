@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 """This is the description"""
 
+from cmath import log
+import curses
+from curses import wrapper
+from curses.textpad import rectangle
 import logging
 import socket
 import time
+from time import gmtime, strftime
 import os
+import sys
 import threading
 
-from json import JSONDecodeError, loads
+from json import JSONDecodeError, loads, dumps
 from pathlib import Path
 from lib.server_database import DataBase
 from lib.version import __version__
@@ -31,6 +37,24 @@ if Path("./debug").exists():
     logging.debug("Debug started")
 else:
     logging.basicConfig(level=logging.CRITICAL)
+
+class Trafficlog():
+    """holds recent udp log traffic"""
+    def __init__(self):
+        self.items = []
+
+    def add_item(self, item):
+        """adds an item to the log and trims the log"""
+        self.items.append(item)
+        if len(self.items) > 9:
+            self.items = self.items[1:len(self.items)]
+
+    def get_log(self):
+        """returns a list of log items"""
+        return self.items
+
+
+
 
 DB = DataBase("server_database.db")
 
@@ -62,19 +86,6 @@ try:
 except IOError as exception:
     logging.critical("%s", exception)
 
-print(
-    f"Field Day aggregation server v{__version__}\n\n"
-    f"          Network information\n"
-    f"Multicast Group: {MULTICAST_GROUP}\n"
-    f"Multicast Port:  {MULTICAST_PORT}\n"
-    f"Interface IP:    {INTERFACE_IP}\n\n"
-    f"           Group Information\n"
-    f"Call:     {OURCALL}\n"
-    f"Class:    {OURCLASS}\n"
-    f"Section:  {OURSECTION}\n"
-    f"AltPower: {bool(ALTPOWER)}\n"
-)
-
 
 def send_pulse():
     """send heartbeat"""
@@ -99,79 +110,150 @@ _heartbeat.start()
 
 people = {}
 
-while 1:
+def comm_log():
+    """Display recent UDP traffic"""
     try:
-        payload = s.recv(1500)
-        json_data = loads(payload.decode())
-        timestamp = time.time()
+        logwindow = curses.newwin(10, 78, 9, 1)
+        rectangle(stdscr, 8,0,20,79)
+        logwindow.clear()
+        for a, b in enumerate(log.get_log()):
+            logwindow.addstr(a,0,b)
+        stdscr.refresh()
+        logwindow.refresh()
+    except curses.error as err:
+        pass
 
-        if json_data.get("cmd") == "POST":
+def main(_):
+    """Main loop"""
+    global stdscr
+    global UDP_log
+    global log
+    log = Trafficlog()
+    UDP_log = ()
+    os.environ.setdefault("ESCDELAY", "25")
+    stdscr = curses.initscr()
+    height, width = stdscr.getmaxyx()
+    if height < 24 or width < 80:
+        print("Terminal size needs to be at least 80x24")
+        curses.endwin()
+        sys.exit()
+    curses.start_color()
+    curses.use_default_colors()
+    if curses.can_change_color():
+        curses.init_color(curses.COLOR_MAGENTA, 1000, 640, 0)
+        curses.init_color(curses.COLOR_BLACK, 0, 0, 0)
+        curses.init_color(curses.COLOR_CYAN, 500, 500, 500)
+        curses.init_pair(1, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+        curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+        curses.init_pair(3, curses.COLOR_CYAN, curses.COLOR_BLACK)
+    curses.noecho()
+    curses.cbreak()
 
-            DB.log_contact(
-                (
-                    json_data.get("unique_id"),
-                    json_data.get("hiscall"),
-                    json_data.get("class"),
-                    json_data.get("section"),
-                    json_data.get("frequency"),
-                    json_data.get("band"),
-                    json_data.get("mode"),
-                    json_data.get("power"),
-                    json_data.get("grid"),
-                    json_data.get("opname"),
-                    json_data.get("station"),
+    stdscr.addstr(1, 1, f"            Field Day aggregation server v{__version__}")
+    stdscr.addstr(3, 1, "   Group information                      Network Information")
+    stdscr.addstr(4, 40, f"Multicast Group: {MULTICAST_GROUP}")
+    stdscr.addstr(5, 40, f"Multicast Port:  {MULTICAST_PORT}")
+    stdscr.addstr(6, 40, f"Interface IP:    {INTERFACE_IP}")
+
+    stdscr.addstr(4, 1, f"Call:     {OURCALL}")
+    stdscr.addstr(5, 1, f"Class:    {OURCLASS}")
+    stdscr.addstr(6, 1, f"Section:  {OURSECTION}")
+    stdscr.addstr(7, 1, f"AltPower: {bool(ALTPOWER)}")
+    stdscr.refresh()
+    while 1:
+        try:
+            payload = s.recv(1500)
+            json_data = loads(payload.decode())
+            timestamp = strftime("%H:%M:%S", gmtime())
+
+            if json_data.get("cmd") == "POST":
+
+                DB.log_contact(
+                    (
+                        json_data.get("unique_id"),
+                        json_data.get("hiscall"),
+                        json_data.get("class"),
+                        json_data.get("section"),
+                        json_data.get("frequency"),
+                        json_data.get("band"),
+                        json_data.get("mode"),
+                        json_data.get("power"),
+                        json_data.get("grid"),
+                        json_data.get("opname"),
+                        json_data.get("station"),
+                    )
                 )
-            )
-            print(
-                f"[{timestamp}] New Contact {json_data.get('station')}: {json_data.get('hiscall')} "
-                f"{json_data.get('band')}M {json_data.get('mode')}"
-            )
-            continue
-
-        if json_data.get("cmd") == "GET":
-            print(f"[{timestamp}] {json_data}\n")
-            continue
-
-        if json_data.get("cmd") == "DELETE":
-            print(f"[{timestamp}] Deleting: {json_data.get('unique_id')}")
-            DB.delete_contact(json_data.get("unique_id"))
-            continue
-
-        if json_data.get("cmd") == "UPDATE":
-            print(
-                f"[{timestamp}] Updating {json_data.get('unique_id')} {json_data.get('hiscall')} "
-                f"{json_data.get('band')} {json_data.get('mode')}"
-            )
-            DB.change_contact(
-                (
-                    json_data.get("hiscall"),
-                    json_data.get("class"),
-                    json_data.get("section"),
-                    json_data.get("date_time"),
-                    json_data.get("band"),
-                    json_data.get("mode"),
-                    json_data.get("power"),
-                    json_data.get("station"),
-                    json_data.get("frequency"),
-                    json_data.get("unique_id"),
-                )
-            )
-            continue
-
-        if json_data.get("cmd") == "PING":
-            if not json_data.get("host"):
-                print(
-                    f"[{timestamp}] Ping: {json_data.get('station')} "
+                log.add_item(
+                    f"[{timestamp}] New Contact {json_data.get('station')}: {json_data.get('hiscall')} "
                     f"{json_data.get('band')}M {json_data.get('mode')}"
                 )
-            if json_data.get("station"):
-                people[
-                    json_data.get("station")
-                ] = f"{json_data.get('band')} {json_data.get('mode')}"
-                print(people)
-            continue
+                comm_log()
+                continue
 
-    except UnicodeDecodeError as err:
-        print(f"[{timestamp}] Not JSON: {err}\n{payload}\n")
-    except JSONDecodeError as err:
-        print(f"[{timestamp}] Not JSON: {err}\n{payload}\n")
+            if json_data.get("cmd") == "GET":
+                log.add_item(f"[{timestamp}] {json_data}")
+                comm_log()
+                continue
+
+            if json_data.get("cmd") == "DELETE":
+                log.add_item(f"[{timestamp}] Deleting: {json_data.get('unique_id')}")
+                DB.delete_contact(json_data.get("unique_id"))
+                comm_log()
+                continue
+
+            if json_data.get("cmd") == "UPDATE":
+                log.add_item(
+                    f"[{timestamp}] Updating {json_data.get('unique_id')} {json_data.get('hiscall')} "
+                    f"{json_data.get('band')} {json_data.get('mode')}"
+                )
+                DB.change_contact(
+                    (
+                        json_data.get("hiscall"),
+                        json_data.get("class"),
+                        json_data.get("section"),
+                        json_data.get("date_time"),
+                        json_data.get("band"),
+                        json_data.get("mode"),
+                        json_data.get("power"),
+                        json_data.get("station"),
+                        json_data.get("frequency"),
+                        json_data.get("unique_id"),
+                    )
+                )
+                comm_log()
+                continue
+
+            if json_data.get("cmd") == "PING":
+                if not json_data.get("host"):
+                    log.add_item(
+                        f"[{timestamp}] Ping: {json_data.get('station')} "
+                        f"{json_data.get('band')}M {json_data.get('mode')}"
+                    )
+                    if json_data.get("station"):
+                        band_mode = f"{json_data.get('band')} {json_data.get('mode')}"
+                        if people.get(json_data.get("station")) != band_mode:
+                            people[json_data.get("station")] = band_mode
+                comm_log()
+                continue
+
+            if json_data.get("cmd") == "GROUPQUERY":
+                packet = {"cmd": "RESPONSE"}
+                packet["recipient"] = json_data.get("station")
+                packet["subject"] = "HOSTINFO"
+                packet["groupcall"] = OURCALL
+                packet["groupclass"] = OURCLASS
+                packet["groupsection"] = OURSECTION
+                bytesToSend = bytes(dumps(packet), encoding="ascii")
+                s.sendto(bytesToSend, (MULTICAST_GROUP, MULTICAST_PORT))
+                log.add_item(
+                    f"[{timestamp}] GROUPQUERY: {json_data.get('station')}"
+                    )
+                comm_log()
+
+
+        except UnicodeDecodeError as err:
+            print(f"[{timestamp}] Not JSON: {err}\n{payload}\n")
+        except JSONDecodeError as err:
+            print(f"[{timestamp}] Not JSON: {err}\n{payload}\n")
+
+wrapper(main)
