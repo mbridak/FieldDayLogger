@@ -29,7 +29,7 @@ if Path("./debug").exists():
         filemode="w+",
         format=(
             "[%(asctime)s] %(levelname)s %(module)s - "
-            "%(funcName)s Line %(lineno)d:\n%(message)s"
+            "%(funcName)s Line %(lineno)d: %(message)s"
         ),
         datefmt="%H:%M:%S",
         level=logging.DEBUG,
@@ -121,7 +121,7 @@ def comm_log():
         stdscr.refresh()
         logwindow.refresh()
     except curses.error as err:
-        pass
+        logging.debug("%s", err)
 
 def main(_):
     """Main loop"""
@@ -163,9 +163,18 @@ def main(_):
     while 1:
         try:
             payload = s.recv(1500)
-            json_data = loads(payload.decode())
+            try:
+                json_data = loads(payload.decode())
+            except UnicodeDecodeError as err:
+                the_error = f"Not Unicode: {err}\n{payload}\n"
+                logging.debug(the_error)
+                continue
+            except JSONDecodeError as err:
+                the_error = f"Not JSON: {err}\n{payload}\n"
+                logging.debug(the_error)
+                continue
+            logging.debug("%s", json_data)
             timestamp = strftime("%H:%M:%S", gmtime())
-
             if json_data.get("cmd") == "POST":
 
                 DB.log_contact(
@@ -187,6 +196,16 @@ def main(_):
                     f"[{timestamp}] New Contact {json_data.get('station')}: {json_data.get('hiscall')} "
                     f"{json_data.get('band')}M {json_data.get('mode')}"
                 )
+                comm_log()
+                packet = {"cmd": "RESPONSE"}
+                packet["recipient"] = json_data.get("station")
+                packet["subject"] = "LOGGEDCONTACT"
+                packet["unique_id"] = json_data.get("unique_id")
+                bytesToSend = bytes(dumps(packet), encoding="ascii")
+                s.sendto(bytesToSend, (MULTICAST_GROUP, MULTICAST_PORT))
+                log.add_item(
+                    f"[{timestamp}] CONFIRM POST: {json_data.get('station')}"
+                    )
                 comm_log()
                 continue
 
