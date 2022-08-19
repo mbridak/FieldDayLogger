@@ -3866,6 +3866,32 @@ color: rgb(0, 0, 0);</string>
      <string>SP</string>
     </property>
    </widget>
+   <widget class="QLabel" name="group_call_indicator">
+    <property name="geometry">
+     <rect>
+      <x>348</x>
+      <y>620</y>
+      <width>91</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>JetBrains Mono</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border: 1px solid green;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <zorder>group_call_indicator</zorder>
    <zorder>frame_2</zorder>
    <zorder>frame_3</zorder>
    <zorder>frame_4</zorder>
