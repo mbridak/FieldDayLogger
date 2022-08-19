@@ -28,6 +28,7 @@ import threading
 import uuid
 import queue
 import time
+from time import gmtime, strftime
 
 import requests
 from PyQt5.QtNetwork import QUdpSocket, QHostAddress
@@ -238,26 +239,27 @@ class MainWindow(QtWidgets.QMainWindow):
             try:
                 json_data = loads(datagram.decode())
             except UnicodeDecodeError as err:
-                print(f"Not Unicode: {err}\n{datagram}\n")
+                the_error = f"Not Unicode: {err}\n{datagram}"
+                logging.info(the_error)
                 continue
             except JSONDecodeError as err:
-                print(f"Not JSON: {err}\n{datagram}\n")
+                the_error = f"Not JSON: {err}\n{datagram}"
+                logging.info(the_error)
                 continue
+            logging.info("%s", json_data)
             if json_data.get("cmd") == "PING":
-                print(f"[{time.time()}] {json_data}")
+                pass
+                # print(f"[{strftime('%H:%M:%S', gmtime())}] {json_data}")
             if json_data.get("cmd") == "RESPONSE":
                 if json_data.get("recipient") == self.preference.get("mycall"):
                     if json_data.get("subject") == "HOSTINFO":
-                        print(
-                            f"Group: {json_data.get('groupcall')} ",
-                            f"Class: {json_data.get('groupclass')} ",
-                            f"Section: {json_data.get('groupsection')}",
-                        )
                         self.groupcall = str(json_data.get('groupcall'))
                         self.myclassEntry.setText(str(json_data.get('groupclass')))
                         self.mysectionEntry.setText(str(json_data.get('groupsection')))
+                        self.group_call_indicator.setText(self.groupcall)
                         self.changemyclass()
                         self.changemysection()
+                        self.mycallEntry.hide()
 
     def query_group(self):
         """Sends request to server asking for group call/class/section."""
