@@ -54,8 +54,6 @@ class Trafficlog():
         return self.items
 
 
-
-
 DB = DataBase("server_database.db")
 
 MULTICAST_PORT = 2239
@@ -113,24 +111,47 @@ people = {}
 def comm_log():
     """Display recent UDP traffic"""
     try:
-        logwindow = curses.newwin(10, 78, 9, 1)
-        rectangle(stdscr, 8,0,20,79)
+        logwindow = curses.newwin(10, 49, 9, 1)
+        # rectangle(stdscr, 8,0,20,50)
         logwindow.clear()
         for a, b in enumerate(log.get_log()):
             logwindow.addstr(a,0,b)
-        stdscr.refresh()
         logwindow.refresh()
     except curses.error as err:
         logging.debug("%s", err)
+    bands = ['160','80','40','20','15', '10', '6', '2']
+    blist = []
+    list_o_bands = DB.get_bands()
+    if list_o_bands:
+        for count in list_o_bands:
+            blist.append(count[0])
+    quewindow = curses.newwin(11, 26, 9, 52)
+    quewindow.clear()
+    quewindow.addstr(0,0,"Band   CW    PH    DI\n")
+    for band in bands:
+        if band in blist:
+            cwt = DB.get_band_mode_tally(band, "CW")
+            dit = DB.get_band_mode_tally(band, "DI")
+            pht = DB.get_band_mode_tally(band, "PH")
+            line = (
+                f"{str(band).rjust(4, ' ')} "
+                f"{str(cwt[0]).rjust(5, ' ')} "
+                f"{str(pht[0]).rjust(5, ' ')} "
+                f"{str(dit[0]).rjust(5, ' ')}\n"
+            )
+            quewindow.addstr(line)
+    stdscr.refresh()
+    quewindow.refresh()
 
 def main(_):
     """Main loop"""
     global stdscr
-    global UDP_log
+    # global UDP_log
     global log
     log = Trafficlog()
-    UDP_log = ()
+    # UDP_log = ()
     os.environ.setdefault("ESCDELAY", "25")
+    curses.set_tabsize(4)
     stdscr = curses.initscr()
     height, width = stdscr.getmaxyx()
     if height < 24 or width < 80:
@@ -149,16 +170,18 @@ def main(_):
     curses.noecho()
     curses.cbreak()
 
-    stdscr.addstr(1, 1, f"            Field Day aggregation server v{__version__}")
-    stdscr.addstr(3, 1, "   Group information                      Network Information")
-    stdscr.addstr(4, 40, f"Multicast Group: {MULTICAST_GROUP}")
-    stdscr.addstr(5, 40, f"Multicast Port:  {MULTICAST_PORT}")
-    stdscr.addstr(6, 40, f"Interface IP:    {INTERFACE_IP}")
+    stdscr.addstr(0, 0, f"\t\t\t\t\tField Day aggregation server v{__version__}\n")
+    stdscr.addstr("   Group information                      Network Information\n")
+    stdscr.addstr(2, 40, f"Multicast Group: {MULTICAST_GROUP}")
+    stdscr.addstr(3, 40, f"Multicast Port:  {MULTICAST_PORT}")
+    stdscr.addstr(4, 40, f"Interface IP:    {INTERFACE_IP}")
 
-    stdscr.addstr(4, 1, f"Call:     {OURCALL}")
-    stdscr.addstr(5, 1, f"Class:    {OURCLASS}")
-    stdscr.addstr(6, 1, f"Section:  {OURSECTION}")
-    stdscr.addstr(7, 1, f"AltPower: {bool(ALTPOWER)}")
+    stdscr.addstr(2, 1, f"Call:     {OURCALL}")
+    stdscr.addstr(3, 1, f"Class:    {OURCLASS}")
+    stdscr.addstr(4, 1, f"Section:  {OURSECTION}")
+    stdscr.addstr(5, 1, f"AltPower: {bool(ALTPOWER)}")
+    rectangle(stdscr, 8,0,20,50)
+    rectangle(stdscr, 8,51,20,79)
     stdscr.refresh()
     while 1:
         try:
@@ -193,16 +216,19 @@ def main(_):
                     )
                 )
                 log.add_item(
-                    f"[{timestamp}] New Contact {json_data.get('station')}: {json_data.get('hiscall')} "
-                    f"{json_data.get('band')}M {json_data.get('mode')}"
+                    f"[{timestamp}] New Contact "
+                    f"{json_data.get('station')}: "
+                    f"{json_data.get('hiscall')} "
+                    f"{json_data.get('band')}M "
+                    f"{json_data.get('mode')}"
                 )
                 comm_log()
                 packet = {"cmd": "RESPONSE"}
                 packet["recipient"] = json_data.get("station")
                 packet["subject"] = "LOGGEDCONTACT"
                 packet["unique_id"] = json_data.get("unique_id")
-                bytesToSend = bytes(dumps(packet), encoding="ascii")
-                s.sendto(bytesToSend, (MULTICAST_GROUP, MULTICAST_PORT))
+                bytes_to_send = bytes(dumps(packet), encoding="ascii")
+                s.sendto(bytes_to_send, (MULTICAST_GROUP, MULTICAST_PORT))
                 log.add_item(
                     f"[{timestamp}] CONFIRM POST: {json_data.get('station')}"
                     )
@@ -222,8 +248,11 @@ def main(_):
 
             if json_data.get("cmd") == "UPDATE":
                 log.add_item(
-                    f"[{timestamp}] Updating {json_data.get('unique_id')} {json_data.get('hiscall')} "
-                    f"{json_data.get('band')} {json_data.get('mode')}"
+                    f"[{timestamp}] Updating "
+                    f"{json_data.get('unique_id')} "
+                    f"{json_data.get('hiscall')} "
+                    f"{json_data.get('band')} "
+                    f"{json_data.get('mode')}"
                 )
                 DB.change_contact(
                     (
@@ -262,8 +291,8 @@ def main(_):
                 packet["groupcall"] = OURCALL
                 packet["groupclass"] = OURCLASS
                 packet["groupsection"] = OURSECTION
-                bytesToSend = bytes(dumps(packet), encoding="ascii")
-                s.sendto(bytesToSend, (MULTICAST_GROUP, MULTICAST_PORT))
+                bytes_to_send = bytes(dumps(packet), encoding="ascii")
+                s.sendto(bytes_to_send, (MULTICAST_GROUP, MULTICAST_PORT))
                 log.add_item(
                     f"[{timestamp}] GROUPQUERY: {json_data.get('station')}"
                     )
