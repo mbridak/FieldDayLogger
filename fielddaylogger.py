@@ -28,7 +28,7 @@ import threading
 import uuid
 import queue
 import time
-from time import gmtime, strftime
+# from time import gmtime, strftime
 
 import requests
 from PyQt5.QtNetwork import QUdpSocket, QHostAddress
@@ -119,6 +119,7 @@ class MainWindow(QtWidgets.QMainWindow):
         uic.loadUi(self.relpath("data/main.ui"), self)
         self.db = DataBase(self.database)
         self.udp_fifo = queue.Queue()
+        self.dirtyqueue = queue.Queue()
         self.listWidget.itemDoubleClicked.connect(self.qsoclicked)
         self.callsign_entry.textEdited.connect(self.calltest)
         self.class_entry.textEdited.connect(self.classtest)
@@ -260,6 +261,8 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.changemyclass()
                         self.changemysection()
                         self.mycallEntry.hide()
+                    if json_data.get("subject") == "POSTED"
+                        pass
 
     def query_group(self):
         """Sends request to server asking for group call/class/section."""
@@ -1307,6 +1310,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.server_udp.sendto(
                     bytesToSend, (self.multicast_group, int(self.multicast_port))
                 )
+                self.dirtyqueue.put(contact)
             except OSError as err:
                 logging.warning("%s", err)
 
