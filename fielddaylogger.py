@@ -17,7 +17,6 @@ from pathlib import Path
 from datetime import datetime
 from json import dumps, loads, JSONDecodeError
 from shutil import copyfile
-from collections import OrderedDict
 
 # from xmlrpc.client import ServerProxy, Error
 import struct
@@ -1316,7 +1315,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 "station": self.preference["mycall"],
                 "unique_id": unique_id,
             }
-            # fixme
             self.server_commands.append(contact)
             bytesToSend = bytes(dumps(contact, indent=4), encoding="ascii")
             try:
