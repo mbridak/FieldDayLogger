@@ -224,7 +224,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.connect_to_server:
                 try:
                     datagram = self.server_udp.recv(1500)
-                except TimeoutError:
+                except socket.timeout:
                     time.sleep(1)
                     continue
                 if datagram:
@@ -249,13 +249,13 @@ class MainWindow(QtWidgets.QMainWindow):
             logging.info("%s", json_data)
             if json_data.get("cmd") == "PING":
                 pass
-                # print(f"[{strftime('%H:%M:%S', gmtime())}] {json_data}")
+                print(f"[{strftime('%H:%M:%S', gmtime())}] {json_data}")
             if json_data.get("cmd") == "RESPONSE":
                 if json_data.get("recipient") == self.preference.get("mycall"):
                     if json_data.get("subject") == "HOSTINFO":
-                        self.groupcall = str(json_data.get('groupcall'))
-                        self.myclassEntry.setText(str(json_data.get('groupclass')))
-                        self.mysectionEntry.setText(str(json_data.get('groupsection')))
+                        self.groupcall = str(json_data.get("groupcall"))
+                        self.myclassEntry.setText(str(json_data.get("groupclass")))
+                        self.mysectionEntry.setText(str(json_data.get("groupsection")))
                         self.group_call_indicator.setText(self.groupcall)
                         self.changemyclass()
                         self.changemysection()
