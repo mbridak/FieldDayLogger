@@ -17,6 +17,7 @@ from pathlib import Path
 from datetime import datetime
 from json import dumps, loads, JSONDecodeError
 from shutil import copyfile
+from collections import OrderedDict
 
 # from xmlrpc.client import ServerProxy, Error
 import struct
@@ -28,7 +29,8 @@ import threading
 import uuid
 import queue
 import time
-from time import gmtime, strftime
+
+# from time import gmtime, strftime
 
 import requests
 from PyQt5.QtNetwork import QUdpSocket, QHostAddress
@@ -112,6 +114,7 @@ class MainWindow(QtWidgets.QMainWindow):
     mygrid = None
     run_state = False
     groupcall = None
+    server_commands = []
 
     def __init__(self, *args, **kwargs):
         """Initialize"""
@@ -218,6 +221,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_socket.bind(QHostAddress.LocalHost, 2237)
         self.udp_socket.readyRead.connect(self.on_udp_socket_ready_read)
 
+    def remove_confirmed_commands(self, data):
+        """Removed confirmed commands from the sent commands list."""
+        for index, item in enumerate(self.server_commands):
+            if item.get("unique_id") == data.get("unique_id") and item.get(
+                "cmd"
+            ) == data.get("subject"):
+                self.server_commands.pop(index)
+                self.infoline.setText(f"Confirmed {data.get('subject')}")
+
     def watch_udp(self):
         """Puts UDP datagrams in a FIFO queue"""
         while True:
@@ -249,7 +261,7 @@ class MainWindow(QtWidgets.QMainWindow):
             logging.info("%s", json_data)
             if json_data.get("cmd") == "PING":
                 pass
-                print(f"[{strftime('%H:%M:%S', gmtime())}] {json_data}")
+                # print(f"[{strftime('%H:%M:%S', gmtime())}] {json_data}")
             if json_data.get("cmd") == "RESPONSE":
                 if json_data.get("recipient") == self.preference.get("mycall"):
                     if json_data.get("subject") == "HOSTINFO":
@@ -260,6 +272,8 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.changemyclass()
                         self.changemysection()
                         self.mycallEntry.hide()
+                        return
+                    self.remove_confirmed_commands(json_data)
 
     def query_group(self):
         """Sends request to server asking for group call/class/section."""
@@ -1302,6 +1316,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 "station": self.preference["mycall"],
                 "unique_id": unique_id,
             }
+            # fixme
+            self.server_commands.append(contact)
             bytesToSend = bytes(dumps(contact, indent=4), encoding="ascii")
             try:
                 self.server_udp.sendto(
@@ -2150,6 +2166,7 @@ class EditQSODialog(QtWidgets.QDialog):
             command["power"] = self.editPower.value()
             command["station"] = window.preference["mycall"].upper()
             command["unique_id"] = self.unique_id
+            window.server_commands.append(command)
             bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
             try:
                 window.server_udp.sendto(
@@ -2166,6 +2183,8 @@ class EditQSODialog(QtWidgets.QDialog):
             command = {}
             command["cmd"] = "DELETE"
             command["unique_id"] = self.unique_id
+            command["station"] = window.preference["mycall"].upper()
+            window.server_commands.append(command)
             bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
             try:
                 window.server_udp.sendto(
