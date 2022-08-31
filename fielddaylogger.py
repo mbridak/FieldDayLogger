@@ -220,6 +220,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_socket.bind(QHostAddress.LocalHost, 2237)
         self.udp_socket.readyRead.connect(self.on_udp_socket_ready_read)
 
+    def clear_dirty_flag(self, unique_id):
+        """clear the dirty flag on record once response is returned from server."""
+        self.db.clear_dirty_flag(unique_id)
+
+    def remove_confirmed_commands(self, data):
+        """Removed confirmed commands from the sent commands list."""
+        for index, item in enumerate(self.server_commands):
+            if item.get("unique_id") == data.get("unique_id") and item.get(
+                "cmd"
+            ) == data.get("subject"):
+                self.server_commands.pop(index)
+                self.clear_dirty_flag(data.get("unique_id"))
+                self.infoline.setText(f"Confirmed {data.get('subject')}")
+
     def watch_udp(self):
         """Puts UDP datagrams in a FIFO queue"""
         while True:
