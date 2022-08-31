@@ -28,6 +28,7 @@ import threading
 import uuid
 import queue
 import time
+
 # from time import gmtime, strftime
 
 import requests
@@ -112,6 +113,7 @@ class MainWindow(QtWidgets.QMainWindow):
     mygrid = None
     run_state = False
     groupcall = None
+    server_commands = []
 
     def __init__(self, *args, **kwargs):
         """Initialize"""
@@ -119,7 +121,6 @@ class MainWindow(QtWidgets.QMainWindow):
         uic.loadUi(self.relpath("data/main.ui"), self)
         self.db = DataBase(self.database)
         self.udp_fifo = queue.Queue()
-        self.dirtyqueue = queue.Queue()
         self.listWidget.itemDoubleClicked.connect(self.qsoclicked)
         self.callsign_entry.textEdited.connect(self.calltest)
         self.class_entry.textEdited.connect(self.classtest)
@@ -219,13 +220,27 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_socket.bind(QHostAddress.LocalHost, 2237)
         self.udp_socket.readyRead.connect(self.on_udp_socket_ready_read)
 
+    def clear_dirty_flag(self, unique_id):
+        """clear the dirty flag on record once response is returned from server."""
+        self.db.clear_dirty_flag(unique_id)
+
+    def remove_confirmed_commands(self, data):
+        """Removed confirmed commands from the sent commands list."""
+        for index, item in enumerate(self.server_commands):
+            if item.get("unique_id") == data.get("unique_id") and item.get(
+                "cmd"
+            ) == data.get("subject"):
+                self.server_commands.pop(index)
+                self.clear_dirty_flag(data.get("unique_id"))
+                self.infoline.setText(f"Confirmed {data.get('subject')}")
+
     def watch_udp(self):
         """Puts UDP datagrams in a FIFO queue"""
         while True:
             if self.connect_to_server:
                 try:
                     datagram = self.server_udp.recv(1500)
-                except TimeoutError:
+                except socket.timeout:
                     time.sleep(1)
                     continue
                 if datagram:
@@ -254,15 +269,15 @@ class MainWindow(QtWidgets.QMainWindow):
             if json_data.get("cmd") == "RESPONSE":
                 if json_data.get("recipient") == self.preference.get("mycall"):
                     if json_data.get("subject") == "HOSTINFO":
-                        self.groupcall = str(json_data.get('groupcall'))
-                        self.myclassEntry.setText(str(json_data.get('groupclass')))
-                        self.mysectionEntry.setText(str(json_data.get('groupsection')))
+                        self.groupcall = str(json_data.get("groupcall"))
+                        self.myclassEntry.setText(str(json_data.get("groupclass")))
+                        self.mysectionEntry.setText(str(json_data.get("groupsection")))
                         self.group_call_indicator.setText(self.groupcall)
                         self.changemyclass()
                         self.changemysection()
                         self.mycallEntry.hide()
-                    if json_data.get("subject") == "POSTED"
-                        pass
+                        return
+                    self.remove_confirmed_commands(json_data)
 
     def query_group(self):
         """Sends request to server asking for group call/class/section."""
@@ -1305,12 +1320,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 "station": self.preference["mycall"],
                 "unique_id": unique_id,
             }
+            self.server_commands.append(contact)
             bytesToSend = bytes(dumps(contact, indent=4), encoding="ascii")
             try:
                 self.server_udp.sendto(
                     bytesToSend, (self.multicast_group, int(self.multicast_port))
                 )
-                self.dirtyqueue.put(contact)
             except OSError as err:
                 logging.warning("%s", err)
 
@@ -1384,6 +1399,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 band,
                 mode,
                 power,
+                _,
                 _,
                 _,
                 _,
@@ -2154,6 +2170,7 @@ class EditQSODialog(QtWidgets.QDialog):
             command["power"] = self.editPower.value()
             command["station"] = window.preference["mycall"].upper()
             command["unique_id"] = self.unique_id
+            window.server_commands.append(command)
             bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
             try:
                 window.server_udp.sendto(
@@ -2170,6 +2187,8 @@ class EditQSODialog(QtWidgets.QDialog):
             command = {}
             command["cmd"] = "DELETE"
             command["unique_id"] = self.unique_id
+            command["station"] = window.preference["mycall"].upper()
+            window.server_commands.append(command)
             bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
             try:
                 window.server_udp.sendto(
