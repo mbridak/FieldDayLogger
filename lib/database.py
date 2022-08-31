@@ -31,12 +31,25 @@ class DataBase:
                     "power INTEGER NOT NULL, "
                     "grid text NOT NULL, "
                     "opname text NOT NULL, "
-                    "unique_id text NOT NULL);"
+                    "unique_id text NOT NULL "
+                    "dirty INTEGER DEFAULT 1);"
                 )
                 cursor.execute(sql_table)
                 conn.commit()
         except sqlite3.Error as exception:
             logging.critical("create_db: Unable to create database: %s", exception)
+
+    def clear_dirty_flag(self, unique_id) -> None:
+        """Clears the dirty flag."""
+        if unique_id:
+            try:
+                with sqlite3.connect(self.database) as conn:
+                    sql = f"update contacts set dirty=0 where unique_id='{unique_id}';"
+                    cursor = conn.cursor()
+                    cursor.execute(sql)
+                    conn.commit()
+            except sqlite3.Error as exception:
+                logging.critical("%s", exception)
 
     def log_contact(self, logme: tuple) -> None:
         """
@@ -48,8 +61,8 @@ class DataBase:
                 sql = (
                     "INSERT INTO contacts"
                     "(callsign, class, section, date_time, frequency, "
-                    "band, mode, power, grid, opname, unique_id) "
-                    "VALUES(?,?,?,datetime('now'),?,?,?,?,?,?,?)"
+                    "band, mode, power, grid, opname, unique_id, dirty) "
+                    "VALUES(?,?,?,datetime('now'),?,?,?,?,?,?,?,1)"
                 )
                 cur = conn.cursor()
                 cur.execute(sql, logme)
