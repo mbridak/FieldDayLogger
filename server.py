@@ -125,6 +125,11 @@ def prectangle(win, uly, ulx, lry, lrx):
     except curses.error:
         pass
     win.addch(lry, ulx, curses.ACS_BTEE)  # LL
+    win.vline(1, 0, curses.ACS_VLINE, 5)
+    win.vline(1, 79, curses.ACS_VLINE, 5)
+    win.addch(6, 0, curses.ACS_LTEE)
+    win.addch(6, 79, curses.ACS_RTEE)
+    win.addch(6, 50, curses.ACS_TTEE)
 
 
 def send_pulse():
