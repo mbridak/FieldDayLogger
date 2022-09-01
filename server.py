@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """This is the description"""
 
-from cmath import log
+# from cmath import log
 import curses
 from curses import wrapper
 from curses.textpad import rectangle
@@ -68,6 +68,12 @@ OURSECTION = "XXX"
 ALTPOWER = 0
 log = Trafficlog()
 THE_SCREEN = curses.initscr()
+
+height, width = THE_SCREEN.getmaxyx()
+if height < 24 or width < 80:
+    print("Terminal size needs to be at least 80x24")
+    curses.endwin()
+    sys.exit()
 
 try:
     if os.path.exists("./server_preferences.json"):
@@ -153,11 +159,6 @@ def main(_):
     """Main loop"""
     os.environ.setdefault("ESCDELAY", "25")
     curses.set_tabsize(4)
-    height, width = THE_SCREEN.getmaxyx()
-    if height < 24 or width < 80:
-        print("Terminal size needs to be at least 80x24")
-        curses.endwin()
-        sys.exit()
     curses.start_color()
     curses.use_default_colors()
     if curses.can_change_color():
