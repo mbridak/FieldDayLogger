@@ -31,13 +31,13 @@ class DataBase:
                     "power INTEGER NOT NULL, "
                     "grid text NOT NULL, "
                     "opname text NOT NULL, "
-                    "unique_id text NOT NULL "
+                    "unique_id text NOT NULL, "
                     "dirty INTEGER DEFAULT 1);"
                 )
                 cursor.execute(sql_table)
                 conn.commit()
         except sqlite3.Error as exception:
-            logging.critical("create_db: Unable to create database: %s", exception)
+            logging.critical("%s", exception)
 
     def clear_dirty_flag(self, unique_id) -> None:
         """Clears the dirty flag."""
