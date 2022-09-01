@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 """This is the description"""
 
-# from cmath import log
+# COLOR_BLACK	Black
+# COLOR_BLUE	Blue
+# COLOR_CYAN	Cyan (light greenish blue)
+# COLOR_GREEN	Green
+# COLOR_MAGENTA	Magenta (purplish red)
+# COLOR_RED	Red
+# COLOR_WHITE	White
+# COLOR_YELLOW	Yellow
+
 import curses
 from curses import wrapper
 from curses.textpad import rectangle
@@ -168,19 +176,35 @@ def main(_):
         curses.init_pair(1, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
         curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
         curses.init_pair(3, curses.COLOR_CYAN, curses.COLOR_BLACK)
+        curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_BLACK)
+        curses.init_pair(5, curses.COLOR_BLUE, curses.COLOR_BLACK)
+        curses.init_pair(6, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+        curses.init_pair(7, curses.COLOR_WHITE, curses.COLOR_BLACK)
     curses.noecho()
     curses.cbreak()
-
-    THE_SCREEN.addstr(0, 0, f"\t\t\t\t\tField Day aggregation server v{__version__}\n")
+    THE_SCREEN.attron(curses.color_pair(1))
+    THE_SCREEN.addstr(
+        0,
+        0,
+        f"\t\t\t\t\tField Day aggregation server v{__version__}\n",
+        curses.color_pair(1),
+    )
     THE_SCREEN.addstr("   Group information                      Network Information\n")
-    THE_SCREEN.addstr(2, 40, f"Multicast Group: {MULTICAST_GROUP}")
-    THE_SCREEN.addstr(3, 40, f"Multicast Port:  {MULTICAST_PORT}")
-    THE_SCREEN.addstr(4, 40, f"Interface IP:    {INTERFACE_IP}")
+    THE_SCREEN.addstr(2, 40, "Multicast Group: ")
+    THE_SCREEN.addstr(f"{MULTICAST_GROUP}", curses.color_pair(7))
+    THE_SCREEN.addstr(3, 40, "Multicast Port:  ")
+    THE_SCREEN.addstr(f"{MULTICAST_PORT}", curses.color_pair(7))
+    THE_SCREEN.addstr(4, 40, "Interface IP:    ")
+    THE_SCREEN.addstr(f"{INTERFACE_IP}", curses.color_pair(7))
 
-    THE_SCREEN.addstr(2, 1, f"Call:     {OURCALL}")
-    THE_SCREEN.addstr(3, 1, f"Class:    {OURCLASS}")
-    THE_SCREEN.addstr(4, 1, f"Section:  {OURSECTION}")
-    THE_SCREEN.addstr(5, 1, f"AltPower: {bool(ALTPOWER)}")
+    THE_SCREEN.addstr(2, 1, "Call:     ")
+    THE_SCREEN.addstr(f"{OURCALL}", curses.color_pair(7))
+    THE_SCREEN.addstr(3, 1, "Class:    ")
+    THE_SCREEN.addstr(f"{OURCLASS}", curses.color_pair(7))
+    THE_SCREEN.addstr(4, 1, "Section:  ")
+    THE_SCREEN.addstr(f"{OURSECTION}", curses.color_pair(7))
+    THE_SCREEN.addstr(5, 1, "AltPower: ")
+    THE_SCREEN.addstr(f"{bool(ALTPOWER)}", curses.color_pair(7))
     rectangle(THE_SCREEN, 8, 0, 20, 50)
     rectangle(THE_SCREEN, 8, 51, 20, 79)
     THE_SCREEN.refresh()
