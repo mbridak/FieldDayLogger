@@ -8,6 +8,7 @@ GPL V3
 # pylint: disable=too-many-lines
 # pylint: disable=invalid-name
 # pylint: disable=no-member
+# pylint: disable=no-value-for-parameter
 # Nothing to see here move along.
 # xplanet -body earth -window -longitude -117 -latitude 38
 # -config Default -projection azmithal -radius 200 -wait 5
