@@ -21,6 +21,7 @@ import os
 import sys
 import threading
 
+from itertools import chain
 from json import JSONDecodeError, loads, dumps
 from pathlib import Path
 from lib.server_database import DataBase
@@ -83,6 +84,10 @@ log = Trafficlog()
 THE_SCREEN = curses.initscr()
 LOGWINDOW = curses.newwin(16, 49, 7, 1)
 QUEWINDOW = curses.newwin(9, 26, 7, 52)
+PEOPLEWINDOW = curses.newwin(6, 28, 17, 51)
+
+people = {}
+
 
 height, width = THE_SCREEN.getmaxyx()
 if height < 24 or width < 80:
@@ -153,8 +158,6 @@ _heartbeat = threading.Thread(
 )
 _heartbeat.start()
 
-people = {}
-
 
 def comm_log():
     """Display recent UDP traffic"""
@@ -188,6 +191,45 @@ def comm_log():
         QUEWINDOW.addstr(yline + 1, 0, line)
     THE_SCREEN.refresh()
     QUEWINDOW.refresh()
+
+
+def show_people():
+    """Display operators"""
+    rev_dict = {}
+    for key, value in people.items():
+        rev_dict.setdefault(value, set()).add(key)
+    result = set(
+        chain.from_iterable(
+            values for key, values in rev_dict.items() if len(values) > 1
+        )
+    )
+    PEOPLEWINDOW.clear()
+    xcol = 0
+    for yline, op_callsign in enumerate(people.keys()):
+        if yline > 5:
+            yline -= 6
+            xcol = 15
+        try:
+            if op_callsign in result:
+
+                PEOPLEWINDOW.addnstr(
+                    yline,
+                    xcol,
+                    f"{op_callsign.rjust(6,' ')} {people.get(op_callsign).rjust(6, ' ')}",
+                    13,
+                    curses.color_pair(2) | curses.A_BOLD,
+                )
+            else:
+                PEOPLEWINDOW.addnstr(
+                    yline,
+                    xcol,
+                    f"{op_callsign.rjust(6,' ')} {people.get(op_callsign).rjust(6, ' ')}",
+                    13,
+                )
+        except curses.error:
+            logging.debug("yline: %d xcol: %d", yline, xcol)
+    THE_SCREEN.refresh()
+    PEOPLEWINDOW.refresh()
 
 
 def main(_):
@@ -248,6 +290,7 @@ def main(_):
     prectangle(THE_SCREEN, 16, 50, 23, 79)
 
     THE_SCREEN.refresh()
+    show_people()
     while 1:
         try:
             payload = s.recv(1500)
@@ -364,6 +407,7 @@ def main(_):
                         band_mode = f"{json_data.get('band')} {json_data.get('mode')}"
                         if people.get(json_data.get("station")) != band_mode:
                             people[json_data.get("station")] = band_mode
+                        show_people()
                 comm_log()
                 continue
 
