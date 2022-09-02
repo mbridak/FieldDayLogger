@@ -132,9 +132,13 @@ def prectangle(win, uly, ulx, lry, lrx):
     win.addch(lry, ulx, curses.ACS_BTEE)  # LL
     win.vline(1, 0, curses.ACS_VLINE, 5)
     win.vline(1, 79, curses.ACS_VLINE, 5)
+    win.vline(1, 22, curses.ACS_VLINE, 5)
+    win.vline(1, 58, curses.ACS_VLINE, 5)
     win.addch(6, 0, curses.ACS_LTEE)
     win.addch(6, 79, curses.ACS_RTEE)
     win.addch(6, 50, curses.ACS_TTEE)
+    win.addch(6, 58, curses.ACS_BTEE)
+    win.addch(6, 22, curses.ACS_BTEE)
 
 
 def send_pulse():
@@ -232,6 +236,28 @@ def show_people():
     PEOPLEWINDOW.refresh()
 
 
+def get_stats():
+    """Get statistics"""
+    (
+        cwcontacts,
+        phonecontacts,
+        digitalcontacts,
+        bandmodemult,
+        last15,
+        lasthour,
+        highpower,
+        qrp,
+    ) = DB.stats()
+
+    points = (int(cwcontacts) * 2) + (int(digitalcontacts) * 2) + int(phonecontacts)
+
+    score = (((qrp * 3) * ALTPOWER) + 2) * points
+
+    THE_SCREEN.addstr(2, 73, f"{score}", curses.color_pair(7))
+    THE_SCREEN.addstr(3, 73, f"{lasthour}", curses.color_pair(7))
+    THE_SCREEN.addstr(4, 73, f"{last15}", curses.color_pair(7))
+
+
 def main(_):
     """Main loop"""
     os.environ.setdefault("ESCDELAY", "25")
@@ -258,16 +284,18 @@ def main(_):
     THE_SCREEN.addstr(0, 0, line)
     THE_SCREEN.attron(curses.color_pair(1))
     THE_SCREEN.addstr(
-        1, 0, "   Group information      Network Information            Scoring\n"
+        1,
+        0,
+        "   Group information           Network Information                Scoring\n",
     )
 
-    THE_SCREEN.addstr(2, 1, "Call____:")
+    THE_SCREEN.addstr(2, 2, "Call____:")
     THE_SCREEN.addstr(f" {OURCALL}", curses.color_pair(7))
-    THE_SCREEN.addstr(3, 1, "Class___:")
+    THE_SCREEN.addstr(3, 2, "Class___:")
     THE_SCREEN.addstr(f" {OURCLASS}", curses.color_pair(7))
-    THE_SCREEN.addstr(4, 1, "Section_:")
+    THE_SCREEN.addstr(4, 2, "Section_:")
     THE_SCREEN.addstr(f" {OURSECTION}", curses.color_pair(7))
-    THE_SCREEN.addstr(5, 1, "AltPower:")
+    THE_SCREEN.addstr(5, 2, "AltPower:")
     THE_SCREEN.addstr(f" {bool(ALTPOWER)}", curses.color_pair(7))
 
     THE_SCREEN.addstr(2, 25, "Multicast Group: ")
@@ -277,18 +305,18 @@ def main(_):
     THE_SCREEN.addstr(4, 25, "Interface IP___: ")
     THE_SCREEN.addstr(f"{INTERFACE_IP}", curses.color_pair(7))
 
-    THE_SCREEN.addstr(2, 55, "Points_____: ")
+    THE_SCREEN.addstr(2, 60, "Points_____: ")
     THE_SCREEN.addstr(f"{POINTS}", curses.color_pair(7))
-    THE_SCREEN.addstr(3, 55, "Last Hour__: ")
+    THE_SCREEN.addstr(3, 60, "Last Hour__: ")
     THE_SCREEN.addstr(f"{LASTHOUR}", curses.color_pair(7))
-    THE_SCREEN.addstr(4, 55, "Last 15 Min: ")
+    THE_SCREEN.addstr(4, 60, "Last 15 Min: ")
     THE_SCREEN.addstr(f"{LAST15}", curses.color_pair(7))
 
     rectangle(THE_SCREEN, 6, 0, 23, 50)
     rectangle(THE_SCREEN, 6, 50, 16, 79)
 
     prectangle(THE_SCREEN, 16, 50, 23, 79)
-
+    get_stats()
     THE_SCREEN.refresh()
     show_people()
     while 1:
@@ -339,6 +367,7 @@ def main(_):
                 s.sendto(bytes_to_send, (MULTICAST_GROUP, MULTICAST_PORT))
                 log.add_item(f"[{timestamp}] CONFIRM POST: {json_data.get('station')}")
                 comm_log()
+                get_stats()
                 continue
 
             if json_data.get("cmd") == "GET":
@@ -360,6 +389,7 @@ def main(_):
                     f"[{timestamp}] CONFIRM DELETE: {json_data.get('station')}"
                 )
                 comm_log()
+                get_stats()
                 continue
 
             if json_data.get("cmd") == "UPDATE":
@@ -395,19 +425,19 @@ def main(_):
                     f"[{timestamp}] CONFIRM UPDATE: {json_data.get('station')}"
                 )
                 comm_log()
+                get_stats()
                 continue
 
             if json_data.get("cmd") == "PING":
-                if not json_data.get("host"):
-                    log.add_item(
-                        f"[{timestamp}] Ping: {json_data.get('station')} "
-                        f"{json_data.get('band')}M {json_data.get('mode')}"
-                    )
-                    if json_data.get("station"):
-                        band_mode = f"{json_data.get('band')} {json_data.get('mode')}"
-                        if people.get(json_data.get("station")) != band_mode:
-                            people[json_data.get("station")] = band_mode
-                        show_people()
+                if json_data.get("station"):
+                    band_mode = f"{json_data.get('band')} {json_data.get('mode')}"
+                    if people.get(json_data.get("station")) != band_mode:
+                        people[json_data.get("station")] = band_mode
+                        log.add_item(
+                            f"[{timestamp}] Band/Mode Change: {json_data.get('station')} "
+                            f"{json_data.get('band')}M {json_data.get('mode')}"
+                        )
+                    show_people()
                 comm_log()
                 continue
 
