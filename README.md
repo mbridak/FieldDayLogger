@@ -59,3 +59,4 @@ Read the manual [here](Manual.md)
 
 ![Picture of main screen](pics/loggerscreenshot.png)
 
+![Picture of server main screen](pics/server_pic.png)
