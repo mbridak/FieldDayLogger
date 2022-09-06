@@ -278,6 +278,9 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.changemysection()
                         self.mycallEntry.hide()
                         return
+                    if json_data.get("subject") == "LOG":
+                        self.infoline.setText(f"Server Generated Log.")
+
                     self.remove_confirmed_commands(json_data)
 
     def query_group(self):
@@ -2089,6 +2092,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cabrillo()
         self.generate_band_mode_tally()
         self.adif()
+        if self.connect_to_server:
+            update = {
+                "cmd": "LOG",
+                "station": self.preference["mycall"],
+            }
+            bytesToSend = bytes(dumps(update), encoding="ascii")
+            try:
+                self.server_udp.sendto(
+                    bytesToSend, (self.multicast_group, int(self.multicast_port))
+                )
+            except OSError as err:
+                logging.warning("%s", err)
 
 
 class EditQSODialog(QtWidgets.QDialog):
