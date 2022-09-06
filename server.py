@@ -75,12 +75,21 @@ OURCALL = "XXXX"
 OURCLASS = "XX"
 OURSECTION = "XXX"
 ALTPOWER = 0
+QRP = 0
+HIGHPOWER = 0
+NAME = "Hiram Maxim"
+ADDRESS = "225 Main Street"
+CITY = "Newington"
+STATE = "CT"
+POSTALCODE = "06111"
+COUNTRY = "USA"
+EMAIL = "Hiram.Maxim@arrl.net"
 
 POINTS = 0
 LASTHOUR = 0
 LAST15 = 0
 
-log = Trafficlog()
+LOG = Trafficlog()
 THE_SCREEN = curses.initscr()
 LOGWINDOW = curses.newwin(16, 49, 7, 1)
 QUEWINDOW = curses.newwin(9, 26, 7, 52)
@@ -109,6 +118,13 @@ try:
             OURCLASS = preference.get("ourclass")
             OURSECTION = preference.get("oursection")
             ALTPOWER = preference.get("altpower")
+            NAME = preference.get("name")
+            ADDRESS = preference.get("address")
+            CITY = preference.get("city")
+            STATE = preference.get("state")
+            POSTALCODE = preference.get("postalcode")
+            COUNTRY = preference.get("country")
+            EMAIL = preference.get("email")
     else:
         print("-=* No Settings File Using Defaults *=-")
 except IOError as exception:
@@ -168,7 +184,7 @@ def comm_log():
     try:
         LOGWINDOW.clear()
         # LOGWINDOW.box()
-        for display_line, display_item in enumerate(log.get_log()):
+        for display_line, display_item in enumerate(LOG.get_log()):
             LOGWINDOW.addstr(display_line, 0, display_item)
         LOGWINDOW.refresh()
     except curses.error as err:
@@ -245,17 +261,155 @@ def get_stats():
         bandmodemult,
         last15,
         lasthour,
-        highpower,
-        qrp,
+        HIGHPOWER,
+        QRP,
     ) = DB.stats()
 
     points = (int(cwcontacts) * 2) + (int(digitalcontacts) * 2) + int(phonecontacts)
 
-    score = (((qrp * 3) * ALTPOWER) + 2) * points
+    score = (((QRP * 3) * ALTPOWER) + 2) * points
 
     THE_SCREEN.addstr(2, 73, f"{score}", curses.color_pair(7))
     THE_SCREEN.addstr(3, 73, f"{lasthour}", curses.color_pair(7))
     THE_SCREEN.addstr(4, 73, f"{last15}", curses.color_pair(7))
+
+
+def fakefreq(band, mode):
+    """
+    If unable to obtain a frequency from the rig,
+    This will return a sane value for a frequency mainly for the cabrillo and adif log.
+    Takes a band and mode as input and returns freq in khz.
+    """
+    logging.info("fakefreq: band:%s mode:%s", band, mode)
+    modes = {"CW": 0, "DI": 1, "PH": 2, "FT8": 1, "SSB": 2}
+    fakefreqs = {
+        "160": ["1830", "1805", "1840"],
+        "80": ["3530", "3559", "3970"],
+        "60": ["5332", "5373", "5405"],
+        "40": ["7030", "7040", "7250"],
+        "30": ["10130", "10130", "0000"],
+        "20": ["14030", "14070", "14250"],
+        "17": ["18080", "18100", "18150"],
+        "15": ["21065", "21070", "21200"],
+        "12": ["24911", "24920", "24970"],
+        "10": ["28065", "28070", "28400"],
+        "6": ["50.030", "50300", "50125"],
+        "2": ["144030", "144144", "144250"],
+        "222": ["222100", "222070", "222100"],
+        "432": ["432070", "432200", "432100"],
+        "SAT": ["144144", "144144", "144144"],
+    }
+    freqtoreturn = fakefreqs[band][modes[mode]]
+    logging.info("fakefreq: returning:%s", freqtoreturn)
+    return freqtoreturn
+
+
+def cabrillo():
+    """
+    Generates a cabrillo log file.
+    """
+    filename = f"{OURCALL}.log"
+    log = DB.fetch_all_contacts_asc()
+    if not log:
+        return
+    catpower = ""
+    if QRP:
+        catpower = "QRP"
+    elif HIGHPOWER:
+        catpower = "HIGH"
+    else:
+        catpower = "LOW"
+    try:
+        with open(filename, "w", encoding="ascii") as file_descriptor:
+            print("START-OF-LOG: 3.0", end="\r\n", file=file_descriptor)
+            print(
+                "CREATED-BY: K6GTE Field Day Logger",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print("CONTEST: ARRL-FD", end="\r\n", file=file_descriptor)
+            print(
+                f"CALLSIGN: {OURCALL}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                f"LOCATION: {OURSECTION}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                f"CATEGORY: {OURCLASS}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+
+            print("CATEGORY-BAND: ALL", end="\r\n", file=file_descriptor)
+            print("CATEGORY-MODE: MIXED", end="\r\n", file=file_descriptor)
+            print("CATEGORY-OPERATOR: MULTI-OP", end="\r\n", file=file_descriptor)
+            print("CATEGORY-STATION: PORTABLE", end="\r\n", file=file_descriptor)
+            print(f"CATEGORY-POWER: {catpower}", end="\r\n", file=file_descriptor)
+            print("CLUB: Test club", end="\r\n", file=file_descriptor)
+            print(
+                f"CLAIMED-SCORE: {None}",  # FIXME
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(f"NAME: {NAME}", end="\r\n", file=file_descriptor)
+            print(f"ADDRESS: {ADDRESS}", end="\r\n", file=file_descriptor)
+            print(f"ADDRESS-CITY: {CITY}", end="\r\n", file=file_descriptor)
+            print(f"ADDRESS-STATE: {STATE}", end="\r\n", file=file_descriptor)
+            print(f"ADDRESS-POSTALCODE: {POSTALCODE}", end="\r\n", file=file_descriptor)
+            print(f"ADDRESS-COUNTRY: {COUNTRY}", end="\r\n", file=file_descriptor)
+            print(f"EMAIL: {EMAIL}", end="\r\n", file=file_descriptor)
+            ops = DB.get_operators()
+            operator_list = []
+            for operators in ops:
+                operator_list.append(operators[0])
+            print(
+                f"OPERATORS: {', '.join(operator_list)}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            for contact in log:
+                (
+                    _,
+                    _,
+                    hiscall,
+                    hisclass,
+                    hissection,
+                    the_datetime,
+                    freq,
+                    band,
+                    mode,
+                    _,
+                    _,
+                    _,
+                    _,
+                ) = contact
+                if mode == "DI":
+                    mode = "DG"
+                loggeddate = the_datetime[:10]
+                loggedtime = the_datetime[11:13] + the_datetime[14:16]
+                try:
+                    temp = str(freq / 1000000).split(".")
+                    freq = temp[0] + temp[1].ljust(3, "0")[:3]
+                except TypeError:
+                    freq = "UNKNOWN"
+                if freq == "0000":
+                    freq = fakefreq(band, mode)
+                print(
+                    f"QSO: {freq.rjust(6)} {mode} {loggeddate} {loggedtime} "
+                    f"{OURCALL} {OURCLASS} "
+                    f"{OURSECTION} {hiscall} "
+                    f"{hisclass} {hissection}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+            print("END-OF-LOG:", end="\r\n", file=file_descriptor)
+    except IOError as exception:
+        logging.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
+        return
 
 
 def main(_):
@@ -351,7 +505,7 @@ def main(_):
                         json_data.get("station"),
                     )
                 )
-                log.add_item(
+                LOG.add_item(
                     f"[{timestamp}] New Contact "
                     f"{json_data.get('station')}: "
                     f"{json_data.get('hiscall')} "
@@ -365,18 +519,31 @@ def main(_):
                 packet["unique_id"] = json_data.get("unique_id")
                 bytes_to_send = bytes(dumps(packet), encoding="ascii")
                 s.sendto(bytes_to_send, (MULTICAST_GROUP, MULTICAST_PORT))
-                log.add_item(f"[{timestamp}] CONFIRM POST: {json_data.get('station')}")
+                LOG.add_item(f"[{timestamp}] CONFIRM POST: {json_data.get('station')}")
                 comm_log()
                 get_stats()
                 continue
 
+            if json_data.get("cmd") == "LOG":
+                LOG.add_item(f"[{timestamp}] GENERATE LOG: {json_data.get('station')}")
+                cabrillo()
+                packet = {"cmd": "RESPONSE"}
+                packet["recipient"] = json_data.get("station")
+                packet["subject"] = "LOG"
+                bytes_to_send = bytes(dumps(packet), encoding="ascii")
+                s.sendto(bytes_to_send, (MULTICAST_GROUP, MULTICAST_PORT))
+                LOG.add_item(
+                    f"[{timestamp}] GENERATE LOG CONF: {json_data.get('station')}"
+                )
+                continue
+
             if json_data.get("cmd") == "GET":
-                log.add_item(f"[{timestamp}] {json_data}")
+                LOG.add_item(f"[{timestamp}] {json_data}")
                 comm_log()
                 continue
 
             if json_data.get("cmd") == "DELETE":
-                log.add_item(f"[{timestamp}] Deleting: {json_data.get('unique_id')}")
+                LOG.add_item(f"[{timestamp}] Deleting: {json_data.get('unique_id')}")
                 DB.delete_contact(json_data.get("unique_id"))
                 comm_log()
                 packet = {"cmd": "RESPONSE"}
@@ -385,7 +552,7 @@ def main(_):
                 packet["unique_id"] = json_data.get("unique_id")
                 bytes_to_send = bytes(dumps(packet), encoding="ascii")
                 s.sendto(bytes_to_send, (MULTICAST_GROUP, MULTICAST_PORT))
-                log.add_item(
+                LOG.add_item(
                     f"[{timestamp}] CONFIRM DELETE: {json_data.get('station')}"
                 )
                 comm_log()
@@ -393,7 +560,7 @@ def main(_):
                 continue
 
             if json_data.get("cmd") == "UPDATE":
-                log.add_item(
+                LOG.add_item(
                     f"[{timestamp}] Updating "
                     f"{json_data.get('unique_id')} "
                     f"{json_data.get('hiscall')} "
@@ -421,7 +588,7 @@ def main(_):
                 packet["unique_id"] = json_data.get("unique_id")
                 bytes_to_send = bytes(dumps(packet), encoding="ascii")
                 s.sendto(bytes_to_send, (MULTICAST_GROUP, MULTICAST_PORT))
-                log.add_item(
+                LOG.add_item(
                     f"[{timestamp}] CONFIRM UPDATE: {json_data.get('station')}"
                 )
                 comm_log()
@@ -433,7 +600,7 @@ def main(_):
                     band_mode = f"{json_data.get('band')} {json_data.get('mode')}"
                     if people.get(json_data.get("station")) != band_mode:
                         people[json_data.get("station")] = band_mode
-                        log.add_item(
+                        LOG.add_item(
                             f"[{timestamp}] Band/Mode Change: {json_data.get('station')} "
                             f"{json_data.get('band')}M {json_data.get('mode')}"
                         )
@@ -450,7 +617,7 @@ def main(_):
                 packet["groupsection"] = OURSECTION
                 bytes_to_send = bytes(dumps(packet), encoding="ascii")
                 s.sendto(bytes_to_send, (MULTICAST_GROUP, MULTICAST_PORT))
-                log.add_item(f"[{timestamp}] GROUPQUERY: {json_data.get('station')}")
+                LOG.add_item(f"[{timestamp}] GROUPQUERY: {json_data.get('station')}")
                 comm_log()
 
         except UnicodeDecodeError as err:
