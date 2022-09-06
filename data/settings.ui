@@ -775,11 +775,17 @@ color: rgb(211, 215, 207);</string>
     <widget class="QCheckBox" name="connect_to_server">
      <property name="geometry">
       <rect>
-       <x>240</x>
+       <x>230</x>
        <y>30</y>
-       <width>151</width>
+       <width>191</width>
        <height>23</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>JetBrains Mono</family>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="text">
       <string>Connect to server</string>
@@ -860,6 +866,12 @@ color: rgb(211, 215, 207);</string>
        <height>25</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <family>JetBrains Mono</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>224.1.1.1</string>
      </property>
@@ -873,6 +885,12 @@ color: rgb(211, 215, 207);</string>
        <height>25</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <family>JetBrains Mono</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>2239</string>
      </property>
@@ -885,6 +903,12 @@ color: rgb(211, 215, 207);</string>
        <width>113</width>
        <height>25</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>JetBrains Mono</family>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="text">
       <string>0.0.0.0</string>
