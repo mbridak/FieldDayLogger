@@ -86,6 +86,14 @@ class DataBase:
         except sqlite3.Error as exception:
             logging.critical("DataBase change_contact: %s", exception)
 
+    def get_operators(self) -> list:
+        """Return a list of station calls used."""
+        with sqlite3.connect(self.database) as conn:
+            cursor = conn.cursor()
+            cursor.execute("select distinct station from contacts;")
+            ops = cursor.fetchall()
+        return ops
+
     def stats(self) -> tuple:
         """
         returns a tuple with some stats:
