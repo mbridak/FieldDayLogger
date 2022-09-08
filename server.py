@@ -386,7 +386,8 @@ def cabrillo():
             for operators in ops:
                 operator_list.append(operators[0])
             print(
-                f"OPERATORS: {', '.join(operator_list)}",
+                f"OPERATORS: {' '.join(operator_list)}",
+                f"@{OURCALL}",
                 end="\r\n",
                 file=file_descriptor,
             )
