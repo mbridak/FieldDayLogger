@@ -370,7 +370,7 @@ def cabrillo():
             print(f"CATEGORY-POWER: {catpower}", end="\r\n", file=file_descriptor)
             print("CLUB: Test club", end="\r\n", file=file_descriptor)
             print(
-                f"CLAIMED-SCORE: {calcscore()}",  # FIXME
+                f"CLAIMED-SCORE: {calcscore()}",
                 end="\r\n",
                 file=file_descriptor,
             )
