@@ -279,7 +279,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.mycallEntry.hide()
                         return
                     if json_data.get("subject") == "LOG":
-                        self.infoline.setText(f"Server Generated Log.")
+                        self.infoline.setText("Server Generated Log.")
 
                     self.remove_confirmed_commands(json_data)
 
