@@ -304,6 +304,25 @@ def fakefreq(band, mode):
     return freqtoreturn
 
 
+def calcscore():
+    """
+    Return our current score based on operating power,
+    altpower and types of contacts.
+
+    2022 scoring: contacts over 100w are disallowed.
+    QRP and Low Power (<100W) have base multiplier of 2.
+    QRP with Alt Power has base multiplier of 5
+    """
+    QRP, HIGHPOWER = DB.qrp_check()
+    c_dubs, phone, digital = DB.contacts_under_101watts()
+    score = (int(c_dubs) * 2) + int(phone) + (int(digital) * 2)
+    multiplier = 2
+    if QRP and ALTPOWER:
+        multiplier = 5
+    score = score * multiplier
+    return score
+
+
 def cabrillo():
     """
     Generates a cabrillo log file.
@@ -351,7 +370,7 @@ def cabrillo():
             print(f"CATEGORY-POWER: {catpower}", end="\r\n", file=file_descriptor)
             print("CLUB: Test club", end="\r\n", file=file_descriptor)
             print(
-                f"CLAIMED-SCORE: {None}",  # FIXME
+                f"CLAIMED-SCORE: {calcscore()}",  # FIXME
                 end="\r\n",
                 file=file_descriptor,
             )
