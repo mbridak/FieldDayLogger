@@ -5,15 +5,21 @@ import random
 import socket
 import uuid
 import time
+import threading
+import queue
 from datetime import datetime
 from json import dumps, loads, JSONDecodeError
 
 MULTICAST_PORT = 2239
 MULTICAST_GROUP = "224.1.1.1"
 INTERFACE_IP = "0.0.0.0"
+GROUP_CALL = None
 MODE = "CW"
 BAND = "20"
 POWER = 5
+
+udp_fifo = queue.Queue()
+server_commands = []
 
 
 def generate_class():
@@ -163,7 +169,7 @@ def log_contact():
         "station": STATION_CALL,
         "unique_id": unique_id,
     }
-    # self.server_commands.append(contact)
+    server_commands.append(contact)
     bytes_to_send = bytes(dumps(contact, indent=4), encoding="ascii")
     try:
         s.sendto(bytes_to_send, (MULTICAST_GROUP, int(MULTICAST_PORT)))
@@ -172,12 +178,77 @@ def log_contact():
         # logging.warning("%s", err)
 
 
+def remove_confirmed_commands(data):
+    """Removed confirmed commands from the sent commands list."""
+    for index, item in enumerate(server_commands):
+        if item.get("unique_id") == data.get("unique_id") and item.get(
+            "cmd"
+        ) == data.get("subject"):
+            server_commands.pop(index)
+            print(f"Confirmed {data.get('subject')}")
+
+
+def watch_udp():
+    """Puts UDP datagrams in a FIFO queue"""
+    while True:
+        try:
+            datagram = s.recv(1500)
+        except socket.timeout:
+            time.sleep(1)
+            continue
+        if datagram:
+            udp_fifo.put(datagram)
+
+
+def check_udp_queue():
+    """checks the UDP datagram queue."""
+    global GROUP_CALL
+    while not udp_fifo.empty():
+        datagram = udp_fifo.get()
+        try:
+            json_data = loads(datagram.decode())
+        except UnicodeDecodeError as err:
+            the_error = f"Not Unicode: {err}\n{datagram}"
+            print(the_error)
+            continue
+        except JSONDecodeError as err:
+            the_error = f"Not JSON: {err}\n{datagram}"
+            print(the_error)
+            continue
+        # logging.info("%s", json_data)
+        if json_data.get("cmd") == "PING":
+            pass
+            # print(f"[{strftime('%H:%M:%S', gmtime())}] {json_data}")
+        if json_data.get("cmd") == "RESPONSE":
+            if json_data.get("recipient") == STATION_CALL:
+                if json_data.get("subject") == "HOSTINFO":
+                    GROUP_CALL = str(json_data.get("groupcall"))
+                    return
+                if json_data.get("subject") == "LOG":
+                    print("Server Generated Log.")
+
+                remove_confirmed_commands(json_data)
+
+
+def query_group():
+    """Sends request to server asking for group call/class/section."""
+    update = {
+        "cmd": "GROUPQUERY",
+        "station": STATION_CALL,
+    }
+    bytes_to_send = bytes(dumps(update), encoding="ascii")
+    try:
+        s.sendto(bytes_to_send, (MULTICAST_GROUP, int(MULTICAST_PORT)))
+    except OSError as err:
+        print(f"{err}")
+
+
 def send_status_udp():
     """Send status update to server informing of our band and mode"""
 
-    # if self.groupcall is None and self.preference["mycall"] != "":
-    #     self.query_group()
-    #     return
+    if GROUP_CALL is None:
+        query_group()
+        return
 
     update = {
         "cmd": "PING",
@@ -190,7 +261,6 @@ def send_status_udp():
         s.sendto(bytes_to_send, (MULTICAST_GROUP, int(MULTICAST_PORT)))
     except OSError as err:
         print(f"Error: {err}")
-        # logging.warning("%s", err)
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -198,16 +268,22 @@ s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind(("", MULTICAST_PORT))
 mreq = socket.inet_aton(MULTICAST_GROUP) + socket.inet_aton(INTERFACE_IP)
 s.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, bytes(mreq))
-
+s.settimeout(0.01)
 
 STATION_CALL = generate_callsign()
 
 
 def main():
     """The main loop"""
+    _udpwatch = threading.Thread(
+        target=watch_udp,
+        daemon=True,
+    )
+    _udpwatch.start()
     send_status_udp()
     while True:
         log_contact()
+        check_udp_queue()
         time.sleep(1)
 
 
