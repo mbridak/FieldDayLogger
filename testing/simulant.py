@@ -167,7 +167,28 @@ def log_contact():
     try:
         s.sendto(bytesToSend, (MULTICAST_GROUP, int(MULTICAST_PORT)))
     except OSError as err:
-        pass
+        print(f"Error: {err}")
+        # logging.warning("%s", err)
+
+
+def send_status_udp():
+    """Send status update to server informing of our band and mode"""
+
+    # if self.groupcall is None and self.preference["mycall"] != "":
+    #     self.query_group()
+    #     return
+
+    update = {
+        "cmd": "PING",
+        "mode": MODE,
+        "band": BAND,
+        "station": STATION_CALL,
+    }
+    bytesToSend = bytes(dumps(update), encoding="ascii")
+    try:
+        s.sendto(bytesToSend, (MULTICAST_GROUP, int(MULTICAST_PORT)))
+    except OSError as err:
+        print(f"Error: {err}")
         # logging.warning("%s", err)
 
 
@@ -183,9 +204,10 @@ STATION_CALL = generate_callsign()
 
 def main():
     """The main loop"""
+    send_status_udp()
     while True:
         log_contact()
-        time.sleep(0.5)
+        time.sleep(1)
 
 
 if __name__ == "__main__":
