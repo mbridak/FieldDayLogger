@@ -156,6 +156,7 @@ def log_contact():
         "mode": MODE,
         "band": BAND,
         "frequency": int(float(fakefreq(BAND, MODE)) * 1000),
+        "date_and_time": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
         "power": POWER,
         "grid": "DM13at",
         "opname": "John Doe",
@@ -163,9 +164,9 @@ def log_contact():
         "unique_id": unique_id,
     }
     # self.server_commands.append(contact)
-    bytesToSend = bytes(dumps(contact, indent=4), encoding="ascii")
+    bytes_to_send = bytes(dumps(contact, indent=4), encoding="ascii")
     try:
-        s.sendto(bytesToSend, (MULTICAST_GROUP, int(MULTICAST_PORT)))
+        s.sendto(bytes_to_send, (MULTICAST_GROUP, int(MULTICAST_PORT)))
     except OSError as err:
         print(f"Error: {err}")
         # logging.warning("%s", err)
@@ -184,9 +185,9 @@ def send_status_udp():
         "band": BAND,
         "station": STATION_CALL,
     }
-    bytesToSend = bytes(dumps(update), encoding="ascii")
+    bytes_to_send = bytes(dumps(update), encoding="ascii")
     try:
-        s.sendto(bytesToSend, (MULTICAST_GROUP, int(MULTICAST_PORT)))
+        s.sendto(bytes_to_send, (MULTICAST_GROUP, int(MULTICAST_PORT)))
     except OSError as err:
         print(f"Error: {err}")
         # logging.warning("%s", err)

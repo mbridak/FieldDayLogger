@@ -516,6 +516,7 @@ def main(_):
                         json_data.get("hiscall"),
                         json_data.get("class"),
                         json_data.get("section"),
+                        json_data.get("date_and_time"),
                         json_data.get("frequency"),
                         json_data.get("band"),
                         json_data.get("mode"),

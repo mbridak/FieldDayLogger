@@ -50,7 +50,7 @@ class DataBase:
                     "INSERT INTO contacts"
                     "(unique_id, callsign, class, section, date_time, frequency, "
                     "band, mode, power, grid, opname, station) "
-                    "VALUES(?,?,?,?,datetime('now'),?,?,?,?,?,?,?)"
+                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"
                 )
                 cur = conn.cursor()
                 cur.execute(sql, logme)
