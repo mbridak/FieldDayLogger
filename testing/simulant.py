@@ -11,6 +11,9 @@ from json import dumps, loads, JSONDecodeError
 MULTICAST_PORT = 2239
 MULTICAST_GROUP = "224.1.1.1"
 INTERFACE_IP = "0.0.0.0"
+MODE = "CW"
+BAND = "20"
+POWER = 5
 
 
 def generate_class():
@@ -111,3 +114,79 @@ def generate_section(call):
         area = call[2]
     sections = call_areas[area].split()
     return sections[random.randint(0, len(sections) - 1)]
+
+
+def fakefreq(band, mode):
+    """
+    If unable to obtain a frequency from the rig,
+    This will return a sane value for a frequency mainly for the cabrillo and adif log.
+    Takes a band and mode as input and returns freq in khz.
+    """
+    modes = {"CW": 0, "DI": 1, "PH": 2, "FT8": 1, "SSB": 2}
+    fakefreqs = {
+        "160": ["1830", "1805", "1840"],
+        "80": ["3530", "3559", "3970"],
+        "60": ["5332", "5373", "5405"],
+        "40": ["7030", "7040", "7250"],
+        "30": ["10130", "10130", "0000"],
+        "20": ["14030", "14070", "14250"],
+        "17": ["18080", "18100", "18150"],
+        "15": ["21065", "21070", "21200"],
+        "12": ["24911", "24920", "24970"],
+        "10": ["28065", "28070", "28400"],
+        "6": ["50.030", "50300", "50125"],
+        "2": ["144030", "144144", "144250"],
+        "222": ["222100", "222070", "222100"],
+        "432": ["432070", "432200", "432100"],
+        "SAT": ["144144", "144144", "144144"],
+    }
+    freqtoreturn = fakefreqs[band][modes[mode]]
+    return freqtoreturn
+
+
+def log_contact():
+    """Send a contgact to the server."""
+    unique_id = uuid.uuid4().hex
+    callsign = generate_callsign()
+    contact = {
+        "cmd": "POST",
+        "hiscall": callsign,
+        "class": generate_class(),
+        "section": generate_section(callsign),
+        "mode": MODE,
+        "band": BAND,
+        "frequency": int(float(fakefreq(BAND, MODE)) * 1000),
+        "power": POWER,
+        "grid": "DM13at",
+        "opname": "John Doe",
+        "station": STATION_CALL,
+        "unique_id": unique_id,
+    }
+    # self.server_commands.append(contact)
+    bytesToSend = bytes(dumps(contact, indent=4), encoding="ascii")
+    try:
+        s.sendto(bytesToSend, (MULTICAST_GROUP, int(MULTICAST_PORT)))
+    except OSError as err:
+        pass
+        # logging.warning("%s", err)
+
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+s.bind(("", MULTICAST_PORT))
+mreq = socket.inet_aton(MULTICAST_GROUP) + socket.inet_aton(INTERFACE_IP)
+s.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, bytes(mreq))
+
+
+STATION_CALL = generate_callsign()
+
+
+def main():
+    """The main loop"""
+    while True:
+        log_contact()
+        time.sleep(0.5)
+
+
+if __name__ == "__main__":
+    main()
