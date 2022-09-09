@@ -1318,6 +1318,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 "mode": self.mode,
                 "band": self.band,
                 "frequency": self.oldfreq,
+                "date_and_time": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
                 "power": int(self.power_selector.value()),
                 "grid": self.contactlookup["grid"],
                 "opname": self.contactlookup["name"],
@@ -1796,6 +1797,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         grid,
                         opname,
                         _,
+                        _,
                     ) = contact
                     if mode == "DI":
                         mode = "FT8"
@@ -2051,6 +2053,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         freq,
                         band,
                         mode,
+                        _,
                         _,
                         _,
                         _,
