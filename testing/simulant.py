@@ -267,6 +267,15 @@ def check_udp_queue():
 
                 remove_confirmed_commands(json_data)
 
+        if json_data.get("cmd") == "CONFLICT":
+            band, mode = json_data.get("bandmode").split()
+            if (
+                band == BAND
+                and mode == MODE
+                and json_data.get("recipient") == STATION_CALL
+            ):
+                print(f"CONFLICT ON {json_data.get('bandmode')}")
+
 
 def query_group():
     """Sends request to server asking for group call/class/section."""
