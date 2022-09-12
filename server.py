@@ -157,6 +157,16 @@ def prectangle(win, uly, ulx, lry, lrx):
     win.addch(6, 22, curses.ACS_BTEE)
 
 
+def ptitle(win, y, x1, x2, title):
+    """Prints title"""
+    title_length = len(title)
+    middle_window = x2 - (x2 - x1) / 2
+    x = int(middle_window - (title_length / 2))
+    win.addstr(y, x, title, curses.color_pair(7))
+    win.addch(y, x - 1, curses.ACS_RTEE)
+    win.addch(y, x + title_length, curses.ACS_LTEE)
+
+
 def send_pulse():
     """send heartbeat"""
     while True:
@@ -197,7 +207,7 @@ def comm_log():
             blist.append(count[0])
     QUEWINDOW.clear()
     # QUEWINDOW.box()
-    QUEWINDOW.addstr(0, 0, "Band   CW    PH    DI")
+    QUEWINDOW.addstr(0, 0, "Band   CW    PH    DI", curses.color_pair(1))
     for yline, band in enumerate(bands):
         cwt = DB.get_band_mode_tally(band, "CW")
         dit = DB.get_band_mode_tally(band, "DI")
@@ -231,7 +241,11 @@ def show_people():
             xcol = 15
         try:
             if op_callsign in result:
-
+                packet = {"cmd": "CONFLICT"}
+                packet["bandmode"] = people.get(op_callsign)
+                packet["recipient"] = op_callsign
+                bytes_to_send = bytes(dumps(packet), encoding="ascii")
+                s.sendto(bytes_to_send, (MULTICAST_GROUP, MULTICAST_PORT))
                 PEOPLEWINDOW.addnstr(
                     yline,
                     xcol,
@@ -427,8 +441,8 @@ def cabrillo():
                     file=file_descriptor,
                 )
             print("END-OF-LOG:", end="\r\n", file=file_descriptor)
-    except IOError as exception:
-        logging.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
+    except IOError as err:
+        logging.critical("cabrillo: IO error: %s, writing to %s", err, filename)
         return
 
 
@@ -490,6 +504,9 @@ def main(_):
     rectangle(THE_SCREEN, 6, 50, 16, 79)
 
     prectangle(THE_SCREEN, 16, 50, 23, 79)
+    ptitle(THE_SCREEN, 6, 0, 50, "UDP Activity")
+    ptitle(THE_SCREEN, 6, 50, 79, "Contacts")
+    ptitle(THE_SCREEN, 16, 50, 79, "Operators")
     get_stats()
     THE_SCREEN.refresh()
     show_people()
