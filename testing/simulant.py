@@ -7,18 +7,54 @@ import uuid
 import time
 import threading
 import queue
+import argparse
 from datetime import datetime
 from json import dumps, loads, JSONDecodeError
+
+
+parser = argparse.ArgumentParser(description="Simulate a Field Day participant.")
+parser.add_argument("-c", "--call", type=str, help="Your Callsign")
+parser.add_argument("-b", "--band", type=str, help="Your Band")
+parser.add_argument("-m", "--mode", type=str, help="Your Mode")
+parser.add_argument("-p", "--power", type=str, help="Your Power")
+
+args = parser.parse_args()
 
 MULTICAST_PORT = 2239
 MULTICAST_GROUP = "224.1.1.1"
 INTERFACE_IP = "0.0.0.0"
 GROUP_CALL = None
+
 bands = ("160", "80", "40", "20", "15", "10", "6", "2")
-BAND = bands[random.randint(0, len(bands) - 1)]
+if args.band:
+    if args.band in bands:
+        BAND = args.band
+    else:
+        print('Allowed bands: "160", "80", "40", "20", "15", "10", "6", "2"')
+        raise SystemExit(1)
+else:
+    BAND = bands[random.randint(0, len(bands) - 1)]
+
 modes = ("CW", "PH", "DI")
-MODE = modes[random.randint(0, len(modes) - 1)]
-POWER = 5
+if args.mode:
+    if args.mode.upper() in modes:
+        MODE = args.mode.upper()
+    else:
+        print('Allowed modes: "CW", "PH", "DI"')
+        raise SystemExit(1)
+else:
+    MODE = modes[random.randint(0, len(modes) - 1)]
+
+if args.power:
+    try:
+        POWER = int(args.power)
+        if POWER < 1 or POWER > 100:
+            raise ValueError
+    except ValueError:
+        print("Power is a number between 1 and 100")
+        raise SystemExit(1)
+else:
+    POWER = 5
 
 udp_fifo = queue.Queue()
 server_commands = []
@@ -250,7 +286,7 @@ def send_status_udp():
 
     if GROUP_CALL is None:
         query_group()
-        return
+        # return
 
     update = {
         "cmd": "PING",
@@ -272,7 +308,10 @@ mreq = socket.inet_aton(MULTICAST_GROUP) + socket.inet_aton(INTERFACE_IP)
 s.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, bytes(mreq))
 s.settimeout(0.01)
 
-STATION_CALL = generate_callsign()
+if args.call:
+    STATION_CALL = args.call.upper()
+else:
+    STATION_CALL = generate_callsign()
 
 
 def main():
@@ -283,13 +322,16 @@ def main():
     )
     _udpwatch.start()
     print(f"Station: {STATION_CALL} on {BAND}M {MODE}")
+    send_status_udp()
     count = 0
     while True:
         count += 1
         if count % 30 == 0:
             log_contact()
+        if count % 60 == 0:
+            send_status_udp()
         check_udp_queue()
-        send_status_udp()
+
         time.sleep(1)
 
 
