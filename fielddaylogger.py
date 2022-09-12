@@ -234,17 +234,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def watch_udp(self):
         """Puts UDP datagrams in a FIFO queue"""
-        while True:
-            if self.connect_to_server:
-                try:
-                    datagram = self.server_udp.recv(1500)
-                except socket.timeout:
-                    time.sleep(1)
-                    continue
-                if datagram:
-                    self.udp_fifo.put(datagram)
-            else:
+        while self.connect_to_server:
+            try:
+                datagram = self.server_udp.recv(1500)
+            except socket.timeout:
                 time.sleep(1)
+                continue
+            if datagram:
+                self.udp_fifo.put(datagram)
 
     def check_udp_queue(self):
         """checks the UDP datagram queue."""
@@ -1269,6 +1266,9 @@ class MainWindow(QtWidgets.QMainWindow):
                         daemon=True,
                     )
                     self._udpwatch.start()
+            else:
+                self.groupcall = None
+                self.mycallEntry.show()
 
         except KeyError as err:
             logging.warning("Corrupt preference, %s, loading clean version.", err)
@@ -2353,6 +2353,6 @@ if __name__ == "__main__":
 
     timer3 = QtCore.QTimer()
     timer3.timeout.connect(window.send_status_udp)
-    timer3.start(10000)
+    timer3.start(60000)
 
     app.exec()
