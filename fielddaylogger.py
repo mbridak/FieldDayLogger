@@ -26,6 +26,7 @@ import threading
 import uuid
 import queue
 import time
+from itertools import chain
 
 # from time import gmtime, strftime
 
@@ -108,6 +109,7 @@ class MainWindow(QtWidgets.QMainWindow):
     dupdict = {}
     ft8dupe = ""
     fkeys = {}
+    people = {}
     mygrid = None
     run_state = False
     groupcall = None
@@ -117,6 +119,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """Initialize"""
         super().__init__(*args, **kwargs)
         uic.loadUi(self.relpath("data/main.ui"), self)
+        self.chat_window.hide()
         self.db = DataBase(self.database)
         self.udp_fifo = queue.Queue()
         self.listWidget.itemDoubleClicked.connect(self.qsoclicked)
@@ -218,6 +221,23 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_socket.bind(QHostAddress.LocalHost, 2237)
         self.udp_socket.readyRead.connect(self.on_udp_socket_ready_read)
 
+    def show_people(self):
+        """Display operators"""
+        rev_dict = {}
+        for key, value in self.people.items():
+            rev_dict.setdefault(value, set()).add(key)
+        result = set(
+            chain.from_iterable(
+                values for key, values in rev_dict.items() if len(values) > 1
+            )
+        )
+        self.users_list.clear()
+        self.users_list.insertPlainText("    Operators\n")
+        for yline, op_callsign in enumerate(self.people.keys()):
+            self.users_list.insertPlainText(
+                f"{op_callsign.rjust(6,' ')} {self.people.get(op_callsign).rjust(6, ' ')}\n"
+            )
+
     def clear_dirty_flag(self, unique_id):
         """clear the dirty flag on record once response is returned from server."""
         self.db.clear_dirty_flag(unique_id)
@@ -259,8 +279,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 continue
             logging.info("%s", json_data)
             if json_data.get("cmd") == "PING":
-                pass
-                # print(f"[{strftime('%H:%M:%S', gmtime())}] {json_data}")
+                if json_data.get("station"):
+                    band_mode = f"{json_data.get('band')} {json_data.get('mode')}"
+                    if self.people.get(json_data.get("station")) != band_mode:
+                        self.people[json_data.get("station")] = band_mode
+                    self.show_people()
+                continue
             if json_data.get("cmd") == "CONFLICT":
                 band, mode = json_data.get("bandmode").split()
                 if (
@@ -270,6 +294,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 ):
                     self.flash()
                     self.infoline.setText(f"CONFLICT ON {json_data.get('bandmode')}")
+                continue
             if json_data.get("cmd") == "RESPONSE":
                 if json_data.get("recipient") == self.preference.get("mycall"):
                     if json_data.get("subject") == "HOSTINFO":
@@ -1249,6 +1274,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.multicast_port,
                     self.interface_ip,
                 )
+                self.chat_window.show()
                 self.server_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 self.server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 self.server_udp.bind(("", int(self.multicast_port)))
@@ -1269,6 +1295,7 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 self.groupcall = None
                 self.mycallEntry.show()
+                self.chat_window.hide()
 
         except KeyError as err:
             logging.warning("Corrupt preference, %s, loading clean version.", err)
