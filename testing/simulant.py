@@ -14,8 +14,10 @@ MULTICAST_PORT = 2239
 MULTICAST_GROUP = "224.1.1.1"
 INTERFACE_IP = "0.0.0.0"
 GROUP_CALL = None
-MODE = "CW"
-BAND = "20"
+bands = ("160", "80", "40", "20", "15", "10", "6", "2")
+BAND = bands[random.randint(0, len(bands) - 1)]
+modes = ("CW", "PH", "DI")
+MODE = modes[random.randint(0, len(modes) - 1)]
 POWER = 5
 
 udp_fifo = queue.Queue()
@@ -280,10 +282,14 @@ def main():
         daemon=True,
     )
     _udpwatch.start()
-    send_status_udp()
+    print(f"Station: {STATION_CALL} on {BAND}M {MODE}")
+    count = 0
     while True:
-        log_contact()
+        count += 1
+        if count % 30 == 0:
+            log_contact()
         check_udp_queue()
+        send_status_udp()
         time.sleep(1)
 
 
