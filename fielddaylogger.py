@@ -264,6 +264,15 @@ class MainWindow(QtWidgets.QMainWindow):
             if json_data.get("cmd") == "PING":
                 pass
                 # print(f"[{strftime('%H:%M:%S', gmtime())}] {json_data}")
+            if json_data.get("cmd") == "CONFLICT":
+                band, mode = json_data.get("bandmode").split()
+                if (
+                    band == self.band
+                    and mode == self.mode
+                    and json_data.get("recipient") == self.preference.get("mycall")
+                ):
+                    self.flash()
+                    self.infoline.setText(f"CONFLICT ON {json_data.get('BANDMODE')}")
             if json_data.get("cmd") == "RESPONSE":
                 if json_data.get("recipient") == self.preference.get("mycall"):
                     if json_data.get("subject") == "HOSTINFO":
@@ -1010,10 +1019,12 @@ class MainWindow(QtWidgets.QMainWindow):
     def changeband(self):
         """change band"""
         self.band = self.band_selector.currentText()
+        self.send_status_udp()
 
     def changemode(self):
         """change mode"""
         self.mode = self.mode_selector.currentText()
+        self.send_status_udp()
 
     def changepower(self):
         """change power"""
