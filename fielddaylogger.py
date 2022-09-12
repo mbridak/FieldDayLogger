@@ -269,7 +269,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     and json_data.get("recipient") == self.preference.get("mycall")
                 ):
                     self.flash()
-                    self.infoline.setText(f"CONFLICT ON {json_data.get('BANDMODE')}")
+                    self.infoline.setText(f"CONFLICT ON {json_data.get('bandmode')}")
             if json_data.get("cmd") == "RESPONSE":
                 if json_data.get("recipient") == self.preference.get("mycall"):
                     if json_data.get("subject") == "HOSTINFO":
