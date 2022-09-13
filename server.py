@@ -28,8 +28,7 @@ from lib.server_database import DataBase
 from lib.version import __version__
 
 # from lib.settings import Settings
-# pylint: disable=no-name-in-module
-# pylint: disable=c-extension-no-member
+# pylint: disable=no-name-in-module, invalid-name, c-extension-no-member, global-statement
 
 
 if Path("./debug").exists():
@@ -108,8 +107,8 @@ try:
     if os.path.exists("./server_preferences.json"):
         with open(
             "./server_preferences.json", "rt", encoding="utf-8"
-        ) as file_descriptor:
-            preference = loads(file_descriptor.read())
+        ) as _file_descriptor:
+            preference = loads(_file_descriptor.read())
             logging.info("%s", preference)
             MULTICAST_PORT = preference.get("multicast_port")
             MULTICAST_GROUP = preference.get("mullticast_group")
@@ -241,11 +240,11 @@ def show_people():
             xcol = 15
         try:
             if op_callsign in result:
-                packet = {"cmd": "CONFLICT"}
-                packet["bandmode"] = people.get(op_callsign)
-                packet["recipient"] = op_callsign
-                bytes_to_send = bytes(dumps(packet), encoding="ascii")
-                s.sendto(bytes_to_send, (MULTICAST_GROUP, MULTICAST_PORT))
+                # packet = {"cmd": "CONFLICT"}
+                # packet["bandmode"] = people.get(op_callsign)
+                # packet["recipient"] = op_callsign
+                # bytes_to_send = bytes(dumps(packet), encoding="ascii")
+                # s.sendto(bytes_to_send, (MULTICAST_GROUP, MULTICAST_PORT))
                 PEOPLEWINDOW.addnstr(
                     yline,
                     xcol,
@@ -268,14 +267,15 @@ def show_people():
 
 def get_stats():
     """Get statistics"""
+    global QRP
     (
         cwcontacts,
         phonecontacts,
         digitalcontacts,
-        bandmodemult,
+        _,
         last15,
         lasthour,
-        HIGHPOWER,
+        _,
         QRP,
     ) = DB.stats()
 
@@ -327,7 +327,8 @@ def calcscore():
     QRP and Low Power (<100W) have base multiplier of 2.
     QRP with Alt Power has base multiplier of 5
     """
-    QRP, HIGHPOWER = DB.qrp_check()
+    global QRP
+    QRP, _ = DB.qrp_check()
     c_dubs, phone, digital = DB.contacts_under_101watts()
     score = (int(c_dubs) * 2) + int(phone) + (int(digital) * 2)
     multiplier = 2
