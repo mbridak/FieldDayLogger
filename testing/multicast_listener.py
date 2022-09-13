@@ -17,7 +17,7 @@ s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind(("", multicast_port))
 mreq = socket.inet_aton(multicast_group) + socket.inet_aton(interface_ip)
 s.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, bytes(mreq))
-s.settimeout(0.01)
+s.settimeout(0.1)
 
 
 def watch_udp():
@@ -25,7 +25,7 @@ def watch_udp():
     while True:
         try:
             datagram = s.recv(1500)
-        except TimeoutError:
+        except socket.timeout:
             time.sleep(1)
             continue
         if datagram:
@@ -41,5 +41,5 @@ _udpwatch.start()
 while 1:
     # print("Waiting...")
     while not fifo.empty():
-        print(f"[{time.time()}] {fifo.get()}")
+        print(f"[{time.time()}] {fifo.get()}\n")
     time.sleep(1)
