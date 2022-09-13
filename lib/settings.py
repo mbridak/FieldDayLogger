@@ -45,6 +45,12 @@ class Settings(QtWidgets.QDialog):
             self.usepywinkeyer_radioButton.setChecked(
                 bool(self.preference["cwtype"] == 2)
             )
+            self.connect_to_server.setChecked(
+                bool(self.preference.get("useserver"))
+            )
+            self.multicast_group.setText(self.preference.get("multicast_group"))
+            self.multicast_port.setText(str(self.preference.get("multicast_port")))
+            self.interface_ip.setText(self.preference.get("interface_ip"))
 
     @staticmethod
     def relpath(filename: str) -> str:
@@ -85,6 +91,10 @@ class Settings(QtWidgets.QDialog):
             self.preference["cwtype"] = 1
         if self.usepywinkeyer_radioButton.isChecked():
             self.preference["cwtype"] = 2
+        self.preference["useserver"] = self.connect_to_server.isChecked()
+        self.preference["multicast_group"] = self.multicast_group.text()
+        self.preference["multicast_port"] = self.multicast_port.text()
+        self.preference["interface_ip"] = self.interface_ip.text()
         try:
             logging.info("save_changes:")
             with open(

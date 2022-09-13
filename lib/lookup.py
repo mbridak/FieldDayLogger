@@ -6,9 +6,12 @@ HamQTH
 """
 
 import logging
+import warnings
 from bs4 import BeautifulSoup as bs
+
 import requests
 
+warnings.filterwarnings('ignore', category=UserWarning, module='bs4')
 
 class HamDBlookup:
     """

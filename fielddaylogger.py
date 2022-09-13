@@ -5,9 +5,7 @@ Email: michael.bridak@gmail.com
 https://github.com/mbridak/FieldDayLogger
 GPL V3
 """
-# pylint: disable=too-many-lines
-# pylint: disable=invalid-name
-# pylint: disable=no-member
+# pylint: disable=too-many-lines, invalid-name, no-member, no-value-for-parameter
 # Nothing to see here move along.
 # xplanet -body earth -window -longitude -117 -latitude 38
 # -config Default -projection azmithal -radius 200 -wait 5
@@ -15,7 +13,7 @@ GPL V3
 from math import radians, sin, cos, atan2, sqrt, asin, pi
 from pathlib import Path
 from datetime import datetime
-from json import dumps, loads
+from json import dumps, loads, JSONDecodeError
 from shutil import copyfile
 
 # from xmlrpc.client import ServerProxy, Error
@@ -25,6 +23,12 @@ import socket
 import sys
 import logging
 import threading
+import uuid
+import queue
+import time
+from itertools import chain
+
+# from time import gmtime, strftime
 
 import requests
 from PyQt5.QtNetwork import QUdpSocket, QHostAddress
@@ -38,7 +42,6 @@ from lib.settings import Settings
 from lib.database import DataBase
 from lib.cwinterface import CW
 from lib.version import __version__
-
 
 
 def relpath(filename):
@@ -105,20 +108,26 @@ class MainWindow(QtWidgets.QMainWindow):
     datadict = {}
     dupdict = {}
     ft8dupe = ""
-    fkeys = dict()
+    fkeys = {}
+    people = {}
     mygrid = None
     run_state = False
+    groupcall = None
+    server_commands = []
 
     def __init__(self, *args, **kwargs):
         """Initialize"""
         super().__init__(*args, **kwargs)
         uic.loadUi(self.relpath("data/main.ui"), self)
+        self.chat_window.hide()
         self.db = DataBase(self.database)
+        self.udp_fifo = queue.Queue()
         self.listWidget.itemDoubleClicked.connect(self.qsoclicked)
         self.callsign_entry.textEdited.connect(self.calltest)
         self.class_entry.textEdited.connect(self.classtest)
         self.section_entry.textEdited.connect(self.sectiontest)
         self.callsign_entry.returnPressed.connect(self.log_contact)
+        self.chat_entry.returnPressed.connect(self.send_chat)
         self.class_entry.returnPressed.connect(self.log_contact)
         self.section_entry.returnPressed.connect(self.log_contact)
         self.mycallEntry.textEdited.connect(self.changemycall)
@@ -186,11 +195,20 @@ class MainWindow(QtWidgets.QMainWindow):
             "cwtype": 0,
             "cwip": "localhost",
             "cwport": 6789,
+            "useserver": 0,
+            "multicast_group": "224.1.1.1",
+            "multicast_port": 2239,
+            "interface_ip": "0.0.0.0",
         }
         self.reference_preference = self.preference.copy()
         self.look_up = None
         self.cat_control = None
         self.cw = None
+        self.connect_to_server = False
+        self.multicast_group = None
+        self.multicast_port = None
+        self.interface_ip = None
+        self._udpwatch = None
         self.readpreferences()
         self.radiochecktimer = QtCore.QTimer()
         self.radiochecktimer.timeout.connect(self.poll_radio)
@@ -198,9 +216,171 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ft8dupechecktimer = QtCore.QTimer()
         self.ft8dupechecktimer.timeout.connect(self.ft8dupecheck)
         self.ft8dupechecktimer.start(1000)
+
+        # ft8 udp server
         self.udp_socket = QUdpSocket()
         self.udp_socket.bind(QHostAddress.LocalHost, 2237)
         self.udp_socket.readyRead.connect(self.on_udp_socket_ready_read)
+
+    def show_people(self):
+        """Display operators"""
+        rev_dict = {}
+        for key, value in self.people.items():
+            rev_dict.setdefault(value, set()).add(key)
+        result = set(
+            chain.from_iterable(
+                values for key, values in rev_dict.items() if len(values) > 1
+            )
+        )
+        self.users_list.clear()
+        self.users_list.insertPlainText("    Operators\n")
+        for op_callsign in self.people:
+            if op_callsign in result:
+                self.users_list.setTextColor(QtGui.QColor(245, 121, 0))
+                self.users_list.insertPlainText(
+                    f"{op_callsign.rjust(6,' ')} {self.people.get(op_callsign).rjust(6, ' ')}\n"
+                )
+                self.users_list.setTextColor(QtGui.QColor(211, 215, 207))
+            else:
+                self.users_list.insertPlainText(
+                    f"{op_callsign.rjust(6,' ')} {self.people.get(op_callsign).rjust(6, ' ')}\n"
+                )
+
+    def clear_dirty_flag(self, unique_id):
+        """clear the dirty flag on record once response is returned from server."""
+        self.db.clear_dirty_flag(unique_id)
+
+    def remove_confirmed_commands(self, data):
+        """Removed confirmed commands from the sent commands list."""
+        for index, item in enumerate(self.server_commands):
+            if item.get("unique_id") == data.get("unique_id") and item.get(
+                "cmd"
+            ) == data.get("subject"):
+                self.server_commands.pop(index)
+                self.clear_dirty_flag(data.get("unique_id"))
+                self.infoline.setText(f"Confirmed {data.get('subject')}")
+
+    def send_chat(self):
+        """Sends UDP chat packet with text entered in chat_entry field."""
+        message = self.chat_entry.text()
+        packet = {"cmd": "CHAT"}
+        packet["sender"] = self.preference.get("mycall")
+        packet["message"] = message
+        bytesToSend = bytes(dumps(packet), encoding="ascii")
+        try:
+            self.server_udp.sendto(
+                bytesToSend, (self.multicast_group, int(self.multicast_port))
+            )
+        except OSError as err:
+            logging.warning("%s", err)
+        self.chat_entry.setText("")
+
+    def display_chat(self, sender, body):
+        """Displays the chat history."""
+        if self.preference.get("mycall") in body.upper():
+            self.chatlog.setTextColor(QtGui.QColor(245, 121, 0))
+        self.chatlog.insertPlainText(f"{sender}: {body}\n")
+        self.chatlog.setTextColor(QtGui.QColor(211, 215, 207))
+
+    def watch_udp(self):
+        """Puts UDP datagrams in a FIFO queue"""
+        while self.connect_to_server:
+            try:
+                datagram = self.server_udp.recv(1500)
+            except socket.timeout:
+                time.sleep(1)
+                continue
+            if datagram:
+                self.udp_fifo.put(datagram)
+
+    def check_udp_queue(self):
+        """checks the UDP datagram queue."""
+        while not self.udp_fifo.empty():
+            datagram = self.udp_fifo.get()
+            try:
+                json_data = loads(datagram.decode())
+            except UnicodeDecodeError as err:
+                the_error = f"Not Unicode: {err}\n{datagram}"
+                logging.info(the_error)
+                continue
+            except JSONDecodeError as err:
+                the_error = f"Not JSON: {err}\n{datagram}"
+                logging.info(the_error)
+                continue
+            logging.info("%s", json_data)
+            if json_data.get("cmd") == "PING":
+                if json_data.get("station"):
+                    band_mode = f"{json_data.get('band')} {json_data.get('mode')}"
+                    if self.people.get(json_data.get("station")) != band_mode:
+                        self.people[json_data.get("station")] = band_mode
+                    self.show_people()
+                continue
+            # if json_data.get("cmd") == "CONFLICT":
+            #     band, mode = json_data.get("bandmode").split()
+            #     if (
+            #         band == self.band
+            #         and mode == self.mode
+            #         and json_data.get("recipient") == self.preference.get("mycall")
+            #     ):
+            #         self.flash()
+            #         self.infoline.setText(f"CONFLICT ON {json_data.get('bandmode')}")
+            #     continue
+            if json_data.get("cmd") == "RESPONSE":
+                if json_data.get("recipient") == self.preference.get("mycall"):
+                    if json_data.get("subject") == "HOSTINFO":
+                        self.groupcall = str(json_data.get("groupcall"))
+                        self.myclassEntry.setText(str(json_data.get("groupclass")))
+                        self.mysectionEntry.setText(str(json_data.get("groupsection")))
+                        self.group_call_indicator.setText(self.groupcall)
+                        self.changemyclass()
+                        self.changemysection()
+                        self.mycallEntry.hide()
+                        return
+                    if json_data.get("subject") == "LOG":
+                        self.infoline.setText("Server Generated Log.")
+                    self.remove_confirmed_commands(json_data)
+                    continue
+            if json_data.get("cmd") == "CHAT":
+                self.display_chat(json_data.get("sender"), json_data.get("message"))
+                continue
+            if json_data.get("cmd") == "GROUPQUERY":
+                if self.groupcall:
+                    self.send_status_udp()
+
+    def query_group(self):
+        """Sends request to server asking for group call/class/section."""
+        update = {
+            "cmd": "GROUPQUERY",
+            "station": self.preference["mycall"],
+        }
+        bytesToSend = bytes(dumps(update), encoding="ascii")
+        try:
+            self.server_udp.sendto(
+                bytesToSend, (self.multicast_group, int(self.multicast_port))
+            )
+        except OSError as err:
+            logging.warning("%s", err)
+
+    def send_status_udp(self):
+        """Send status update to server informing of our band and mode"""
+        if self.connect_to_server:
+            if self.groupcall is None and self.preference["mycall"] != "":
+                self.query_group()
+                return
+
+            update = {
+                "cmd": "PING",
+                "mode": self.mode,
+                "band": self.band,
+                "station": self.preference["mycall"],
+            }
+            bytesToSend = bytes(dumps(update), encoding="ascii")
+            try:
+                self.server_udp.sendto(
+                    bytesToSend, (self.multicast_group, int(self.multicast_port))
+                )
+            except OSError as err:
+                logging.warning("%s", err)
 
     def clearcontactlookup(self):
         """clearout the contact lookup"""
@@ -457,8 +637,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.run_button.setText("Run")
         self.read_cw_macros()
 
-
-
     def read_cw_macros(self):
         """
         Reads in the CW macros, firsts it checks to see if the file exists. If it does not,
@@ -466,9 +644,7 @@ class MainWindow(QtWidgets.QMainWindow):
         temp directory this is running from... In theory.
         """
 
-        if (
-            not Path("./cwmacros_fd.txt").exists()
-        ):
+        if not Path("./cwmacros_fd.txt").exists():
             logging.info("read_cw_macros: copying default macro file.")
             copyfile(self.relpath("data/cwmacros_fd.txt"), "./cwmacros_fd.txt")
         with open("./cwmacros_fd.txt", "r", encoding="utf-8") as file_descriptor:
@@ -901,10 +1077,12 @@ class MainWindow(QtWidgets.QMainWindow):
     def changeband(self):
         """change band"""
         self.band = self.band_selector.currentText()
+        self.send_status_udp()
 
     def changemode(self):
         """change mode"""
         self.mode = self.mode_selector.currentText()
+        self.send_status_udp()
 
     def changepower(self):
         """change power"""
@@ -1043,20 +1221,18 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Restore preferences if they exist, otherwise create some sane defaults.
         """
-        logging.info("readpreferences:")
         try:
             if os.path.exists("./fd_preferences.json"):
                 with open(
                     "./fd_preferences.json", "rt", encoding="utf-8"
                 ) as file_descriptor:
                     self.preference = loads(file_descriptor.read())
-                    logging.info("reading: %s", self.preference)
             else:
                 with open(
                     "./fd_preferences.json", "wt", encoding="utf-8"
                 ) as file_descriptor:
                     file_descriptor.write(dumps(self.preference, indent=4))
-                    logging.info("writing: %s", self.preference)
+                    logging.info("No preference, writing dafult.")
         except IOError as exception:
             logging.critical("readpreferences: %s", exception)
         logging.info(self.preference)
@@ -1120,6 +1296,43 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.preference["cwport"],
                 )
                 self.cw.speed = 20
+
+            self.connect_to_server = self.preference.get("useserver")
+            self.multicast_group = self.preference.get("multicast_group")
+            self.multicast_port = self.preference.get("multicast_port")
+            self.interface_ip = self.preference.get("interface_ip")
+            # group upd server
+            logging.info("Use group server: %s", self.connect_to_server)
+            if self.connect_to_server:
+                logging.info(
+                    "Connecting: %s:%s %s",
+                    self.multicast_group,
+                    self.multicast_port,
+                    self.interface_ip,
+                )
+                self.chat_window.show()
+                self.server_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                self.server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                self.server_udp.bind(("", int(self.multicast_port)))
+                mreq = socket.inet_aton(self.multicast_group) + socket.inet_aton(
+                    self.interface_ip
+                )
+                self.server_udp.setsockopt(
+                    socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, bytes(mreq)
+                )
+                self.server_udp.settimeout(0.01)
+
+                if self._udpwatch is None:
+                    self._udpwatch = threading.Thread(
+                        target=self.watch_udp,
+                        daemon=True,
+                    )
+                    self._udpwatch.start()
+            else:
+                self.groupcall = None
+                self.mycallEntry.show()
+                self.chat_window.hide()
+
         except KeyError as err:
             logging.warning("Corrupt preference, %s, loading clean version.", err)
             self.preference = self.reference_preference.copy()
@@ -1134,7 +1347,6 @@ class MainWindow(QtWidgets.QMainWindow):
         Write preferences to json file.
         """
         try:
-            logging.info("writepreferences:")
             with open(
                 "./fd_preferences.json", "wt", encoding="utf-8"
             ) as file_descriptor:
@@ -1153,6 +1365,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if not self.cat_control:
             self.oldfreq = int(float(self.fakefreq(self.band, self.mode)) * 1000)
+        unique_id = uuid.uuid4().hex
         contact = (
             self.callsign_entry.text(),
             self.class_entry.text(),
@@ -1163,8 +1376,35 @@ class MainWindow(QtWidgets.QMainWindow):
             int(self.power_selector.value()),
             self.contactlookup["grid"],
             self.contactlookup["name"],
+            unique_id,
         )
         self.db.log_contact(contact)
+
+        if self.connect_to_server:
+            contact = {
+                "cmd": "POST",
+                "hiscall": self.callsign_entry.text(),
+                "class": self.class_entry.text(),
+                "section": self.section_entry.text(),
+                "mode": self.mode,
+                "band": self.band,
+                "frequency": self.oldfreq,
+                "date_and_time": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+                "power": int(self.power_selector.value()),
+                "grid": self.contactlookup["grid"],
+                "opname": self.contactlookup["name"],
+                "station": self.preference["mycall"],
+                "unique_id": unique_id,
+            }
+            self.server_commands.append(contact)
+            bytesToSend = bytes(dumps(contact, indent=4), encoding="ascii")
+            try:
+                self.server_udp.sendto(
+                    bytesToSend, (self.multicast_group, int(self.multicast_port))
+                )
+            except OSError as err:
+                logging.warning("%s", err)
+
         self.sections()
         self.stats()
         self.updatemarker()
@@ -1235,6 +1475,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 band,
                 mode,
                 power,
+                _,
+                _,
                 _,
                 _,
             ) = contact
@@ -1570,7 +1812,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Updates the xplanet marker file with a list of logged contact lat & lon
         """
-        if self.preference['usemarker']:
+        if self.preference["usemarker"]:
             filename = str(Path.home()) + "/" + self.markerfile
             try:
                 list_of_grids = self.db.get_grids()
@@ -1625,6 +1867,8 @@ class MainWindow(QtWidgets.QMainWindow):
                         _,
                         grid,
                         opname,
+                        _,
+                        _,
                     ) = contact
                     if mode == "DI":
                         mode = "FT8"
@@ -1752,6 +1996,7 @@ class MainWindow(QtWidgets.QMainWindow):
             _,
             grid,
             opname,
+            _,
         ) = contact
         if mode == "DI":
             mode = "FT8"
@@ -1882,6 +2127,8 @@ class MainWindow(QtWidgets.QMainWindow):
                         _,
                         _,
                         _,
+                        _,
+                        _,
                     ) = contact
                     if mode == "DI":
                         mode = "DG"
@@ -1919,6 +2166,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cabrillo()
         self.generate_band_mode_tally()
         self.adif()
+        if self.connect_to_server:
+            update = {
+                "cmd": "LOG",
+                "station": self.preference["mycall"],
+            }
+            bytesToSend = bytes(dumps(update), encoding="ascii")
+            try:
+                self.server_udp.sendto(
+                    bytesToSend, (self.multicast_group, int(self.multicast_port))
+                )
+            except OSError as err:
+                logging.warning("%s", err)
 
 
 class EditQSODialog(QtWidgets.QDialog):
@@ -1934,6 +2193,7 @@ class EditQSODialog(QtWidgets.QDialog):
         self.deleteButton.clicked.connect(self.delete_contact)
         self.buttonBox.accepted.connect(self.save_changes)
         self.change = QsoEdit()
+        self.unique_id = None
 
     def set_up(self, linetopass, thedatabase):
         """Set up variables"""
@@ -1960,6 +2220,7 @@ class EditQSODialog(QtWidgets.QDialog):
         now = QtCore.QDateTime.fromString(date_time, "yyyy-MM-dd hh:mm:ss")
         self.editDateTime.setDateTime(now)
         self.database = thedatabase
+        self.unique_id = self.database.get_unique_id(self.theitem)
 
     @staticmethod
     def relpath(filename: str) -> str:
@@ -1987,11 +2248,44 @@ class EditQSODialog(QtWidgets.QDialog):
             self.theitem,
         ]
         self.database.change_contact(qso)
+        if window.connect_to_server:
+            command = {"cmd": "UPDATE"}
+            command["hiscall"] = self.editCallsign.text().upper()
+            command["class"] = self.editClass.text().upper()
+            command["section"] = self.editSection.text().upper()
+            command["date_time"] = self.editDateTime.text()
+            command["frequency"] = self.editFreq.text()
+            command["band"] = self.editBand.currentText()
+            command["mode"] = self.editMode.currentText().upper()
+            command["power"] = self.editPower.value()
+            command["station"] = window.preference["mycall"].upper()
+            command["unique_id"] = self.unique_id
+            window.server_commands.append(command)
+            bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
+            try:
+                window.server_udp.sendto(
+                    bytesToSend, (window.multicast_group, int(window.multicast_port))
+                )
+            except OSError as err:
+                logging.warning("%s", err)
         self.change.lineChanged.emit()
 
     def delete_contact(self):
         """delete the contact"""
         self.database.delete_contact(self.theitem)
+        if window.connect_to_server:
+            command = {}
+            command["cmd"] = "DELETE"
+            command["unique_id"] = self.unique_id
+            command["station"] = window.preference["mycall"].upper()
+            window.server_commands.append(command)
+            bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
+            try:
+                window.server_udp.sendto(
+                    bytesToSend, (window.multicast_group, int(window.multicast_port))
+                )
+            except OSError as err:
+                logging.warning("%s", err)
         self.change.lineChanged.emit()
         self.close()  # try:
 
@@ -2081,7 +2375,6 @@ if __name__ == "__main__":
     app.setStyle("Fusion")
     font_dir = relpath("font")
     families = load_fonts_from_dir(os.fspath(font_dir))
-    logging.info(families)
     window = MainWindow()
     window.setWindowTitle(f"K6GTE Field Day Logger v{__version__}")
     window.show()
@@ -2116,5 +2409,13 @@ if __name__ == "__main__":
     timer = QtCore.QTimer()
     timer.timeout.connect(window.update_time)
     timer.start(1000)
+
+    timer2 = QtCore.QTimer()
+    timer2.timeout.connect(window.check_udp_queue)
+    timer2.start(1000)
+
+    timer3 = QtCore.QTimer()
+    timer3.timeout.connect(window.send_status_udp)
+    timer3.start(60000)
 
     app.exec()

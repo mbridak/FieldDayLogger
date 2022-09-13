@@ -21,6 +21,7 @@ class DataBase:
                 sql_table = (
                     "CREATE TABLE IF NOT EXISTS contacts "
                     "(id INTEGER PRIMARY KEY, "
+                    "unique_id text NOT NULL, "
                     "callsign text NOT NULL, "
                     "class text NOT NULL, "
                     "section text NOT NULL, "
@@ -31,38 +32,25 @@ class DataBase:
                     "power INTEGER NOT NULL, "
                     "grid text NOT NULL, "
                     "opname text NOT NULL, "
-                    "unique_id text NOT NULL, "
-                    "dirty INTEGER DEFAULT 1);"
+                    "station text NOT NULL);"
                 )
                 cursor.execute(sql_table)
                 conn.commit()
         except sqlite3.Error as exception:
-            logging.critical("%s", exception)
-
-    def clear_dirty_flag(self, unique_id) -> None:
-        """Clears the dirty flag."""
-        if unique_id:
-            try:
-                with sqlite3.connect(self.database) as conn:
-                    sql = f"update contacts set dirty=0 where unique_id='{unique_id}';"
-                    cursor = conn.cursor()
-                    cursor.execute(sql)
-                    conn.commit()
-            except sqlite3.Error as exception:
-                logging.critical("%s", exception)
+            logging.critical("create_db: Unable to create database: %s", exception)
 
     def log_contact(self, logme: tuple) -> None:
         """
         Inserts a contact into the db.
-        pass in (hiscall, hisclass, hissection, band, mode, int(power), grid, name)
+        pass in (unique_id, hiscall, hisclass, hissection, band, mode, int(power), grid, name)
         """
         try:
             with sqlite3.connect(self.database) as conn:
                 sql = (
                     "INSERT INTO contacts"
-                    "(callsign, class, section, date_time, frequency, "
-                    "band, mode, power, grid, opname, unique_id, dirty) "
-                    "VALUES(?,?,?,datetime('now'),?,?,?,?,?,?,?,1)"
+                    "(unique_id, callsign, class, section, date_time, frequency, "
+                    "band, mode, power, grid, opname, station) "
+                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"
                 )
                 cur = conn.cursor()
                 cur.execute(sql, logme)
@@ -70,26 +58,12 @@ class DataBase:
         except sqlite3.Error as exception:
             logging.debug("DataBase log_contact: %s", exception)
 
-    def get_unique_id(self, contact) -> str:
-        """get unique id"""
-        unique_id = ""
-        if contact:
+    def delete_contact(self, unique_id) -> None:
+        """Deletes a contact from the db by passing in UUID."""
+        if unique_id:
             try:
                 with sqlite3.connect(self.database) as conn:
-                    sql = f"select unique_id from contacts where id={int(contact)}"
-                    cursor = conn.cursor()
-                    cursor.execute(sql)
-                    unique_id = str(cursor.fetchone()[0])
-            except sqlite3.Error as exception:
-                logging.debug("%s", exception)
-        return unique_id
-
-    def delete_contact(self, contact) -> None:
-        """Deletes a contact from the db."""
-        if contact:
-            try:
-                with sqlite3.connect(self.database) as conn:
-                    sql = f"delete from contacts where id={int(contact)}"
+                    sql = f"delete from contacts where unique_id='{unique_id}'"
                     cur = conn.cursor()
                     cur.execute(sql)
                     conn.commit()
@@ -98,20 +72,27 @@ class DataBase:
 
     def change_contact(self, qso):
         """Update an existing contact."""
-        print(qso)
         try:
             with sqlite3.connect(self.database) as conn:
                 sql = (
                     f"update contacts set callsign = '{qso[0]}', class = '{qso[1]}', "
                     f"section = '{qso[2]}', date_time = '{qso[3]}', band = '{qso[4]}', "
-                    f"mode = '{qso[5]}', power = '{qso[6]}'  where id='{qso[7]}'"
+                    f"mode = '{qso[5]}', power = '{qso[6]}', station = '{qso[7]}', "
+                    f"frequency = '{qso[8]}' where unique_id='{qso[9]}';"
                 )
-                print(sql)
                 cur = conn.cursor()
                 cur.execute(sql)
                 conn.commit()
         except sqlite3.Error as exception:
-            logging.debug("DataBase change_contact: %s", exception)
+            logging.critical("DataBase change_contact: %s", exception)
+
+    def get_operators(self) -> list:
+        """Return a list of station calls used."""
+        with sqlite3.connect(self.database) as conn:
+            cursor = conn.cursor()
+            cursor.execute("select distinct station from contacts;")
+            ops = cursor.fetchall()
+        return ops
 
     def stats(self) -> tuple:
         """

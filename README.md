@@ -1,6 +1,6 @@
 # K6GTE Field Day logger (GUI)
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  [![Python: 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)  [![Made With:PyQt5](https://img.shields.io/badge/Made%20with-PyQt5-red)](https://pypi.org/project/PyQt5/)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  [![Python: 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)  [![Made With:PyQt5](https://img.shields.io/badge/Made%20with-PyQt5-red)](https://pypi.org/project/PyQt5/)
 
 [ARRL Field Day](http://field-day.arrl.org/) is a once a year 24hr emergency 
 preparidness event for radio amateurs (Hams). During the event, we try and 
@@ -22,7 +22,11 @@ file with a band/mode/power breakdown which you can use when you submit your
 logs to the ARRL online [here](http://field-day.arrl.org/fdentry.php). An ADIF 
 file will also be generated so you can merge contacts into your normal Log.
 
+We now have a group aggrigation server, The clients and server pass traffic
+over Multicast UDP.
+
 Read the manual [here](Manual.md)
 
 ![Picture of main screen](pics/loggerscreenshot.png)
 
+![Picture of server main screen](pics/server_pic.png)
