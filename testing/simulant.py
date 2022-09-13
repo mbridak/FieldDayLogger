@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Simulated Field Day club participant"""
 
+# pylint: disable=global-statement, raise-missing-from
+
 import random
 import socket
 import uuid
@@ -166,7 +168,7 @@ def fakefreq(band, mode):
     This will return a sane value for a frequency mainly for the cabrillo and adif log.
     Takes a band and mode as input and returns freq in khz.
     """
-    modes = {"CW": 0, "DI": 1, "PH": 2, "FT8": 1, "SSB": 2}
+    _modes = {"CW": 0, "DI": 1, "PH": 2, "FT8": 1, "SSB": 2}
     fakefreqs = {
         "160": ["1830", "1805", "1840"],
         "80": ["3530", "3559", "3970"],
@@ -184,7 +186,7 @@ def fakefreq(band, mode):
         "432": ["432070", "432200", "432100"],
         "SAT": ["144144", "144144", "144144"],
     }
-    freqtoreturn = fakefreqs[band][modes[mode]]
+    freqtoreturn = fakefreqs[band][_modes[mode]]
     return freqtoreturn
 
 
