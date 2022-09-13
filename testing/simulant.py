@@ -275,6 +275,9 @@ def check_udp_queue():
                 and json_data.get("recipient") == STATION_CALL
             ):
                 print(f"CONFLICT ON {json_data.get('bandmode')}")
+        if json_data.get("cmd") == "GROUPQUERY":
+            if GROUP_CALL:
+                send_status_udp()
 
 
 def query_group():
