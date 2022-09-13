@@ -127,6 +127,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.class_entry.textEdited.connect(self.classtest)
         self.section_entry.textEdited.connect(self.sectiontest)
         self.callsign_entry.returnPressed.connect(self.log_contact)
+        self.chat_entry.returnPressed.connect(self.send_chat)
         self.class_entry.returnPressed.connect(self.log_contact)
         self.section_entry.returnPressed.connect(self.log_contact)
         self.mycallEntry.textEdited.connect(self.changemycall)
@@ -233,10 +234,17 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.users_list.clear()
         self.users_list.insertPlainText("    Operators\n")
-        for yline, op_callsign in enumerate(self.people.keys()):
-            self.users_list.insertPlainText(
-                f"{op_callsign.rjust(6,' ')} {self.people.get(op_callsign).rjust(6, ' ')}\n"
-            )
+        for op_callsign in self.people:
+            if op_callsign in result:
+                self.users_list.setTextColor(QtGui.QColor(245, 121, 0))
+                self.users_list.insertPlainText(
+                    f"{op_callsign.rjust(6,' ')} {self.people.get(op_callsign).rjust(6, ' ')}\n"
+                )
+                self.users_list.setTextColor(QtGui.QColor(211, 215, 207))
+            else:
+                self.users_list.insertPlainText(
+                    f"{op_callsign.rjust(6,' ')} {self.people.get(op_callsign).rjust(6, ' ')}\n"
+                )
 
     def clear_dirty_flag(self, unique_id):
         """clear the dirty flag on record once response is returned from server."""
@@ -251,6 +259,28 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.server_commands.pop(index)
                 self.clear_dirty_flag(data.get("unique_id"))
                 self.infoline.setText(f"Confirmed {data.get('subject')}")
+
+    def send_chat(self):
+        """Sends UDP chat packet with text entered in chat_entry field."""
+        message = self.chat_entry.text()
+        packet = {"cmd": "CHAT"}
+        packet["sender"] = self.preference.get("mycall")
+        packet["message"] = message
+        bytesToSend = bytes(dumps(packet), encoding="ascii")
+        try:
+            self.server_udp.sendto(
+                bytesToSend, (self.multicast_group, int(self.multicast_port))
+            )
+        except OSError as err:
+            logging.warning("%s", err)
+        self.chat_entry.setText("")
+
+    def display_chat(self, sender, body):
+        """Displays the chat history."""
+        if self.preference.get("mycall") in body.upper():
+            self.chatlog.setTextColor(QtGui.QColor(245, 121, 0))
+        self.chatlog.insertPlainText(f"{sender}: {body}\n")
+        self.chatlog.setTextColor(QtGui.QColor(211, 215, 207))
 
     def watch_udp(self):
         """Puts UDP datagrams in a FIFO queue"""
@@ -285,16 +315,16 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.people[json_data.get("station")] = band_mode
                     self.show_people()
                 continue
-            if json_data.get("cmd") == "CONFLICT":
-                band, mode = json_data.get("bandmode").split()
-                if (
-                    band == self.band
-                    and mode == self.mode
-                    and json_data.get("recipient") == self.preference.get("mycall")
-                ):
-                    self.flash()
-                    self.infoline.setText(f"CONFLICT ON {json_data.get('bandmode')}")
-                continue
+            # if json_data.get("cmd") == "CONFLICT":
+            #     band, mode = json_data.get("bandmode").split()
+            #     if (
+            #         band == self.band
+            #         and mode == self.mode
+            #         and json_data.get("recipient") == self.preference.get("mycall")
+            #     ):
+            #         self.flash()
+            #         self.infoline.setText(f"CONFLICT ON {json_data.get('bandmode')}")
+            #     continue
             if json_data.get("cmd") == "RESPONSE":
                 if json_data.get("recipient") == self.preference.get("mycall"):
                     if json_data.get("subject") == "HOSTINFO":
@@ -308,8 +338,14 @@ class MainWindow(QtWidgets.QMainWindow):
                         return
                     if json_data.get("subject") == "LOG":
                         self.infoline.setText("Server Generated Log.")
-
                     self.remove_confirmed_commands(json_data)
+                    continue
+            if json_data.get("cmd") == "CHAT":
+                self.display_chat(json_data.get("sender"), json_data.get("message"))
+                continue
+            if json_data.get("cmd") == "GROUPQUERY":
+                if self.groupcall:
+                    self.send_status_udp()
 
     def query_group(self):
         """Sends request to server asking for group call/class/section."""
