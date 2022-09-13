@@ -3915,6 +3915,12 @@ color: rgb(0, 0, 0);</string>
        <height>251</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <family>JetBrains Mono</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="readOnly">
       <bool>true</bool>
      </property>
@@ -3928,6 +3934,12 @@ color: rgb(0, 0, 0);</string>
        <height>29</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <family>JetBrains Mono</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
     </widget>
     <widget class="QTextEdit" name="users_list">
      <property name="geometry">
@@ -3937,6 +3949,12 @@ color: rgb(0, 0, 0);</string>
        <width>161</width>
        <height>251</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>JetBrains Mono</family>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="readOnly">
       <bool>true</bool>
