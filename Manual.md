@@ -247,7 +247,34 @@ The configuration file for the server is a JSON file 'server_preferences.json'.
     "ourcall": "W1AW",
     "ourclass": "3A",
     "oursection": "ORG",
-    "altpower": 1,
+    "bonus": {
+        "emergency_power": {
+            "bool": 0,
+            "station_count": 0
+        },
+        "media_publicity": 0,
+        "public_location": 0,
+        "public_info_table": 0,
+        "message_to_section_manager": 0,
+        "message_handling": {
+            "bool": 0,
+            "message_count": 0
+        },
+        "satellite_qso": 0,
+        "w1aw_bulletin": 0,
+        "educational_activity": 0,
+        "elected_official_visit": 0,
+        "agency_representative_visit": 0,
+        "gota": 0,
+        "web_submission": 0,
+        "youth_participation": {
+            "bool": 0,
+            "youth_count": 0
+        },
+        "social_media": 0,
+        "safety_officer": 0
+    },
+    "batterypower": 1,
     "name": "Hiram Maxim",
     "address": "225 Main Street",
     "city": "Newington",
@@ -264,6 +291,12 @@ The configuration file for the server is a JSON file 'server_preferences.json'.
 Go ahead and edit this file before running the server. Feel free to leave the
 last 3 items as they are unless you have good reason not too. The rest should
 be straight forward.
+
+Under the bonuses section, if your group qualifies for a bonus, replace the '0'
+next to the bonus with a '1'. Three of the bonuses require a count of items
+qualifiying you for the bonus. For example Message Handling. If your group 
+qualifies for this, change the value of 'bool' to a 1, and then 'message_count'
+to the number of messages handled. 
 
 ### Client configuration for groups
 
