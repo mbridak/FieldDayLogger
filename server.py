@@ -79,7 +79,7 @@ INTERFACE_IP = "0.0.0.0"
 OURCALL = "XXXX"
 OURCLASS = "XX"
 OURSECTION = "XXX"
-ALTPOWER = 0
+BATTERYPOWER = 0
 QRP = 0
 HIGHPOWER = 0
 NAME = "Hiram Maxim"
@@ -122,7 +122,7 @@ try:
             OURCALL = preference.get("ourcall")
             OURCLASS = preference.get("ourclass")
             OURSECTION = preference.get("oursection")
-            ALTPOWER = preference.get("altpower")
+            BATTERYPOWER = preference.get("batterypower")
             NAME = preference.get("name")
             ADDRESS = preference.get("address")
             CITY = preference.get("city")
@@ -287,7 +287,7 @@ def get_stats():
 
     points = (int(cwcontacts) * 2) + (int(digitalcontacts) * 2) + int(phonecontacts)
 
-    score = (((QRP * 3) * ALTPOWER) + 2) * points
+    score = (((QRP * 3) * BATTERYPOWER) + 2) * points
 
     THE_SCREEN.addstr(2, 73, f"{score}", curses.color_pair(7))
     THE_SCREEN.addstr(3, 73, f"{lasthour}", curses.color_pair(7))
@@ -327,18 +327,18 @@ def fakefreq(band, mode):
 def calcscore():
     """
     Return our current score based on operating power,
-    altpower and types of contacts.
+    battery power and types of contacts.
 
     2022 scoring: contacts over 100w are disallowed.
     QRP and Low Power (<100W) have base multiplier of 2.
-    QRP with Alt Power has base multiplier of 5
+    QRP with Battery Power has base multiplier of 5
     """
     global QRP
     QRP, _ = DB.qrp_check()
     c_dubs, phone, digital = DB.contacts_under_101watts()
     score = (int(c_dubs) * 2) + int(phone) + (int(digital) * 2)
     multiplier = 2
-    if QRP and ALTPOWER:
+    if QRP and BATTERYPOWER:
         multiplier = 5
     score = score * multiplier
     return score
@@ -490,8 +490,8 @@ def main(_):
     THE_SCREEN.addstr(f" {OURCLASS}", curses.color_pair(7))
     THE_SCREEN.addstr(4, 2, "Section_:")
     THE_SCREEN.addstr(f" {OURSECTION}", curses.color_pair(7))
-    THE_SCREEN.addstr(5, 2, "AltPower:")
-    THE_SCREEN.addstr(f" {bool(ALTPOWER)}", curses.color_pair(7))
+    THE_SCREEN.addstr(5, 2, "Battery_:")
+    THE_SCREEN.addstr(f" {bool(BATTERYPOWER)}", curses.color_pair(7))
 
     THE_SCREEN.addstr(2, 25, "Multicast Group: ")
     THE_SCREEN.addstr(f"{MULTICAST_GROUP}", curses.color_pair(7))
