@@ -20,6 +20,7 @@ from time import gmtime, strftime
 import os
 import sys
 import threading
+import argparse
 
 from itertools import chain
 from json import JSONDecodeError, loads, dumps
@@ -45,6 +46,11 @@ if Path("./debug").exists():
     logging.debug("Debug started")
 else:
     logging.basicConfig(level=logging.CRITICAL)
+
+parser = argparse.ArgumentParser(description="Field Day aggregation server.")
+parser.add_argument("-l", "--log", action="store_true", help="Generate log")
+
+args = parser.parse_args()
 
 
 class Trafficlog:
@@ -665,4 +671,7 @@ def main(_):
             print(f"[{timestamp}] Not JSON: {err}\n{payload}\n")
 
 
+if args.log:
+    cabrillo()
+    raise SystemExit(1)
 wrapper(main)
