@@ -41,5 +41,6 @@ _udpwatch.start()
 while 1:
     # print("Waiting...")
     while not fifo.empty():
-        print(f"[{time.time()}] {fifo.get()}\n")
+        timestamp = time.strftime("%H:%M:%S", time.gmtime())
+        print(f"[{timestamp}] {fifo.get()}\n")
     time.sleep(1)
