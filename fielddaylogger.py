@@ -261,6 +261,26 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.clear_dirty_flag(data.get("unique_id"))
                 self.infoline.setText(f"Confirmed {data.get('subject')}")
 
+    def check_for_stale_commands(self):
+        """
+        Check through server commands to see if there has not been a reply in 30 seconds.
+        Resubmits those that are stale.
+        """
+        if self.connect_to_server:
+            for index, item in enumerate(self.server_commands):
+                expired = datetime.strptime(item.get("expire"), "%Y-%m-%dT%H:%M:%S.%f")
+                if datetime.now() > expired:
+                    newexpire = datetime.now() + timedelta(seconds=30)
+                    self.server_commands[index]["expire"] = newexpire.isoformat()
+                    bytesToSend = bytes(dumps(item, indent=4), encoding="ascii")
+                    try:
+                        self.server_udp.sendto(
+                            bytesToSend,
+                            (self.multicast_group, int(self.multicast_port)),
+                        )
+                    except OSError as err:
+                        logging.warning("%s", err)
+
     def send_chat(self):
         """Sends UDP chat packet with text entered in chat_entry field."""
         message = self.chat_entry.text()
@@ -388,6 +408,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
             except OSError as err:
                 logging.warning("%s", err)
+
+            self.check_for_stale_commands()
 
     def clearcontactlookup(self):
         """clearout the contact lookup"""
@@ -1387,6 +1409,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.db.log_contact(contact)
 
+        stale = datetime.now() + timedelta(seconds=30)
         if self.connect_to_server:
             contact = {
                 "cmd": "POST",
@@ -1402,6 +1425,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 "opname": self.contactlookup["name"],
                 "station": self.preference["mycall"],
                 "unique_id": unique_id,
+                "expire": stale.isoformat(),
             }
             self.server_commands.append(contact)
             bytesToSend = bytes(dumps(contact, indent=4), encoding="ascii")
@@ -2256,6 +2280,7 @@ class EditQSODialog(QtWidgets.QDialog):
         ]
         self.database.change_contact(qso)
         if window.connect_to_server:
+            stale = datetime.now() + timedelta(seconds=30)
             command = {"cmd": "UPDATE"}
             command["hiscall"] = self.editCallsign.text().upper()
             command["class"] = self.editClass.text().upper()
@@ -2267,6 +2292,7 @@ class EditQSODialog(QtWidgets.QDialog):
             command["power"] = self.editPower.value()
             command["station"] = window.preference["mycall"].upper()
             command["unique_id"] = self.unique_id
+            command["expire"] = stale.isoformat()
             window.server_commands.append(command)
             bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
             try:
@@ -2281,10 +2307,12 @@ class EditQSODialog(QtWidgets.QDialog):
         """delete the contact"""
         self.database.delete_contact(self.theitem)
         if window.connect_to_server:
+            stale = datetime.now() + timedelta(seconds=30)
             command = {}
             command["cmd"] = "DELETE"
             command["unique_id"] = self.unique_id
             command["station"] = window.preference["mycall"].upper()
+            command["expire"] = stale.isoformat()
             window.server_commands.append(command)
             bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
             try:
