@@ -12,7 +12,7 @@ GPL V3
 
 from math import radians, sin, cos, atan2, sqrt, asin, pi
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 from json import dumps, loads, JSONDecodeError
 from shutil import copyfile
 
@@ -114,6 +114,7 @@ class MainWindow(QtWidgets.QMainWindow):
     run_state = False
     groupcall = None
     server_commands = []
+    server_seen = None
 
     def __init__(self, *args, **kwargs):
         """Initialize"""
@@ -295,6 +296,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def check_udp_queue(self):
         """checks the UDP datagram queue."""
+        if self.server_seen:
+            if datetime.now() > self.server_seen:
+                self.group_call_indicator.setStyleSheet(
+                    "border: 1px solid green;\nbackground-color: red;\ncolor: yellow;"
+                )
         while not self.udp_fifo.empty():
             datagram = self.udp_fifo.get()
             try:
@@ -308,23 +314,18 @@ class MainWindow(QtWidgets.QMainWindow):
                 logging.info(the_error)
                 continue
             logging.info("%s", json_data)
+
             if json_data.get("cmd") == "PING":
                 if json_data.get("station"):
                     band_mode = f"{json_data.get('band')} {json_data.get('mode')}"
                     if self.people.get(json_data.get("station")) != band_mode:
                         self.people[json_data.get("station")] = band_mode
                     self.show_people()
+                if json_data.get("host"):
+                    self.server_seen = datetime.now() + timedelta(seconds=30)
+                    self.group_call_indicator.setStyleSheet("border: 1px solid green;")
                 continue
-            # if json_data.get("cmd") == "CONFLICT":
-            #     band, mode = json_data.get("bandmode").split()
-            #     if (
-            #         band == self.band
-            #         and mode == self.mode
-            #         and json_data.get("recipient") == self.preference.get("mycall")
-            #     ):
-            #         self.flash()
-            #         self.infoline.setText(f"CONFLICT ON {json_data.get('bandmode')}")
-            #     continue
+
             if json_data.get("cmd") == "RESPONSE":
                 if json_data.get("recipient") == self.preference.get("mycall"):
                     if json_data.get("subject") == "HOSTINFO":
@@ -335,14 +336,20 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.changemyclass()
                         self.changemysection()
                         self.mycallEntry.hide()
+                        self.server_seen = datetime.now() + timedelta(seconds=30)
+                        self.group_call_indicator.setStyleSheet(
+                            "border: 1px solid green;"
+                        )
                         return
                     if json_data.get("subject") == "LOG":
                         self.infoline.setText("Server Generated Log.")
                     self.remove_confirmed_commands(json_data)
                     continue
+
             if json_data.get("cmd") == "CHAT":
                 self.display_chat(json_data.get("sender"), json_data.get("message"))
                 continue
+
             if json_data.get("cmd") == "GROUPQUERY":
                 if self.groupcall:
                     self.send_status_udp()
