@@ -210,7 +210,7 @@ def log_contact():
         "unique_id": unique_id,
     }
     server_commands.append(contact)
-    bytes_to_send = bytes(dumps(contact, indent=4), encoding="ascii")
+    bytes_to_send = bytes(dumps(contact), encoding="ascii")
     try:
         s.sendto(bytes_to_send, (MULTICAST_GROUP, int(MULTICAST_PORT)))
     except OSError as err:
