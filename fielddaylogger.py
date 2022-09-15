@@ -272,7 +272,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 if datetime.now() > expired:
                     newexpire = datetime.now() + timedelta(seconds=30)
                     self.server_commands[index]["expire"] = newexpire.isoformat()
-                    bytesToSend = bytes(dumps(item, indent=4), encoding="ascii")
+                    bytesToSend = bytes(dumps(item), encoding="ascii")
                     try:
                         self.server_udp.sendto(
                             bytesToSend,
@@ -1428,7 +1428,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 "expire": stale.isoformat(),
             }
             self.server_commands.append(contact)
-            bytesToSend = bytes(dumps(contact, indent=4), encoding="ascii")
+            bytesToSend = bytes(dumps(contact), encoding="ascii")
             try:
                 self.server_udp.sendto(
                     bytesToSend, (self.multicast_group, int(self.multicast_port))
@@ -2294,7 +2294,7 @@ class EditQSODialog(QtWidgets.QDialog):
             command["unique_id"] = self.unique_id
             command["expire"] = stale.isoformat()
             window.server_commands.append(command)
-            bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
+            bytesToSend = bytes(dumps(command), encoding="ascii")
             try:
                 window.server_udp.sendto(
                     bytesToSend, (window.multicast_group, int(window.multicast_port))
@@ -2314,7 +2314,7 @@ class EditQSODialog(QtWidgets.QDialog):
             command["station"] = window.preference["mycall"].upper()
             command["expire"] = stale.isoformat()
             window.server_commands.append(command)
-            bytesToSend = bytes(dumps(command, indent=4), encoding="ascii")
+            bytesToSend = bytes(dumps(command), encoding="ascii")
             try:
                 window.server_udp.sendto(
                     bytesToSend, (window.multicast_group, int(window.multicast_port))
