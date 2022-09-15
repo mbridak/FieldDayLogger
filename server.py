@@ -757,5 +757,6 @@ def main(_):
 
 if args.log:
     cabrillo()
+    curses.endwin()
     raise SystemExit(1)
 wrapper(main)
