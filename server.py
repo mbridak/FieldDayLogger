@@ -246,11 +246,6 @@ def show_people():
             xcol = 15
         try:
             if op_callsign in result:
-                # packet = {"cmd": "CONFLICT"}
-                # packet["bandmode"] = people.get(op_callsign)
-                # packet["recipient"] = op_callsign
-                # bytes_to_send = bytes(dumps(packet), encoding="ascii")
-                # s.sendto(bytes_to_send, (MULTICAST_GROUP, MULTICAST_PORT))
                 PEOPLEWINDOW.addnstr(
                     yline,
                     xcol,
