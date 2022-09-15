@@ -258,6 +258,20 @@ class DataBase:
             cursor.execute("select * from contacts order by date_time desc")
             return cursor.fetchall()
 
+    def fetch_all_dirty_contacts(self) -> tuple:
+        """return all contacts still flagged as dirty."""
+        with sqlite3.connect(self.database) as conn:
+            cursor = conn.cursor()
+            cursor.execute("select * from contacts where dirty=1 order by id")
+            return cursor.fetchall()
+
+    def count_all_dirty_contacts(self) -> tuple:
+        """return all contacts still flagged as dirty."""
+        with sqlite3.connect(self.database) as conn:
+            cursor = conn.cursor()
+            cursor.execute("select count(*) as alldirty from contacts where dirty=1")
+            return cursor.fetchone()
+
     def fetch_last_contact(self) -> tuple:
         """returns a tuple of all contacts in the database."""
         with sqlite3.connect(self.database) as conn:
