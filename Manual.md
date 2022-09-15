@@ -16,8 +16,9 @@ brother.
 ---
 ## Wheres the data
 
-The client log is stored in an sqlite3 database file './FieldDay.db'. If you need to 
-wipe everything and start clean, just delete this file and re-run the logger.
+The client log is stored in an sqlite3 database file './FieldDay.db'. If you 
+need to wipe everything and start clean, just delete this file and re-run the 
+logger.
 
 The aggrigation server stores it's database in a file called, in a stroke of 
 inspiration, './server_database.db'.
@@ -65,7 +66,11 @@ Just make server.py executable and run it the same way as the client.
 
 ## What to do first
 
-When run for the first time, you will be greeted by a dialog asking for your Callsign, Class and Section. Afterward, there is a gear icon on the main screen, where you can change your CAT, CW interface, callsign lookup service etc. You can also change your call class and section by clicking on the respective fields.
+When run for the first time, you will be greeted by a dialog asking for your 
+Callsign, Class and Section. Afterward, there is a gear icon on the main 
+screen, where you can change your CAT, CW interface, callsign lookup service 
+etc. You can also change your call class and section by clicking on the 
+respective fields.
 
 ![Picture showing bottom of screen](pics/yourstuff.png)
 
@@ -76,24 +81,40 @@ When run for the first time, you will be greeted by a dialog asking for your Cal
 
 ## Logging
 
-Okay you've made a contact. Enter the call in the call field. As you type it in, it will do a super check partial (see below). Press TAB or SPACE to advance to the next field. Once the call is entered and you've moved to the next field, it will do a DUP check (see below). It will try and Autofill the next fields (see below). When entering the section, it will do a section partial check (see below). Press the ENTER key to submit the contact to the log.
+Okay you've made a contact. Enter the call in the call field. As you type it 
+in, it will do a super check partial (see below). Press TAB or SPACE to 
+advance to the next field. Once the call is entered and you've moved to the 
+next field, it will do a DUP check (see below). It will try and Autofill the 
+next fields (see below). When entering the section, it will do a section 
+partial check (see below). Press the ENTER key to submit the contact to the 
+log.
 
-If it's a busted call or a dup, press the ESC key to clear all inputs and start again.
+If it's a busted call or a dup, press the ESC key to clear all inputs and 
+start again.
 
 ---
 ## Radio Polling with CAT
 
-If you run flrig or rigctld on a computer connected to the radio, it can be polled for band/mode updates automatically. Click the gear icon at the bottom of the screen to set the IP and port and choose flrig or rigctld. The default ports are 4532 for rigctld and 12345 for flrig.  There is a radio icon at the bottom of the logging window to indicate polling status. Green good, Red bad.
+If you run flrig or rigctld on a computer connected to the radio, it can be 
+polled for band/mode updates automatically. Click the gear icon at the bottom 
+of the screen to set the IP and port and choose flrig or rigctld. The default 
+ports are 4532 for rigctld and 12345 for flrig.  There is a radio icon at the 
+bottom of the logging window to indicate polling status. Green good, Red bad.
 
 ---
 ## Cloudlog useage
 
-If you use [CloudLog](https://github.com/magicbug/Cloudlog) for your main logging you can click the gear icon to enter your credentials. Contacts are pushed to CloudLog as soon as they are logged.
+If you use [CloudLog](https://github.com/magicbug/Cloudlog) for your main 
+logging you can click the gear icon to enter your credentials. Contacts are 
+pushed to CloudLog as soon as they are logged.
 
 ---
 ## QRZ, HamDB or HamQTH
 
-The QRZ/HamDB/HamQTH lookup is only used to get the name and gridsquare for the call. Mainly because when a contact is pushed to [CloudLog](https://github.com/magicbug/Cloudlog) it will not show as a pin on the map unless it has a gridsquare. So this is a scratch my own itch feature.
+The QRZ/HamDB/HamQTH lookup is only used to get the name and gridsquare for 
+the call. Mainly because when a contact is pushed to 
+[CloudLog](https://github.com/magicbug/Cloudlog) it will not show as a pin on 
+the map unless it has a gridsquare. So this is a scratch my own itch feature.
 
 The call to the lookup service is made anytime you exit the call entry field 
 by pressing a TAB or Space key. This call is done in it's own thread so it will 
@@ -320,6 +341,53 @@ If more than one operator is on the same band/mode, their names will be
 highlighted in the operators list. Feel free to yell at eachother in the chat.
 
 ![Picture showing band and mode conflict](pics/band_conflict.png)
+
+### How to know the server is there.
+
+Most likely, the server will be in some other tent/building/area of the room.
+Every 10 seconds or so the server will send out a UDP network packet saying
+it's there. As long as your client keeps seeing these packets the group call
+indicator at the bottom of the screen will look like:
+
+![Picture showing server status](pics/server_pinging.png) 
+
+But if about 30 seconds go by with no update from the server, the indicator
+will change to:
+
+![Picture showing server status](pics/server_not_pinging.png)
+
+Go check on it.
+
+### Logging reliability
+
+As mentioned before, We're using UDP traffic to pass data back and forth to the
+server. UDP traffic is a 'Fire and forget' method. Akin to a bunch of people 
+in the same room yelling at eachother. Everyone can hear you, but you don't 
+know if anyone heard what you said. This has both Advantages and Disadvantages. 
+One advantage is that your program is not stuck waiting for a reply or timeout 
+locking up your user interface. The disadvantage is you have no idea if anyone 
+took note of what you had said.
+
+This works fine in a local network since the traffic doesn't have to survive
+the trip through the big bad tubes of the internet. That being said, someone
+may trip on a cord, unplugging the router/switch/wireless gateway. Or someone
+may be trying to use WIFI and they are Soooooo far away you can barely see
+their tent. Or worse you have EVERYONE on WIFI, and there are packet collisions
+galore degrading your network.
+
+To account for this, the client logging program keeps track of recent packets
+sent, noting the time they were sent at. The server after getting a packet, 
+generates a response to the sender with it's unique identifyer. Once the client
+gets the response from the server it will remove the request on the local side
+and print a lille message at the bottom of the screen giving you a visual 
+confirmation that the command was acted upon by the server.
+If the server does not respond either because the response was lost or the
+request never made it to reply too, after 30 seconds the client will resend the
+packet every 30 seconds until it gets a reply.
+
+Chat traffic is best effort. Either everyone sees your plea for more beer or
+they don't. No retry is made for chat traffic. Just get your butt up and make 
+the trip to the cooler.
 
 ### Generating the cabrillo file
 
