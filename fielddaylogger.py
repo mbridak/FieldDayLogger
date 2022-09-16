@@ -2452,6 +2452,6 @@ if __name__ == "__main__":
 
     timer3 = QtCore.QTimer()
     timer3.timeout.connect(window.send_status_udp)
-    timer3.start(60000)
+    timer3.start(15000)
 
     app.exec()
