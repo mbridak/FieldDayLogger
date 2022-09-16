@@ -10,6 +10,7 @@ import time
 import threading
 import queue
 import argparse
+from random import randint
 from datetime import datetime
 from json import dumps, loads, JSONDecodeError
 
@@ -26,6 +27,21 @@ MULTICAST_PORT = 2239
 MULTICAST_GROUP = "224.1.1.1"
 INTERFACE_IP = "0.0.0.0"
 GROUP_CALL = None
+
+eightymeterstalk = (
+    "What are the @stats?",
+    "That K6GTE guy is a jerk!",
+    "I worked your mama on 80 meters.",
+    "I have nothing interesting to add, I'm just running my keys.",
+    "Who's here that has gout?",
+    "Jim, go to 40",
+    "I gotta pee again, someone cover the GOTA station.",
+    "Who made that 'Chili'... Gawd aweful!",
+    ".. -..  - .- .--. - .... .- -",
+    "Why's no one covering 160?",
+    "That FT8, It's so enjoyable!",
+    "Yes Jim, you have to DISCONNECT the dummy load.",
+)
 
 bands = ("160", "80", "40", "20", "15", "10", "6", "2")
 if args.band:
@@ -282,6 +298,19 @@ def check_udp_queue():
                 send_status_udp()
 
 
+def send_chat():
+    """Sends UDP chat packet with text entered in chat_entry field."""
+    message = eightymeterstalk[randint(0, len(eightymeterstalk) - 1)]
+    packet = {"cmd": "CHAT"}
+    packet["sender"] = STATION_CALL
+    packet["message"] = message
+    bytes_to_send = bytes(dumps(packet), encoding="ascii")
+    try:
+        s.sendto(bytes_to_send, (MULTICAST_GROUP, int(MULTICAST_PORT)))
+    except OSError as err:
+        print(f"{err}")
+
+
 def query_group():
     """Sends request to server asking for group call/class/section."""
     update = {
@@ -344,6 +373,8 @@ def main():
             log_contact()
         if count % 60 == 0:
             send_status_udp()
+        if count % 45 == 0:
+            send_chat()
         check_udp_queue()
 
         time.sleep(1)
