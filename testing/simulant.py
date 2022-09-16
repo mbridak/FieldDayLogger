@@ -37,7 +37,7 @@ eightymeterstalk = (
     "Jim, go to 40",
     "I gotta pee again, someone cover the GOTA station.",
     "Who made that 'Chili'... Gawd aweful!",
-    ".. -..  - .- .--. - .... .- -",
+    ".. -..  - .- .--.  - .... .- -",
     "Why's no one covering 160?",
     "That FT8, It's so enjoyable!",
     "Yes Jim, you have to DISCONNECT the dummy load.",
@@ -371,7 +371,7 @@ def main():
         count += 1
         if count % 30 == 0:
             log_contact()
-        if count % 60 == 0:
+        if count % 15 == 0:
             send_status_udp()
         if count % 45 == 0:
             send_chat()
