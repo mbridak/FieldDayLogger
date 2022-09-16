@@ -748,6 +748,63 @@ def main(_):
                 s.sendto(bytes_to_send, (MULTICAST_GROUP, MULTICAST_PORT))
                 LOG.add_item(f"[{timestamp}] GROUPQUERY: {json_data.get('station')}")
                 comm_log()
+                continue
+
+            if json_data.get("cmd") == "CHAT":
+                if "@stats" in json_data.get("message"):
+
+                    bands = ["160", "80", "40", "20", "15", "10", "6", "2"]
+                    blist = []
+                    list_o_bands = DB.get_bands()
+                    if list_o_bands:
+                        for count in list_o_bands:
+                            blist.append(count[0])
+
+                    message = "\nBand   CW    PH    DI\n"
+                    for band in bands:
+                        cwt = DB.get_band_mode_tally(band, "CW")
+                        dit = DB.get_band_mode_tally(band, "DI")
+                        pht = DB.get_band_mode_tally(band, "PH")
+                        line = (
+                            f"{str(band).rjust(4, ' ')} "
+                            f"{str(cwt[0]).rjust(5, ' ')} "
+                            f"{str(pht[0]).rjust(5, ' ')} "
+                            f"{str(dit[0]).rjust(5, ' ')}\n"
+                        )
+                        message += line
+
+                    global QRP
+                    (
+                        cwcontacts,
+                        phonecontacts,
+                        digitalcontacts,
+                        _,
+                        last15,
+                        lasthour,
+                        _,
+                        QRP,
+                    ) = DB.stats()
+
+                    points = (
+                        (int(cwcontacts) * 2)
+                        + (int(digitalcontacts) * 2)
+                        + int(phonecontacts)
+                    )
+
+                    score = (((QRP * 3) * BATTERYPOWER) + 2) * points
+                    message += (
+                        f"\nScore {score}\n"
+                        f"Last Hour {lasthour}\n"
+                        f"Last 15 {last15}"
+                    )
+                    packet = {"cmd": "CHAT"}
+                    packet["sender"] = "Server"
+                    packet["message"] = message
+                    bytes_to_send = bytes(dumps(packet), encoding="ascii")
+                    try:
+                        s.sendto(bytes_to_send, (MULTICAST_GROUP, int(MULTICAST_PORT)))
+                    except OSError as err:
+                        logging.debug("%s", err)
 
         except UnicodeDecodeError as err:
             print(f"[{timestamp}] Not JSON: {err}\n{payload}\n")
