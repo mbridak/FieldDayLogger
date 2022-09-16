@@ -300,8 +300,9 @@ class MainWindow(QtWidgets.QMainWindow):
         """Displays the chat history."""
         if self.preference.get("mycall") in body.upper():
             self.chatlog.setTextColor(QtGui.QColor(245, 121, 0))
-        self.chatlog.insertPlainText(f"{sender}: {body}\n")
+        self.chatlog.insertPlainText(f"\n{sender}: {body}")
         self.chatlog.setTextColor(QtGui.QColor(211, 215, 207))
+        self.chatlog.ensureCursorVisible()
 
     def watch_udp(self):
         """Puts UDP datagrams in a FIFO queue"""
