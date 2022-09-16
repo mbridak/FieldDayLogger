@@ -342,6 +342,37 @@ highlighted in the operators list. Feel free to yell at eachother in the chat.
 
 ![Picture showing band and mode conflict](pics/band_conflict.png)
 
+### Chat Window
+
+The chat window is pretty straight forward. If someone mentions you in the chat
+that line will be highlighted with an accent color. If you find the font size
+does not work for you, can adjust the size by: Placing your mouse cursor in the
+chat window, then rotate your mouse wheel while holding down the Control key.
+
+There is one command you can type into the chat window that may be of use.
+if you type @stats into the window the server will dump out some stats into the
+chat.
+
+```
+Server: 
+Band   CW    PH    DI
+ 160     0     0     0
+  80     0     0    25
+  40     0   159     0
+  20     1   162   126
+  15     0     0     0
+  10     0     0     0
+   6     0    17     0
+   2     0     0     0
+
+Score: 1284
+Last Hour: 271
+Last 15: 81
+```
+
+Since most people will not be able to see the screen of the server, if it has
+one at all. You may find this useful.
+
 ### How to know the server is there.
 
 Most likely, the server will be in some other tent/building/area of the room.
