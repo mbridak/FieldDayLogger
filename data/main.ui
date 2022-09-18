@@ -3921,6 +3921,9 @@ color: rgb(0, 0, 0);</string>
        <pointsize>12</pointsize>
       </font>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
      <property name="readOnly">
       <bool>true</bool>
      </property>
@@ -3940,6 +3943,9 @@ color: rgb(0, 0, 0);</string>
        <pointsize>12</pointsize>
       </font>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
     </widget>
     <widget class="QTextEdit" name="users_list">
      <property name="geometry">
@@ -3955,6 +3961,9 @@ color: rgb(0, 0, 0);</string>
        <family>JetBrains Mono</family>
        <pointsize>12</pointsize>
       </font>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
      </property>
      <property name="readOnly">
       <bool>true</bool>
