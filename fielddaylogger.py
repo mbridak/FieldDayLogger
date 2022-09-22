@@ -1622,7 +1622,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if hisband == self.band and hismode == self.mode:
                 self.flash()
                 self.infobox.setTextColor(QtGui.QColor(245, 121, 0))
-                dupetext = " DUP!!!"
+                dupetext = " DUPE"
             else:
                 self.infobox.setTextColor(QtGui.QColor(211, 215, 207))
             self.infobox.insertPlainText(f"{hiscall}: {hisband} {hismode}{dupetext}\n")
