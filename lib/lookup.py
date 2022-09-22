@@ -11,7 +11,8 @@ from bs4 import BeautifulSoup as bs
 
 import requests
 
-warnings.filterwarnings('ignore', category=UserWarning, module='bs4')
+warnings.filterwarnings("ignore", category=UserWarning, module="bs4")
+
 
 class HamDBlookup:
     """
@@ -21,12 +22,17 @@ class HamDBlookup:
     def __init__(self) -> None:
         self.url = "https://api.hamdb.org/"
         self.error = None
+        self.lookup_cache = {}
 
     def lookup(self, call: str) -> tuple:
         """
         Lookup a call on QRZ
         """
         logging.info("Hamdblookup-lookup: %s", call)
+        if self.lookup_cache.get(call):
+            srep = f"{self.lookup_cache.get(call)}"
+            logging.info("Hamdblookup-lookup-cache: %s", srep)
+            return self.lookup_cache.get(call)
         grid = False
         name = False
         error_text = False
@@ -52,6 +58,10 @@ class HamDBlookup:
         else:
             error_text = str(query_result.status_code)
         logging.info("HamDB-lookup: %s %s %s %s", grid, name, nickname, error_text)
+        if error_text in ("NOT_FOUND", "OK"):
+            self.lookup_cache[call] = (grid, name, nickname, error_text)
+            srep = f"{self.lookup_cache.get(call)}"
+            logging.info("Hamdblookup-lookup-caching: %s", srep)
         return grid, name, nickname, error_text
 
 
@@ -61,6 +71,7 @@ class QRZlookup:
     """
 
     def __init__(self, username: str, password: str) -> None:
+        self.lookup_cache = {}
         self.session = False
         self.expiration = False
         self.error = (
@@ -112,6 +123,10 @@ class QRZlookup:
         Lookup a call on QRZ
         """
         logging.info("QRZlookup-lookup: %s", call)
+        if self.lookup_cache.get(call):
+            srep = f"{self.lookup_cache.get(call)}"
+            logging.info("QRZlookup-cache: %s", srep)
+            return self.lookup_cache.get(call)
         grid = False
         name = False
         error_text = False
@@ -147,6 +162,9 @@ class QRZlookup:
                 error_text = root.session.error.text
                 self.error = error_text
             if root.find("callsign"):
+                call = None
+                if root.callsign.find("call"):
+                    call = root.callsign.call.text
                 if root.callsign.find("grid"):
                     grid = root.callsign.grid.text
                 if root.callsign.find("fname"):
@@ -161,6 +179,10 @@ class QRZlookup:
         logging.info(
             "QRZlookup-parse_lookup: %s %s %s %s", grid, name, nickname, error_text
         )
+        if call and error_text is False:
+            self.lookup_cache[call] = (grid, name, nickname, error_text)
+            srep = f"{self.lookup_cache.get(call)}"
+            logging.info("QRZ-lookup-caching: %s", srep)
         return grid, name, nickname, error_text
 
 
@@ -169,6 +191,7 @@ class HamQTH:
 
     def __init__(self, username: str, password: str) -> None:
         """initialize HamQTH lookup"""
+        self.lookup_cache = {}
         self.username = username
         self.password = password
         self.url = "https://www.hamqth.com/xml.php"
@@ -197,6 +220,10 @@ class HamQTH:
         """
         Lookup a call on HamQTH
         """
+        if self.lookup_cache.get(call):
+            srep = f"{self.lookup_cache.get(call)}"
+            logging.info("HamQTHlookup-cache: %s", srep)
+            return self.lookup_cache.get(call)
         grid, name, nickname, error_text = False, False, False, False
         if self.session:
             payload = {"id": self.session, "callsign": call, "prg": "wfd_curses"}
@@ -218,6 +245,8 @@ class HamQTH:
                                 self.url, params=payload, timeout=10.0
                             )
             grid, name, nickname, error_text = self.parse_lookup(query_result)
+            if error_text is None:
+                pass
         return grid, name, nickname, error_text
 
     def parse_lookup(self, query_result) -> tuple:
@@ -225,16 +254,27 @@ class HamQTH:
         Returns gridsquare and name for a callsign looked up by qrz or hamdb.
         Or False for both if none found or error.
         """
+        call = None
         grid, name, nickname, error_text = False, False, False, False
         root = bs(query_result.text, "html.parser")
         if root.find("session"):
             if root.session.find("error"):
                 error_text = root.session.error.text
         if root.find("search"):
+            if root.search.find("callsign"):
+                call = root.search.callsign.text
             if root.search.find("grid"):
                 grid = root.search.grid.text
             if root.search.find("nick"):
                 nickname = root.search.nick.text
             if root.search.find("adr_name"):
                 name = root.search.adr_name.text
+        if call and error_text is False:
+            self.lookup_cache[call] = (grid, name, nickname, error_text)
+            srep = f"{self.lookup_cache.get(call)}"
+            logging.info("HamQTH-lookup-caching: %s", srep)
         return grid, name, nickname, error_text
+
+
+if __name__ == "__main__":
+    print("Nope. I'm not the program you are looking for.")
