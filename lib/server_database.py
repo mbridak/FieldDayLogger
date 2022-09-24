@@ -46,14 +46,25 @@ class DataBase:
         """
         try:
             with sqlite3.connect(self.database) as conn:
-                sql = (
-                    "INSERT INTO contacts"
-                    "(unique_id, callsign, class, section, date_time, frequency, "
-                    "band, mode, power, grid, opname, station) "
-                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"
-                )
+                sql = f"select count(*) from contacts where unique_id ='{logme[0]}';"
                 cur = conn.cursor()
-                cur.execute(sql, logme)
+                cur.execute(sql)
+                if cur.fetchone()[0] == 0:
+                    sql = (
+                        "INSERT INTO contacts"
+                        "(unique_id, callsign, class, section, date_time, frequency, "
+                        "band, mode, power, grid, opname, station) "
+                        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"
+                    )
+                    cur.execute(sql, logme)
+                else:
+                    sql = (
+                        f"update contacts set callsign = '{logme[1]}', class = '{logme[2]}', "
+                        f"section = '{logme[3]}', date_time = '{logme[4]}', band = '{logme[6]}', "
+                        f"mode = '{logme[7]}', power = '{logme[8]}', station = '{logme[11]}', "
+                        f"frequency = '{logme[5]}' where unique_id='{logme[0]}';"
+                    )
+                    cur.execute(sql)
                 conn.commit()
         except sqlite3.Error as exception:
             logging.debug("DataBase log_contact: %s", exception)
