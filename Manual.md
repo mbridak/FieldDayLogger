@@ -409,12 +409,17 @@ galore degrading your network.
 To account for this, the client logging program keeps track of recent packets
 sent, noting the time they were sent at. The server after getting a packet, 
 generates a response to the sender with it's unique identifyer. Once the client
-gets the response from the server it will remove the request on the local side
-and print a lille message at the bottom of the screen giving you a visual 
+gets the response from the server, it will remove the request on the local side
+and print a little message at the bottom of the screen giving you a visual 
 confirmation that the command was acted upon by the server.
 If the server does not respond either because the response was lost or the
-request never made it to reply too, after 30 seconds the client will resend the
+request never made it to reply too. The client will resend the
 packet every 30 seconds until it gets a reply.
+
+But all this may still result in the server not having a copy of your contact.
+To account for this, when the "Generate Logs" button is pressed on the client,
+the client will resend all the logged contacts that have not gotten responses
+from the server. You can keep doing this, if need be,  until it gets them all.
 
 Chat traffic is best effort. Either everyone sees your plea for more beer or
 they don't. No retry is made for chat traffic. Just get your butt up and make 
