@@ -11,6 +11,21 @@ class DataBase:
         self.database = database
         self.create_db()
 
+    @staticmethod
+    def row_factory(cursor, row):
+        """
+        cursor.description:
+        (name, type_code, display_size,
+        internal_size, precision, scale, null_ok)
+        row: (value, value, ...)
+        """
+        return {
+            col[0]: row[idx]
+            for idx, col in enumerate(
+                cursor.description,
+            )
+        }
+
     def create_db(self) -> None:
         """
         create database tables contacts if they do not exist.
@@ -258,16 +273,18 @@ class DataBase:
             cursor.execute("select * from contacts order by date_time desc")
             return cursor.fetchall()
 
-    def fetch_all_dirty_contacts(self) -> tuple:
+    def fetch_all_dirty_contacts(self) -> list:
         """return all contacts still flagged as dirty."""
         with sqlite3.connect(self.database) as conn:
+            conn.row_factory = self.row_factory
             cursor = conn.cursor()
             cursor.execute("select * from contacts where dirty=1 order by id")
             return cursor.fetchall()
 
-    def count_all_dirty_contacts(self) -> tuple:
+    def count_all_dirty_contacts(self) -> dict:
         """return all contacts still flagged as dirty."""
         with sqlite3.connect(self.database) as conn:
+            conn.row_factory = self.row_factory
             cursor = conn.cursor()
             cursor.execute("select count(*) as alldirty from contacts where dirty=1")
             return cursor.fetchone()
