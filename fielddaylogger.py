@@ -247,6 +247,44 @@ class MainWindow(QtWidgets.QMainWindow):
                     f"{op_callsign.rjust(6,' ')} {self.people.get(op_callsign).rjust(6, ' ')}\n"
                 )
 
+    def resolve_dirty_records(self):
+        """Go through dirty records and submit them to the server."""
+        if self.connect_to_server:
+            records = self.db.fetch_all_dirty_contacts()
+            self.infobox.setTextColor(QtGui.QColor(211, 215, 207))
+            self.infobox.insertPlainText(f"Resolving {len(records)} unsent contacts.\n")
+            app.processEvents()
+            if records:
+                for count, dirty_contact in enumerate(records):
+                    contact = {}
+                    contact["cmd"] = "POST"
+                    contact["station"] = self.preference.get("mycall")
+                    stale = datetime.now() + timedelta(seconds=30)
+                    contact["expire"] = stale.isoformat()
+                    contact["unique_id"] = dirty_contact.get("unique_id")
+                    contact["hiscall"] = dirty_contact.get("callsign")
+                    contact["class"] = dirty_contact.get("class")
+                    contact["section"] = dirty_contact.get("section")
+                    contact["date_and_time"] = dirty_contact.get("date_time")
+                    contact["frequency"] = dirty_contact.get("frequency")
+                    contact["band"] = dirty_contact.get("band")
+                    contact["mode"] = dirty_contact.get("mode")
+                    contact["power"] = dirty_contact.get("power")
+                    contact["grid"] = dirty_contact.get("grid")
+                    contact["opname"] = dirty_contact.get("opname")
+                    self.server_commands.append(contact)
+                    bytesToSend = bytes(dumps(contact), encoding="ascii")
+                    try:
+                        self.server_udp.sendto(
+                            bytesToSend,
+                            (self.multicast_group, int(self.multicast_port)),
+                        )
+                    except OSError as err:
+                        logging.warning("%s", err)
+                    time.sleep(0.1)  # Do I need this?
+                    self.infobox.insertPlainText(f"Sending {count}\n")
+                    app.processEvents()
+
     def clear_dirty_flag(self, unique_id):
         """clear the dirty flag on record once response is returned from server."""
         self.db.clear_dirty_flag(unique_id)
@@ -2195,6 +2233,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def generate_logs(self):
         """Do this when generate logs button pressed"""
         self.infobox.clear()
+        self.resolve_dirty_records()
         self.cabrillo()
         self.generate_band_mode_tally()
         self.adif()
