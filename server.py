@@ -343,7 +343,7 @@ def cabrillo():
     """
     Generates a cabrillo log file.
     """
-    filename = f"{OURCALL}.log"
+    filename = f"./{OURCALL}.log"
     log = DB.fetch_all_contacts_asc()
     if not log:
         return
