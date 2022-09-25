@@ -274,7 +274,16 @@ class DataBase:
             return cursor.fetchall()
 
     def fetch_all_dirty_contacts(self) -> list:
-        """return all contacts still flagged as dirty."""
+        """
+        Return a list of dict, containing all contacts still flagged as dirty.\n
+        Example:\n
+        {\n
+            'id': 2, 'callsign': 'N6QW', 'class': '1B', 'section': 'SB', \n
+            'date_time': '2022-09-22 18:44:02', 'frequency': 1830000, 'band': '160', \n
+            'mode': 'CW', 'power': 5, 'grid': 'DM04md', 'opname': 'PETER JULIANO', \n
+            'unique_id': '6fe98693f3ac4250847a6e5ac9da650e', 'dirty': 1\n
+        }\n
+        """
         with sqlite3.connect(self.database) as conn:
             conn.row_factory = self.row_factory
             cursor = conn.cursor()
@@ -282,7 +291,10 @@ class DataBase:
             return cursor.fetchall()
 
     def count_all_dirty_contacts(self) -> dict:
-        """return all contacts still flagged as dirty."""
+        """
+        Returns a dict containing the count of contacts still flagged as dirty.\n
+        Example: {'alldirty': 3}
+        """
         with sqlite3.connect(self.database) as conn:
             conn.row_factory = self.row_factory
             cursor = conn.cursor()
