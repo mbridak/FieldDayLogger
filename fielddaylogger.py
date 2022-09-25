@@ -10,6 +10,7 @@ GPL V3
 # xplanet -body earth -window -longitude -117 -latitude 38
 # -config Default -projection azmithal -radius 200 -wait 5
 
+
 from math import radians, sin, cos, atan2, sqrt, asin, pi
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -247,6 +248,18 @@ class MainWindow(QtWidgets.QMainWindow):
                     f"{op_callsign.rjust(6,' ')} {self.people.get(op_callsign).rjust(6, ' ')}\n"
                 )
 
+    def show_dirty_records(self):
+        """Checks for dirty records, Changes Generate Log button to give visual indication."""
+        if self.connect_to_server:
+            result = self.db.count_all_dirty_contacts()
+            all_dirty_count = result.get("alldirty")
+            if all_dirty_count:
+                self.genLogButton.setStyleSheet("background-color: red;")
+                self.genLogButton.setText(f"UnVfyd: {all_dirty_count}")
+            else:
+                self.genLogButton.setStyleSheet("background-color: rgb(92, 53, 102);")
+                self.genLogButton.setText("Generate Logs")
+
     def resolve_dirty_records(self):
         """Go through dirty records and submit them to the server."""
         if self.connect_to_server:
@@ -288,6 +301,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def clear_dirty_flag(self, unique_id):
         """clear the dirty flag on record once response is returned from server."""
         self.db.clear_dirty_flag(unique_id)
+        self.show_dirty_records()
 
     def remove_confirmed_commands(self, data):
         """Removed confirmed commands from the sent commands list."""
@@ -344,14 +358,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def watch_udp(self):
         """Puts UDP datagrams in a FIFO queue"""
-        while self.connect_to_server:
-            try:
-                datagram = self.server_udp.recv(1500)
-            except socket.timeout:
+        while True:
+            if self.connect_to_server:
+                try:
+                    datagram = self.server_udp.recv(1500)
+                except socket.timeout:
+                    time.sleep(1)
+                    continue
+                if datagram:
+                    self.udp_fifo.put(datagram)
+            else:
                 time.sleep(1)
-                continue
-            if datagram:
-                self.udp_fifo.put(datagram)
 
     def check_udp_queue(self):
         """checks the UDP datagram queue."""
@@ -1425,6 +1442,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def log_contact(self):
         """Log the current contact"""
+        self.show_dirty_records()
         if (
             len(self.callsign_entry.text()) == 0
             or len(self.class_entry.text()) == 0
@@ -2233,6 +2251,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def generate_logs(self):
         """Do this when generate logs button pressed"""
         self.infobox.clear()
+        self.show_dirty_records()
         self.resolve_dirty_records()
         self.cabrillo()
         self.generate_band_mode_tally()
