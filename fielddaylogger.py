@@ -783,7 +783,10 @@ class MainWindow(QtWidgets.QMainWindow):
     def process_macro(self, macro):
         """process string substitutions"""
         macro = macro.upper()
-        macro = macro.replace("{MYCALL}", self.preference["mycall"])
+        if self.groupcall and self.connect_to_server:
+            macro = macro.replace("{MYCALL}", self.groupcall)
+        else:
+            macro = macro.replace("{MYCALL}", self.preference["mycall"])
         macro = macro.replace("{MYCLASS}", self.preference["myclass"])
         macro = macro.replace("{MYSECT}", self.preference["mysection"])
         macro = macro.replace("{HISCALL}", self.callsign_entry.text())
