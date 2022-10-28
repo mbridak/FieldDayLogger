@@ -23,7 +23,7 @@
 	- [CW Macros (Run vs S&P)](#cw-macros-run-vs-sp)
 	- [CWDAEMON speed changes](#cwdaemon-speed-changes)
 	- [When the event is over](#when-the-event-is-over)
-- [Group / Club logging](#group-club-logging)
+- [Group / Club logging](#group--club-logging)
 	- [Server configuration](#server-configuration)
 	- [Client configuration for groups](#client-configuration-for-groups)
 	- [Chat Window](#chat-window)
