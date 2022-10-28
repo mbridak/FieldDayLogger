@@ -11,7 +11,7 @@
 - [Features](#features)
 	- [Logging](#logging)
 	- [Radio Polling with CAT](#radio-polling-with-cat)
-	- [Cloudlog useage](#cloudlog-usage)
+	- [Cloudlog useage](#cloudlog-useage)
 	- [QRZ, HamDB or HamQTH](#qrz-hamdb-or-hamqth)
 	- [XPlanet marker file](#xplanet-marker-file)
 	- [Editing an existing contact](#editing-an-existing-contact)
