@@ -1,5 +1,37 @@
 # K6GTE Field Day logger
 
+## TOC
+
+- [Caveats](#Caveats)
+- [Wheres the data](#wheres-the-data)
+- [Running from source](#running-from-source)
+	- [The Client](#the-client)
+	- [The Server](#the-server)
+- [What to do first](#what-to-do-first)
+- [Features](#features)
+	- [Logging](#logging)
+	- [Radio Polling with CAT](#radio-polling-with-cat)
+	- [Cloudlog useage](#cloudlog-usage)
+	- [QRZ, HamDB or HamQTH](#qrz-hamdb-or-hamqth)
+	- [XPlanet marker file](#xplanet-marker-file)
+	- [Editing an existing contact](#editing-an-existing-contact)
+	- [Super Check Partial](#super-check-partial)
+	- [Section partial check](#section-partial-check)
+	- [DUP checking](#dup-checking)
+	- [Autofill](#autofill)
+	- [CW Macros](#cw-macros)
+	- [CW Macros (Run vs S&P)](#cw-macros-run-vs-sp)
+	- [CWDAEMON speed changes](#cwdaemon-speed-changes)
+	- [When the event is over](#when-the-event-is-over)
+- [Group / Club logging](#group-club-logging)
+	- [Server configuration](#server-configuration)
+	- [Client configuration for groups](#client-configuration-for-groups)
+	- [Chat Window](#chat-window)
+	- [How to know the server is there](#how-to-know-the-server-is-there)
+	- [Logging reliability](#logging-reliability)
+- [Generating the cabrillo file](#generating-the-cabrillo-file)
+
+---
 ## Caveats
 
 This has always been a "scratch my own itch" project. And the development of 
@@ -225,7 +257,7 @@ This can also be used to reload the macros if you edit them while the program
 is running.
 
 ---
-## CWDAEMON speed changes.
+## CWDAEMON speed changes
 
 If you use cwdaemon for your cw macro sending, you can press the PageUp and 
 PageDown keys on your keyboard to increase/decrease the cw sending speed.
@@ -373,7 +405,7 @@ Last 15: 81
 Since most people will not be able to see the screen of the server, if it has
 one at all. You may find this useful.
 
-### How to know the server is there.
+### How to know the server is there
 
 Most likely, the server will be in some other tent/building/area of the room.
 Every 10 seconds or so the server will send out a UDP network packet saying
