@@ -27,6 +27,10 @@ over Multicast UDP.
 
 Read the manual [here](Manual.md)
 
+### WB8ERJ's blog writeup
+
+[Mike's Tech Blog WB8ERJ](https://mikestechblog.com/field-day-logging-software-for-the-raspberry-pi/)
+
 ![Picture of main screen](pics/loggerscreenshot.png)
 
 ![Picture of server main screen](pics/server_pic.png)
