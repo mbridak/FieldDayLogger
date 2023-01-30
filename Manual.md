@@ -33,7 +33,6 @@
     - [Logging reliability](#logging-reliability)
     - [Generating the cabrillo file](#generating-the-cabrillo-file)
     - [I'm sure there are short cummings](#im-sure-there-are-short-cummings)
-  - [The Bandmap program](#the-bandmap-program)
 
 ---
 
@@ -111,9 +110,9 @@ screen, where you can change your CAT, CW interface, callsign lookup service
 etc. You can also change your call class and section by clicking on the
 respective fields.
 
-![Picture showing bottom of screen](pics/yourstuff.png)
+![Picture showing bottom of screen](https://github.com/mbridak/FieldDayLogger/raw/main/pics/yourstuff.png)
 
-![Picture showing settings screen](pics/loggerSettingsDialog.png)
+![Picture showing settings screen](https://github.com/mbridak/FieldDayLogger/raw/main/pics/loggerSettingsDialog.png)
 
 ---
 
@@ -174,7 +173,7 @@ If you use QRZ/HamdDB lookups you can also generate an
 [XPlanet](http://xplanet.sourceforge.net/) markerfile which will show little
 pips on the map as contacts are logged.
 
-![Picture showing xplanet](pics/xplanet.png)
+![Picture showing xplanet](https://github.com/mbridak/FieldDayLogger/raw/main/pics/xplanet.png)
 
 The above launched with an example command:
 
@@ -188,7 +187,7 @@ xplanet -body earth -window -longitude -117 -latitude 38 -config Default -projec
 
 Double click a contact in the upper portion of the screen to edit or delete it.
 
-![Picture showing edit qso dialog](pics/editqso.png)
+![Picture showing edit qso dialog](https://github.com/mbridak/FieldDayLogger/raw/main/pics/editqso.png)
 
 ---
 
@@ -198,7 +197,7 @@ If you type more than two characters in the callsign field the program will
 filter the input through a "Super Check Partial" routine and show you possible
 matches to known contesting call signs. Is this useful? Doubt it.
 
-![Picture showing super check partial](pics/scp.png)
+![Picture showing super check partial](https://github.com/mbridak/FieldDayLogger/raw/main/pics/scp.png)
 
 ---
 
@@ -207,7 +206,7 @@ matches to known contesting call signs. Is this useful? Doubt it.
 As you type the section abbreviation you are presented with a list of all
 possible sections that start with what you have typed.
 
-![Picture showing section check partial](pics/sectioncheck.png)
+![Picture showing section check partial](https://github.com/mbridak/FieldDayLogger/raw/main/pics/sectioncheck.png)
 
 ---
 
@@ -222,7 +221,7 @@ is a DUP. At this point you and the other OP can argue back and forth about
 who's wrong. In the end you'll put your big boy pants on and make a decision if
 you'll enter the call or not.
 
-![Picture showing dup checking](pics/dupe.png)
+![Picture showing dup checking](https://github.com/mbridak/FieldDayLogger/raw/main/pics/dupe.png)
 
 ---
 
@@ -270,7 +269,7 @@ You can toggle the macros in use between Run and Search and Pounce by clicking
 the button to the left of the settings/gear button at the botton right portion
 of the screen.
 
-![Picture showing buttons](pics/run_sp.png)
+![Picture showing buttons](https://github.com/mbridak/FieldDayLogger/raw/main/pics/run_sp.png)
 
 This can also be used to reload the macros if you edit them while the program
 is running.
@@ -290,7 +289,7 @@ You can press `ESC` to abort CW output.
 After the big weekend, once you've swept up all the broken beer bottles and
 wiped the BBQ sauce off your chin, go ahead and click the Generate Logs button.
 
-![Picture showing generate log button](pics/genlog.png)
+![Picture showing generate log button](https://github.com/mbridak/FieldDayLogger/raw/main/pics/genlog.png)
 
 This will generate the following:
 
@@ -311,7 +310,7 @@ I have added a group contact aggrigating server. This can be run on the same
 computer as the client program, or on a separate dedicated PC or Raspberry Pi
 on the same network.
 
-![Picture showing main server screen](pics/server_pic.png)
+![Picture showing main server screen](https://github.com/mbridak/FieldDayLogger/raw/main/pics/server_pic.png)
 
 ### Server configuration
 
@@ -377,7 +376,7 @@ to the number of messages handled.
 
 In the settings dialog there is now a tab labeled 'Group Operation'.
 
-![Picture showing settings dialog tab](pics/group_server_settings.png)
+![Picture showing settings dialog tab](https://github.com/mbridak/FieldDayLogger/raw/main/pics/group_server_settings.png)
 
 Go ahead and place a check next to 'Connect to server'. Rejoyce and let
 merriment be had by all. Be sure and have your callsign already set before
@@ -389,12 +388,12 @@ server reports. The portion of the screen where all the different ARRL sections
 are displayed will be replaced by a group chat window and a column showing the
 station call, band and mode of other participants.
 
-![Picture showing logger screen changes](pics/group_chat.png)
+![Picture showing logger screen changes](https://github.com/mbridak/FieldDayLogger/raw/main/pics/group_chat.png)
 
 If more than one operator is on the same band/mode, their names will be
 highlighted in the operators list. Feel free to yell at eachother in the chat.
 
-![Picture showing band and mode conflict](pics/band_conflict.png)
+![Picture showing band and mode conflict](https://github.com/mbridak/FieldDayLogger/raw/main/pics/band_conflict.png)
 
 ### Chat Window
 
@@ -434,12 +433,12 @@ Every 10 seconds or so the server will send out a UDP network packet saying
 it's there. As long as your client keeps seeing these packets the group call
 indicator at the bottom of the screen will look like:
 
-![Picture showing server status](pics/server_pinging.png)
+![Picture showing server status](https://github.com/mbridak/FieldDayLogger/raw/main/pics/server_pinging.png)
 
 But if about 30 seconds go by with no update from the server, the indicator
 will change to:
 
-![Picture showing server status](pics/server_not_pinging.png)
+![Picture showing server status](https://github.com/mbridak/FieldDayLogger/raw/main/pics/server_not_pinging.png)
 
 Go check on it.
 
@@ -494,9 +493,3 @@ are a couple of things I forgot, or didn't account for.
 
 If you are part of a group of linux using Hams, please take this for a spin and
 tell me what I missed or could do better.
-
----
-
-## The Bandmap program
-
-See [here](bandmap.md)
