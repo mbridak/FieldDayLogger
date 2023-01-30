@@ -1595,7 +1595,7 @@ class MainWindow(QtWidgets.QMainWindow):
         Reads in the ARRL sections into some internal dictionaries.
         """
         try:
-            data_path = self.working_path + "/data/arrl_sect.json"
+            data_path = self.working_path + "/data/arrl_sect.dat"
             with open(data_path, "r", encoding="utf-8") as file_descriptor:
                 while 1:
                     line = (
@@ -2140,7 +2140,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         filename = self.preference["mycall"].upper() + ".log"
         self.infobox.setTextColor(QtGui.QColor(211, 215, 207))
-        self.infobox.insertPlainText(f"Saving cabrillo to: {filename}")
+        self.infobox.insertPlainText(f"Saving cabrillo to: {filename}\n")
         app.processEvents()
         log = self.db.fetch_all_contacts_asc()
         if not log:
@@ -2486,12 +2486,12 @@ timer3.timeout.connect(window.send_status_udp)
 
 def run():
     """Main Entry"""
-    PATH = os.path.dirname(pkgutil.get_loader("wfdlogger").get_filename())
+    PATH = os.path.dirname(pkgutil.get_loader("fdlogger").get_filename())
     os.system(
         "xdg-icon-resource install --size 64 --context apps --mode user "
-        f"{PATH}/data/k6gte-fdlogger.png k6gte-fdlogger"
+        f"{PATH}/icon/k6gte-fdlogger.png k6gte-fdlogger"
     )
-    os.system(f"xdg-desktop-menu install {PATH}/data/k6gte-fdlogger.desktop")
+    os.system(f"xdg-desktop-menu install {PATH}/data/k6gte-fieldday.desktop")
     timer.start(1000)
     timer2.start(1000)
     timer3.start(15000)
