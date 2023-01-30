@@ -6,9 +6,7 @@
   - [TOC](#toc)
   - [Caveats](#caveats)
   - [Wheres the data](#wheres-the-data)
-  - [Running from source](#running-from-source)
-    - [The Client](#the-client)
-    - [The Server](#the-server)
+  - [Installation and running and removal](#installation-and-running-and-removal)
   - [What to do first](#what-to-do-first)
 - [Features](#features)
   - [Logging](#logging)
@@ -42,7 +40,7 @@ This has always been a "scratch my own itch" project. And the development of
 it is driven by that. However, I welcome suggestions, criticisms and feature
 requests.
 
-Field Day only has a generic digital mode designator 'DI', which gets exported
+Field Day only has a generic digital mode designator 'DG', which gets exported
 to the cabrillo file. But ADIF and CloudLog needed something else, So I Chose
 FT8. Yes Yes, I know. FT8 is the spawn of Satan, and is killing Ham Radio...
 Blah Blah Blah... Feel free to change it to what ever you will use.
@@ -74,31 +72,21 @@ The server does not create an adif file, 'cause why should it...
 
 ---
 
-## Running from source
+## Installation and running and removal
 
-### The Client
+```bash
+# install
+pip install fdlogger
 
-Install Python 3, then required libraries.
+# update
+pip install -U fdlogger
 
-If you're the Ubuntu/Debian type you can:
+# remove
+pip uninstall fdlogger
 
-`sudo apt install python3-pyqt5 python3-requests python3-bs4`
-
-You can install libraries via pip:
-
-`python3 -m pip3 install -r requirements.txt`
-
-Just make fielddaylogger.py executable and run it within the same folder,
-or type:
-
-`python3 fielddaylogger.py`
-
-### The Server
-
-The server is a terminal / curses program and uses standard libraries that
-should already be installed.
-
-Just make server.py executable and run it the same way as the client.
+# run it
+fdlogger
+```
 
 ---
 
