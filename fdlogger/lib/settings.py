@@ -3,6 +3,7 @@
 import logging
 import sys
 import os
+import pkgutil
 from json import dumps, loads
 from PyQt5 import QtWidgets, uic
 
@@ -13,7 +14,11 @@ class Settings(QtWidgets.QDialog):
     def __init__(self, parent=None):
         """initialize dialog"""
         super().__init__(parent)
-        uic.loadUi(self.relpath("data/settings.ui"), self)
+        self.working_path = os.path.dirname(
+            pkgutil.get_loader("fdlogger").get_filename()
+        )
+        data_path = self.working_path + "/data/settings.ui"
+        uic.loadUi(data_path, self)
         self.buttonBox.accepted.connect(self.save_changes)
         self.preference = None
         self.setup()
@@ -45,25 +50,10 @@ class Settings(QtWidgets.QDialog):
             self.usepywinkeyer_radioButton.setChecked(
                 bool(self.preference["cwtype"] == 2)
             )
-            self.connect_to_server.setChecked(
-                bool(self.preference.get("useserver"))
-            )
+            self.connect_to_server.setChecked(bool(self.preference.get("useserver")))
             self.multicast_group.setText(self.preference.get("multicast_group"))
             self.multicast_port.setText(str(self.preference.get("multicast_port")))
             self.interface_ip.setText(self.preference.get("interface_ip"))
-
-    @staticmethod
-    def relpath(filename: str) -> str:
-        """
-        If the program is packaged with pyinstaller,
-        this is needed since all files will be in a temp
-        folder during execution.
-        """
-        if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-            base_path = getattr(sys, "_MEIPASS")
-        else:
-            base_path = os.path.abspath(".")
-        return os.path.join(base_path, filename)
 
     def save_changes(self):
         """
