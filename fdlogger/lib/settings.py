@@ -1,7 +1,6 @@
 """Settings Dialog Class"""
 
 import logging
-import sys
 import os
 import pkgutil
 from json import dumps, loads
@@ -28,32 +27,88 @@ class Settings(QtWidgets.QDialog):
         with open("./fd_preferences.json", "rt", encoding="utf-8") as file_descriptor:
             self.preference = loads(file_descriptor.read())
             logging.info("reading: %s", self.preference)
-            self.useqrz_radioButton.setChecked(bool(self.preference["useqrz"]))
-            self.usehamdb_radioButton.setChecked(bool(self.preference["usehamdb"]))
-            self.usehamqth_radioButton.setChecked(bool(self.preference["usehamqth"]))
-            self.lookup_user_name_field.setText(self.preference["lookupusername"])
-            self.lookup_password_field.setText(self.preference["lookuppassword"])
-            self.cloudlogapi_field.setText(self.preference["cloudlogapi"])
-            self.cloudlogurl_field.setText(self.preference["cloudlogurl"])
-            self.rigcontrolip_field.setText(self.preference["CAT_ip"])
-            self.rigcontrolport_field.setText(str(self.preference["CAT_port"]))
-            self.usecloudlog_checkBox.setChecked(bool(self.preference["cloudlog"]))
-            self.userigctld_radioButton.setChecked(bool(self.preference["userigctld"]))
-            self.useflrig_radioButton.setChecked(bool(self.preference["useflrig"]))
-            self.markerfile_field.setText(self.preference["markerfile"])
-            self.generatemarker_checkbox.setChecked(bool(self.preference["usemarker"]))
-            self.cwip_field.setText(self.preference["cwip"])
-            self.cwport_field.setText(str(self.preference["cwport"]))
+            self.useqrz_radioButton.setChecked(bool(self.preference.get("useqrz")))
+            self.usehamdb_radioButton.setChecked(bool(self.preference.get("usehamdb")))
+            self.usehamqth_radioButton.setChecked(
+                bool(self.preference.get("usehamqth"))
+            )
+            self.lookup_user_name_field.setText(
+                self.preference.get("lookupusername")
+                if self.preference.get("lookupusername")
+                else ""
+            )
+            self.lookup_password_field.setText(
+                self.preference.get("lookuppassword")
+                if self.preference.get("lookuppassword")
+                else ""
+            )
+            self.cloudlogapi_field.setText(
+                self.preference.get("cloudlogapi")
+                if self.preference.get("cloudlogapi")
+                else ""
+            )
+            self.cloudlogurl_field.setText(
+                self.preference.get("cloudlogurl")
+                if self.preference.get("cloudlogurl")
+                else ""
+            )
+            self.rigcontrolip_field.setText(
+                self.preference.get("CAT_ip") if self.preference.get("CAT_ip") else ""
+            )
+            self.rigcontrolport_field.setText(
+                str(
+                    self.preference.get("CAT_port")
+                    if self.preference.get("CAT_port")
+                    else ""
+                )
+            )
+            self.usecloudlog_checkBox.setChecked(bool(self.preference.get("cloudlog")))
+            self.userigctld_radioButton.setChecked(
+                bool(self.preference.get("userigctld"))
+            )
+            self.useflrig_radioButton.setChecked(bool(self.preference.get("useflrig")))
+            self.markerfile_field.setText(
+                self.preference.get("markerfile")
+                if self.preference.get("markerfile")
+                else ""
+            )
+            self.generatemarker_checkbox.setChecked(
+                bool(self.preference.get("usemarker"))
+            )
+            self.cwip_field.setText(
+                self.preference.get("cwip") if self.preference.get("cwip") else ""
+            )
+            self.cwport_field.setText(
+                str(
+                    self.preference.get("cwport")
+                    if self.preference.get("cwport")
+                    else ""
+                )
+            )
             self.usecwdaemon_radioButton.setChecked(
-                bool(self.preference["cwtype"] == 1)
+                bool(self.preference.get("cwtype") == 1)
             )
             self.usepywinkeyer_radioButton.setChecked(
-                bool(self.preference["cwtype"] == 2)
+                bool(self.preference.get("cwtype") == 2)
             )
             self.connect_to_server.setChecked(bool(self.preference.get("useserver")))
-            self.multicast_group.setText(self.preference.get("multicast_group"))
-            self.multicast_port.setText(str(self.preference.get("multicast_port")))
-            self.interface_ip.setText(self.preference.get("interface_ip"))
+            self.multicast_group.setText(
+                self.preference.get("multicast_group")
+                if self.preference.get("multicast_group")
+                else ""
+            )
+            self.multicast_port.setText(
+                str(
+                    self.preference.get("multicast_port")
+                    if self.preference.get("multicast_port")
+                    else ""
+                )
+            )
+            self.interface_ip.setText(
+                self.preference.get("interface_ip")
+                if self.preference.get("interface_ip")
+                else ""
+            )
 
     def save_changes(self):
         """
