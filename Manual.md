@@ -2,63 +2,66 @@
 
 ## TOC
 
-- [Caveats](#Caveats)
-- [Wheres the data](#wheres-the-data)
-- [Running from source](#running-from-source)
-	- [The Client](#the-client)
-	- [The Server](#the-server)
-- [What to do first](#what-to-do-first)
+- [K6GTE Field Day logger](#k6gte-field-day-logger)
+  - [TOC](#toc)
+  - [Caveats](#caveats)
+  - [Wheres the data](#wheres-the-data)
+  - [Installation and running and removal](#installation-and-running-and-removal)
+  - [What to do first](#what-to-do-first)
 - [Features](#features)
-	- [Logging](#logging)
-	- [Radio Polling with CAT](#radio-polling-with-cat)
-	- [Cloudlog useage](#cloudlog-useage)
-	- [QRZ, HamDB or HamQTH](#qrz-hamdb-or-hamqth)
-	- [XPlanet marker file](#xplanet-marker-file)
-	- [Editing an existing contact](#editing-an-existing-contact)
-	- [Super Check Partial](#super-check-partial)
-	- [Section partial check](#section-partial-check)
-	- [DUP checking](#dup-checking)
-	- [Autofill](#autofill)
-	- [CW Macros](#cw-macros)
-	- [CW Macros (Run vs S&P)](#cw-macros-run-vs-sp)
-	- [CWDAEMON speed changes](#cwdaemon-speed-changes)
-	- [When the event is over](#when-the-event-is-over)
-- [Group / Club logging](#group--club-logging)
-	- [Server configuration](#server-configuration)
-	- [Client configuration for groups](#client-configuration-for-groups)
-	- [Chat Window](#chat-window)
-	- [How to know the server is there](#how-to-know-the-server-is-there)
-	- [Logging reliability](#logging-reliability)
-- [Generating the cabrillo file](#generating-the-cabrillo-file)
+  - [Logging](#logging)
+  - [Radio Polling with CAT](#radio-polling-with-cat)
+  - [Cloudlog useage](#cloudlog-useage)
+  - [QRZ, HamDB or HamQTH](#qrz-hamdb-or-hamqth)
+  - [XPlanet marker file](#xplanet-marker-file)
+  - [Editing an existing contact](#editing-an-existing-contact)
+  - [Super Check Partial](#super-check-partial)
+  - [Section partial check](#section-partial-check)
+  - [DUP checking](#dup-checking)
+  - [Autofill](#autofill)
+  - [CW Macros](#cw-macros)
+  - [CW Macros (Run vs S\&P)](#cw-macros-run-vs-sp)
+  - [CWDAEMON speed changes](#cwdaemon-speed-changes)
+  - [When the event is over](#when-the-event-is-over)
+  - [Group / Club logging](#group--club-logging)
+    - [Server configuration](#server-configuration)
+    - [Client configuration for groups](#client-configuration-for-groups)
+    - [Chat Window](#chat-window)
+    - [How to know the server is there](#how-to-know-the-server-is-there)
+    - [Logging reliability](#logging-reliability)
+    - [Generating the cabrillo file](#generating-the-cabrillo-file)
+    - [I'm sure there are short cummings](#im-sure-there-are-short-cummings)
 
 ---
+
 ## Caveats
 
-This has always been a "scratch my own itch" project. And the development of 
-it is driven by that. However, I welcome suggestions, criticisms and feature 
+This has always been a "scratch my own itch" project. And the development of
+it is driven by that. However, I welcome suggestions, criticisms and feature
 requests.
 
-Field Day only has a generic digital mode designator 'DI', which gets exported 
-to the cabrillo file. But ADIF and CloudLog needed something else, So I Chose 
-FT8. Yes Yes, I know. FT8 is the spawn of Satan, and is killing Ham Radio... 
-Blah Blah Blah... Feel free to change it to what ever you will use. 
-Just search for the two places in the code 'FT8' is used and Bob's your dads 
+Field Day only has a generic digital mode designator 'DG', which gets exported
+to the cabrillo file. But ADIF and CloudLog needed something else, So I Chose
+FT8. Yes Yes, I know. FT8 is the spawn of Satan, and is killing Ham Radio...
+Blah Blah Blah... Feel free to change it to what ever you will use.
+Just search for the two places in the code 'FT8' is used and Bob's your dads
 brother.
 
 ---
+
 ## Wheres the data
 
-The client log is stored in an sqlite3 database file './FieldDay.db'. If you 
-need to wipe everything and start clean, just delete this file and re-run the 
+The client log is stored in an sqlite3 database file './FieldDay.db'. If you
+need to wipe everything and start clean, just delete this file and re-run the
 logger.
 
-The aggrigation server stores it's database in a file called, in a stroke of 
+The aggrigation server stores it's database in a file called, in a stroke of
 inspiration, './server_database.db'.
 
-The logger will generate a cabrillo file './YOURCALL.log' and a 
-'./Statistics.txt' file with a band/mode/power breakdown which you can use 
-when you submit your logs to the ARRL online 
-[here](http://field-day.arrl.org/fdentry.php). 
+The logger will generate a cabrillo file './YOURCALL.log' and a
+'./Statistics.txt' file with a band/mode/power breakdown which you can use
+when you submit your logs to the ARRL online
+[here](http://field-day.arrl.org/fdentry.php).
 
 The server will generate a cabrillo file './YOURCLUBSCALLSIGN.log'
 
@@ -68,101 +71,97 @@ merge contacts into your normal Log.
 The server does not create an adif file, 'cause why should it...
 
 ---
-## Running from source
 
-### The Client
+## Installation and running and removal
 
-Install Python 3, then required libraries.
+```bash
+# install
+pip install fdlogger
 
-If you're the Ubuntu/Debian type you can:
+# update
+pip install -U fdlogger
 
-`sudo apt install python3-pyqt5 python3-requests python3-bs4`
+# remove
+pip uninstall fdlogger
 
-You can install libraries via pip:
-
-`python3 -m pip3 install -r requirements.txt`
-
-Just make fielddaylogger.py executable and run it within the same folder,
-or type:
-
-`python3 fielddaylogger.py`
-
-### The Server
-
-The server is a terminal / curses program and uses standard libraries that
-should already be installed.
-
-Just make server.py executable and run it the same way as the client. 
+# run it
+fdlogger
+```
 
 ---
 
 ## What to do first
 
-When run for the first time, you will be greeted by a dialog asking for your 
-Callsign, Class and Section. Afterward, there is a gear icon on the main 
-screen, where you can change your CAT, CW interface, callsign lookup service 
-etc. You can also change your call class and section by clicking on the 
+When run for the first time, you will be greeted by a dialog asking for your
+Callsign, Class and Section. Afterward, there is a gear icon on the main
+screen, where you can change your CAT, CW interface, callsign lookup service
+etc. You can also change your call class and section by clicking on the
 respective fields.
 
-![Picture showing bottom of screen](pics/yourstuff.png)
+![Picture showing bottom of screen](https://github.com/mbridak/FieldDayLogger/raw/main/pics/yourstuff.png)
 
-![Picture showing settings screen](pics/loggerSettingsDialog.png)
+![Picture showing settings screen](https://github.com/mbridak/FieldDayLogger/raw/main/pics/loggerSettingsDialog.png)
 
 ---
+
 # Features
 
 ## Logging
 
-Okay you've made a contact. Enter the call in the call field. As you type it 
-in, it will do a super check partial (see below). Press TAB or SPACE to 
-advance to the next field. Once the call is entered and you've moved to the 
-next field, it will do a DUP check (see below). It will try and Autofill the 
-next fields (see below). When entering the section, it will do a section 
-partial check (see below). Press the ENTER key to submit the contact to the 
+Okay you've made a contact. Enter the call in the call field. As you type it
+in, it will do a super check partial (see below). Press TAB or SPACE to
+advance to the next field. Once the call is entered and you've moved to the
+next field, it will do a DUP check (see below). It will try and Autofill the
+next fields (see below). When entering the section, it will do a section
+partial check (see below). Press the ENTER key to submit the contact to the
 log.
 
-If it's a busted call or a dup, press the ESC key to clear all inputs and 
+If it's a busted call or a dup, press the ESC key to clear all inputs and
 start again.
 
 ---
+
 ## Radio Polling with CAT
 
-If you run flrig or rigctld on a computer connected to the radio, it can be 
-polled for band/mode updates automatically. Click the gear icon at the bottom 
-of the screen to set the IP and port and choose flrig or rigctld. The default 
-ports are 4532 for rigctld and 12345 for flrig.  There is a radio icon at the 
+If you run flrig or rigctld on a computer connected to the radio, it can be
+polled for band/mode updates automatically. Click the gear icon at the bottom
+of the screen to set the IP and port and choose flrig or rigctld. The default
+ports are 4532 for rigctld and 12345 for flrig.  There is a radio icon at the
 bottom of the logging window to indicate polling status. Green good, Red bad.
 
 ---
+
 ## Cloudlog useage
 
-If you use [CloudLog](https://github.com/magicbug/Cloudlog) for your main 
-logging you can click the gear icon to enter your credentials. Contacts are 
+If you use [CloudLog](https://github.com/magicbug/Cloudlog) for your main
+logging you can click the gear icon to enter your credentials. Contacts are
 pushed to CloudLog as soon as they are logged.
 
 ---
+
 ## QRZ, HamDB or HamQTH
 
-The QRZ/HamDB/HamQTH lookup is only used to get the name and gridsquare for 
-the call. Mainly because when a contact is pushed to 
-[CloudLog](https://github.com/magicbug/Cloudlog) it will not show as a pin on 
+The QRZ/HamDB/HamQTH lookup is only used to get the name and gridsquare for
+the call. Mainly because when a contact is pushed to
+[CloudLog](https://github.com/magicbug/Cloudlog) it will not show as a pin on
 the map unless it has a gridsquare. So this is a scratch my own itch feature.
 
-The call to the lookup service is made anytime you exit the call entry field 
-by pressing a TAB or Space key. This call is done in it's own thread so it will 
+The call to the lookup service is made anytime you exit the call entry field
+by pressing a TAB or Space key. This call is done in it's own thread so it will
 not slow down the GUI interface.
 
-Distance and bearing to contact is also calculated at this time, though I 
-haven't made use of the data. 
+Distance and bearing to contact is also calculated at this time, though I
+haven't made use of the data.
 
 ---
+
 ## XPlanet marker file
 
-If you use QRZ/HamdDB lookups you can also generate an 
-[XPlanet](http://xplanet.sourceforge.net/) markerfile which will show little 
+If you use QRZ/HamdDB lookups you can also generate an
+[XPlanet](http://xplanet.sourceforge.net/) markerfile which will show little
 pips on the map as contacts are logged.
 
-![Picture showing xplanet](pics/xplanet.png)
+![Picture showing xplanet](https://github.com/mbridak/FieldDayLogger/raw/main/pics/xplanet.png)
 
 The above launched with an example command:
 
@@ -171,60 +170,66 @@ xplanet -body earth -window -longitude -117 -latitude 38 -config Default -projec
 ```
 
 ---
+
 ## Editing an existing contact
 
 Double click a contact in the upper portion of the screen to edit or delete it.
 
-![Picture showing edit qso dialog](pics/editqso.png)
+![Picture showing edit qso dialog](https://github.com/mbridak/FieldDayLogger/raw/main/pics/editqso.png)
 
 ---
+
 ## Super Check Partial
 
-If you type more than two characters in the callsign field the program will 
-filter the input through a "Super Check Partial" routine and show you possible 
+If you type more than two characters in the callsign field the program will
+filter the input through a "Super Check Partial" routine and show you possible
 matches to known contesting call signs. Is this useful? Doubt it.
 
-![Picture showing super check partial](pics/scp.png)
+![Picture showing super check partial](https://github.com/mbridak/FieldDayLogger/raw/main/pics/scp.png)
 
 ---
+
 ## Section partial check
 
-As you type the section abbreviation you are presented with a list of all 
+As you type the section abbreviation you are presented with a list of all
 possible sections that start with what you have typed.
 
-![Picture showing section check partial](pics/sectioncheck.png)
+![Picture showing section check partial](https://github.com/mbridak/FieldDayLogger/raw/main/pics/sectioncheck.png)
 
 ---
+
 ## DUP checking
 
-Once you type a complete callsign and press TAB or SPACE to advance to the next 
-field. The callsign is checked against previous callsigns in your log. It will 
-list any prior contact made showing the band and mode of the contact. If the 
-band and mode are the same as the one you are currently using, the listing will 
-be highlighted, the screen will flash, a bell will sound to alert you that this 
-is a DUP. At this point you and the other OP can argue back and forth about 
-who's wrong. In the end you'll put your big boy pants on and make a decision if 
+Once you type a complete callsign and press TAB or SPACE to advance to the next
+field. The callsign is checked against previous callsigns in your log. It will
+list any prior contact made showing the band and mode of the contact. If the
+band and mode are the same as the one you are currently using, the listing will
+be highlighted, the screen will flash, a bell will sound to alert you that this
+is a DUP. At this point you and the other OP can argue back and forth about
+who's wrong. In the end you'll put your big boy pants on and make a decision if
 you'll enter the call or not.
 
-![Picture showing dup checking](pics/dupe.png)
+![Picture showing dup checking](https://github.com/mbridak/FieldDayLogger/raw/main/pics/dupe.png)
 
 ---
+
 ## Autofill
 
-If you have worked this person before on another band/mode the program will 
-load the class and section used previously for this call so you will not have 
+If you have worked this person before on another band/mode the program will
+load the class and section used previously for this call so you will not have
 to enter this info again.
 
 ---
+
 ## CW Macros
 
-The program will check in the current working directory for a file called 
+The program will check in the current working directory for a file called
 `cwmacros_fd.txt`. If not present it will be created. It will parse the file
 and configure the row of 12 buttons along the bottom half of the window.
 The macros can be activated by either pressing the corresponding function key,
-or by directly clicking on the button. You can check the file to glean it's 
+or by directly clicking on the button. You can check the file to glean it's
 structure, but it's pretty straight forward. Each line has 4 sections separated
-by the pipe `|` character. 
+by the pipe `|` character.
 Here's an example line.
 
 `R|F2|Run Exch|{HISCALL} {MYCLASS} {MYSECT}`
@@ -245,57 +250,61 @@ These are pulled straight from the onscreen input fields. Combined with normal
 text this should have you covered for most of your exchange needs.
 
 ---
+
 ## CW Macros (Run vs S&P)
 
 You can toggle the macros in use between Run and Search and Pounce by clicking
 the button to the left of the settings/gear button at the botton right portion
 of the screen.
 
-![Picture showing buttons](pics/run_sp.png)
+![Picture showing buttons](https://github.com/mbridak/FieldDayLogger/raw/main/pics/run_sp.png)
 
 This can also be used to reload the macros if you edit them while the program
 is running.
 
 ---
+
 ## CWDAEMON speed changes
 
-If you use cwdaemon for your cw macro sending, you can press the PageUp and 
+If you use cwdaemon for your cw macro sending, you can press the PageUp and
 PageDown keys on your keyboard to increase/decrease the cw sending speed.
 You can press `ESC` to abort CW output.
 
 ---
+
 ## When the event is over
 
-After the big weekend, once you've swept up all the broken beer bottles and 
+After the big weekend, once you've swept up all the broken beer bottles and
 wiped the BBQ sauce off your chin, go ahead and click the Generate Logs button.
 
-![Picture showing generate log button](pics/genlog.png)
+![Picture showing generate log button](https://github.com/mbridak/FieldDayLogger/raw/main/pics/genlog.png)
 
 This will generate the following:
 
 An ADIF log 'FieldDay.adi'.
 
-A Cabrillo log 'Yourcall.log'. Which you edit to fill in your address etc. 
-If your not using Windows, you must ensure whatever editor you use uses CR/LF 
-line endings. Cause whatever they use at the ARRL will choke with out them. 
+A Cabrillo log 'Yourcall.log'. Which you edit to fill in your address etc.
+If your not using Windows, you must ensure whatever editor you use uses CR/LF
+line endings. Cause whatever they use at the ARRL will choke with out them.
 To be safe you might want to run it through 'unix2dos' before submitting it.
 
 A 'Statistics.txt' file which breaks down your band/mode/power usage.
 
 ---
+
 ## Group / Club logging
 
 I have added a group contact aggrigating server. This can be run on the same
 computer as the client program, or on a separate dedicated PC or Raspberry Pi
 on the same network.
 
-![Picture showing main server screen](pics/server_pic.png)
+![Picture showing main server screen](https://github.com/mbridak/FieldDayLogger/raw/main/pics/server_pic.png)
 
 ### Server configuration
 
 The configuration file for the server is a JSON file 'server_preferences.json'.
 
-```
+```json
 {
     "ourcall": "W1AW",
     "ourclass": "3A",
@@ -347,15 +356,15 @@ be straight forward.
 
 Under the bonuses section, if your group qualifies for a bonus, replace the '0'
 next to the bonus with a '1'. Three of the bonuses require a count of items
-qualifiying you for the bonus. For example Message Handling. If your group 
+qualifiying you for the bonus. For example Message Handling. If your group
 qualifies for this, change the value of 'bool' to a 1, and then 'message_count'
-to the number of messages handled. 
+to the number of messages handled.
 
 ### Client configuration for groups
 
 In the settings dialog there is now a tab labeled 'Group Operation'.
 
-![Picture showing settings dialog tab](pics/group_server_settings.png)
+![Picture showing settings dialog tab](https://github.com/mbridak/FieldDayLogger/raw/main/pics/group_server_settings.png)
 
 Go ahead and place a check next to 'Connect to server'. Rejoyce and let
 merriment be had by all. Be sure and have your callsign already set before
@@ -367,12 +376,12 @@ server reports. The portion of the screen where all the different ARRL sections
 are displayed will be replaced by a group chat window and a column showing the
 station call, band and mode of other participants.
 
-![Picture showing logger screen changes](pics/group_chat.png)
+![Picture showing logger screen changes](https://github.com/mbridak/FieldDayLogger/raw/main/pics/group_chat.png)
 
 If more than one operator is on the same band/mode, their names will be
 highlighted in the operators list. Feel free to yell at eachother in the chat.
 
-![Picture showing band and mode conflict](pics/band_conflict.png)
+![Picture showing band and mode conflict](https://github.com/mbridak/FieldDayLogger/raw/main/pics/band_conflict.png)
 
 ### Chat Window
 
@@ -385,7 +394,7 @@ There is one command you can type into the chat window that may be of use.
 if you type @stats into the window the server will dump out some stats into the
 chat.
 
-```
+```text
 Server: 
 Band   CW    PH    DI
  160     0     0     0
@@ -412,23 +421,23 @@ Every 10 seconds or so the server will send out a UDP network packet saying
 it's there. As long as your client keeps seeing these packets the group call
 indicator at the bottom of the screen will look like:
 
-![Picture showing server status](pics/server_pinging.png) 
+![Picture showing server status](https://github.com/mbridak/FieldDayLogger/raw/main/pics/server_pinging.png)
 
 But if about 30 seconds go by with no update from the server, the indicator
 will change to:
 
-![Picture showing server status](pics/server_not_pinging.png)
+![Picture showing server status](https://github.com/mbridak/FieldDayLogger/raw/main/pics/server_not_pinging.png)
 
 Go check on it.
 
 ### Logging reliability
 
 As mentioned before, We're using UDP traffic to pass data back and forth to the
-server. UDP traffic is a 'Fire and forget' method. Akin to a bunch of people 
-in the same room yelling at eachother. Everyone can hear you, but you don't 
-know if anyone heard what you said. This has both Advantages and Disadvantages. 
-One advantage is that your program is not stuck waiting for a reply or timeout 
-locking up your user interface. The disadvantage is you have no idea if anyone 
+server. UDP traffic is a 'Fire and forget' method. Akin to a bunch of people
+in the same room yelling at eachother. Everyone can hear you, but you don't
+know if anyone heard what you said. This has both Advantages and Disadvantages.
+One advantage is that your program is not stuck waiting for a reply or timeout
+locking up your user interface. The disadvantage is you have no idea if anyone
 took note of what you had said.
 
 This works fine in a local network since the traffic doesn't have to survive
@@ -439,10 +448,10 @@ their tent. Or worse you have EVERYONE on WIFI, and there are packet collisions
 galore degrading your network.
 
 To account for this, the client logging program keeps track of recent packets
-sent, noting the time they were sent at. The server after getting a packet, 
+sent, noting the time they were sent at. The server after getting a packet,
 generates a response to the sender with it's unique identifyer. Once the client
 gets the response from the server, it will remove the request on the local side
-and print a little message at the bottom of the screen giving you a visual 
+and print a little message at the bottom of the screen giving you a visual
 confirmation that the command was acted upon by the server.
 If the server does not respond either because the response was lost or the
 request never made it to reply too. The client will resend the
@@ -454,7 +463,7 @@ the client will resend all the logged contacts that have not gotten responses
 from the server. You can keep doing this, if need be,  until it gets them all.
 
 Chat traffic is best effort. Either everyone sees your plea for more beer or
-they don't. No retry is made for chat traffic. Just get your butt up and make 
+they don't. No retry is made for chat traffic. Just get your butt up and make
 the trip to the cooler.
 
 ### Generating the cabrillo file
@@ -472,7 +481,3 @@ are a couple of things I forgot, or didn't account for.
 
 If you are part of a group of linux using Hams, please take this for a spin and
 tell me what I missed or could do better.
-
----
-## The Bandmap program
-See [here](bandmap.md)

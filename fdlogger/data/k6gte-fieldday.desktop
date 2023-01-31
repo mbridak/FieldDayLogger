@@ -1,10 +1,10 @@
 [Desktop Entry]
-Name=fielddaylogger
-StartupWMClass=fielddaylogger
+Name=fdlogger
+StartupWMClass=fdlogger
 GenericName=K6GTE Field Day Logger
 Comment=Amateur Radio Communications
-Exec=fielddaylogger
-Icon=k6gte-FieldDay
+Exec=fdlogger
+Icon=k6gte-fieldday
 Terminal=false
 Type=Application
 Categories=HamRadio;

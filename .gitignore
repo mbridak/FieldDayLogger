@@ -2,6 +2,8 @@ FieldDay.db
 FieldDay.adi
 Statistics.txt
 changes.txt
+rebuild.sh
+publish.sh
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
