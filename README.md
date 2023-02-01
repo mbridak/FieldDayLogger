@@ -28,6 +28,7 @@ over Multicast UDP.
 
 - [K6GTE Field Day logger (GUI)](#k6gte-field-day-logger-gui)
   - [Caveats](#caveats)
+  - [Recent Changes](#recent-changes)
   - [Wheres the data](#wheres-the-data)
   - [Installation and running and removal](#installation-and-running-and-removal)
   - [What to do first](#what-to-do-first)
@@ -73,6 +74,11 @@ Just search for the two places in the code 'FT8' is used and Bob's your dads
 brother.
 
 **WB8ERJ's blog writeup** [Mike's Tech Blog WB8ERJ](https://mikestechblog.com/field-day-logging-software-for-the-raspberry-pi/)
+
+## Recent Changes
+
+- [23.2.1] Made interface resizable.
+- [23.1.30] Repackaged for PyPi pip installation
 
 ## Wheres the data
 
