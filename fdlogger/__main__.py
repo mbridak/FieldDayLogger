@@ -125,6 +125,13 @@ class MainWindow(QtWidgets.QMainWindow):
         data_path = self.working_path + "/data/main.ui"
         uic.loadUi(data_path, self)
         self.chat_window.hide()
+        self.frame_5.show()
+        self.frame_6.show()
+        self.frame_7.show()
+        self.frame_8.show()
+        self.frame_9.show()
+        self.group_call_indicator.hide()
+        self.mycallEntry.show()
         self.db = DataBase(self.database)
         self.udp_fifo = queue.Queue()
         self.listWidget.itemDoubleClicked.connect(self.qsoclicked)
@@ -263,6 +270,9 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 self.genLogButton.setStyleSheet("background-color: rgb(92, 53, 102);")
                 self.genLogButton.setText("Generate Logs")
+        else:
+            self.genLogButton.setStyleSheet("background-color: rgb(92, 53, 102);")
+            self.genLogButton.setText("Generate Logs")
 
     def resolve_dirty_records(self):
         """Go through dirty records and submit them to the server."""
@@ -1391,6 +1401,13 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.interface_ip,
                 )
                 self.chat_window.show()
+                self.frame_5.hide()
+                self.frame_6.hide()
+                self.frame_7.hide()
+                self.frame_8.hide()
+                self.frame_9.hide()
+                self.group_call_indicator.show()
+                self.mycallEntry.hide()
                 self.server_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 self.server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 self.server_udp.bind(("", int(self.multicast_port)))
@@ -1410,8 +1427,14 @@ class MainWindow(QtWidgets.QMainWindow):
                     self._udpwatch.start()
             else:
                 self.groupcall = None
-                self.mycallEntry.show()
                 self.chat_window.hide()
+                self.frame_5.show()
+                self.frame_6.show()
+                self.frame_7.show()
+                self.frame_8.show()
+                self.frame_9.show()
+                self.group_call_indicator.hide()
+                self.mycallEntry.show()
 
         except KeyError as err:
             logging.warning("Corrupt preference, %s, loading clean version.", err)
@@ -1782,19 +1805,22 @@ class MainWindow(QtWidgets.QMainWindow):
         self.Section_NE.setStyleSheet(self.worked_section("NE"))
         self.Section_MN.setStyleSheet(self.worked_section("MN"))
         self.Section_SD.setStyleSheet(self.worked_section("SD"))
+
         self.Section_AB.setStyleSheet(self.worked_section("AB"))
-        self.Section_NT.setStyleSheet(self.worked_section("NT"))
         self.Section_BC.setStyleSheet(self.worked_section("BC"))
-        self.Section_ONE.setStyleSheet(self.worked_section("ONE"))
-        self.Section_GTA.setStyleSheet(self.worked_section("GTA"))
-        self.Section_ONN.setStyleSheet(self.worked_section("ONN"))
-        self.Section_MAR.setStyleSheet(self.worked_section("MAR"))
-        self.Section_ONS.setStyleSheet(self.worked_section("ONS"))
+        self.Section_GH.setStyleSheet(self.worked_section("GH"))
         self.Section_MB.setStyleSheet(self.worked_section("MB"))
-        self.Section_QC.setStyleSheet(self.worked_section("QC"))
+        self.Section_NB.setStyleSheet(self.worked_section("NB"))
         self.Section_NL.setStyleSheet(self.worked_section("NL"))
-        self.Section_SK.setStyleSheet(self.worked_section("SK"))
+        self.Section_NS.setStyleSheet(self.worked_section("NS"))
+
         self.Section_PE.setStyleSheet(self.worked_section("PE"))
+        self.Section_ONE.setStyleSheet(self.worked_section("ONE"))
+        self.Section_ONN.setStyleSheet(self.worked_section("ONN"))
+        self.Section_ONS.setStyleSheet(self.worked_section("ONS"))
+        self.Section_QC.setStyleSheet(self.worked_section("QC"))
+        self.Section_SK.setStyleSheet(self.worked_section("SK"))
+        self.Section_TER.setStyleSheet(self.worked_section("TER"))
 
     def sections(self):
         """
