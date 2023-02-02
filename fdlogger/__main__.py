@@ -246,7 +246,7 @@ class MainWindow(QtWidgets.QMainWindow):
             )
         )
         self.users_list.clear()
-        self.users_list.insertPlainText("    Operators\n")
+        self.users_list.insertPlainText("Operators\n")
         for op_callsign in self.people:
             if op_callsign in result:
                 self.users_list.setTextColor(QtGui.QColor(245, 121, 0))
@@ -2278,7 +2278,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.connect_to_server:
             update = {
                 "cmd": "LOG",
-                "station": self.preference["mycall"],
+                "station": self.preference.get("mycall")
+                if self.preference.get("mycall")
+                else "",
             }
             bytesToSend = bytes(dumps(update), encoding="ascii")
             try:
