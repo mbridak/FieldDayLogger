@@ -2579,7 +2579,7 @@ if Path("./debug").exists():
     print("debugging on")
 else:
     print("debugging off")
-    logger.setLevel(logger.warning)
+    logger.setLevel(logging.WARNING)
 
 app = QtWidgets.QApplication(sys.argv)
 app.setStyle("Fusion")
