@@ -527,7 +527,7 @@ border-top-color: rgb(255, 255, 255);</string>
                <property name="font">
                 <font>
                  <family>JetBrains Mono</family>
-                 <pointsize>12</pointsize>
+                 <pointsize>9</pointsize>
                 </font>
                </property>
                <property name="focusPolicy">
@@ -543,7 +543,7 @@ border-top-color: rgb(255, 255, 255);</string>
                <property name="font">
                 <font>
                  <family>JetBrains Mono</family>
-                 <pointsize>12</pointsize>
+                 <pointsize>9</pointsize>
                 </font>
                </property>
                <property name="focusPolicy">
