@@ -77,7 +77,8 @@ brother.
 
 ## Recent Changes
 
-- [23.2.2] Added N1MM status packets.
+- [23.2.3] Contact lookup now shows in infoline. Reduced font size in the group chat window. Improved debug logging.
+- [23.2.2] Added N1MM status packets. fdserver program moved into it's own repo/PyPi package.
 - [23.2.1] Made interface resizable.
 - [23.1.30] Repackaged for PyPi pip installation
 
@@ -152,8 +153,6 @@ polled for band/mode updates automatically. Click the gear icon at the bottom
 of the screen to set the IP and port and choose flrig or rigctld. The default
 ports are 4532 for rigctld and 12345 for flrig.  There is a radio icon at the
 bottom of the logging window to indicate polling status. Green good, Red bad.
-
----
 
 ## Cloudlog useage
 
@@ -346,7 +345,7 @@ The configuration file for the server is a JSON file 'server_preferences.json'.
     "email": "Hiram.Maxim@arrl.net",
     "mullticast_group": "224.1.1.1",
     "multicast_port": 2239,
-    "interface_ip": "0.0.0.0"
+    "interface_ip": "0.0.0.0",
 }
 ```
 
@@ -391,7 +390,7 @@ does not work for you, can adjust the size by: Placing your mouse cursor in the
 chat window, then rotate your mouse wheel while holding down the Control key.
 
 There is one command you can type into the chat window that may be of use.
-if you type @stats into the window the server will dump out some stats into the
+if you type `@stats` into the window, the server will dump out some stats into the
 chat.
 
 ```text
