@@ -432,7 +432,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.groupcall = str(json_data.get("groupcall"))
                         self.myclassEntry.setText(str(json_data.get("groupclass")))
                         self.mysectionEntry.setText(str(json_data.get("groupsection")))
-                        self.group_call_indicator.setText(self.groupcall)
+                        self.group_call_indicator.setText(self.groupcall.center(14))
                         self.changemyclass()
                         self.changemysection()
                         self.mycallEntry.hide()
@@ -522,6 +522,10 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.mygrid, self.contactlookup["grid"]
                 )
             logger.info("%s", self.contactlookup)
+            self.infoline.setText(
+                f"{self.contactlookup.get('nickname') if self.contactlookup.get('nickname') else self.contactlookup.get('name')}"
+                f" {self.contactlookup.get('grid')}"
+            )
 
     def distance(self, grid1: str, grid2: str) -> float:
         """
