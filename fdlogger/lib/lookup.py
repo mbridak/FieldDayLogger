@@ -8,6 +8,7 @@ HamQTH
 import logging
 import xmltodict
 import requests
+from pathlib import Path
 
 
 class HamDBlookup:
@@ -16,6 +17,21 @@ class HamDBlookup:
     """
 
     def __init__(self) -> None:
+        self.logger = logging.getLogger("__name__")
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter(
+            datefmt="%H:%M:%S",
+            fmt="[%(asctime)s] %(levelname)s %(module)s - %(funcName)s Line %(lineno)d:\n%(message)s",
+        )
+        handler.setFormatter(formatter)
+        self.logger.addHandler(handler)
+
+        if Path("./debug").exists():
+            # if True:
+            self.logger.setLevel(logging.DEBUG)
+            print("debugging on")
+        else:
+            self.logger.setLevel(self.logger.warning)
         self.url = "https://api.hamdb.org/"
         self.error = False
 
@@ -49,7 +65,7 @@ class HamDBlookup:
         </hamdb>
         """
 
-        logging.info("%s", call)
+        self.logger.debug("%s", call)
         grid = False
         name = False
         error_text = False
@@ -72,11 +88,11 @@ class HamDBlookup:
                 callsign = root.get("callsign")
             if messages:
                 error_text = messages.get("status")
-                logging.debug("HamDB: %s", error_text)
+                self.logger.debug("HamDB: %s", error_text)
                 if error_text != "OK":
                     self.error = False
             if callsign:
-                logging.debug("HamDB: found callsign field")
+                self.logger.debug("HamDB: found callsign field")
                 if callsign.get("grid"):
                     grid = callsign.get("grid")
                 if callsign.get("fname"):
@@ -91,7 +107,7 @@ class HamDBlookup:
         else:
             self.error = True
             error_text = str(query_result.status_code)
-        logging.info("HamDB-lookup: %s %s %s %s", grid, name, nickname, error_text)
+        self.logger.debug("HamDB-lookup: %s %s %s %s", grid, name, nickname, error_text)
         return grid, name, nickname, error_text
 
 
@@ -139,7 +155,7 @@ class QRZlookup:
         Message	An informational message for the user
         Error	XML system error message
         """
-        logging.info("QRZlookup-getsession:")
+        self.logger.debug("QRZlookup-getsession:")
         self.error = False
         self.message = False
         self.session = False
@@ -150,7 +166,7 @@ class QRZlookup:
             root = baseroot.get("QRZDatabase")
             if root:
                 session = root.get("Session")
-            logging.info("\n\n%s\n\n", root)
+            self.logger.debug("\n\n%s\n\n", root)
             if session.get("Key"):
                 self.session = session.get("Key")
             if session.get("SubExp"):
@@ -159,14 +175,14 @@ class QRZlookup:
                 self.error = session.get("Error")
             if session.get("Message"):
                 self.message = session.get("Message")
-            logging.info(
+            self.logger.debug(
                 "key:%s error:%s message:%s",
                 self.session,
                 self.error,
                 self.message,
             )
         except requests.exceptions.RequestException as exception:
-            logging.info("%s", exception)
+            self.logger.debug("%s", exception)
             self.session = False
             self.error = f"{exception}"
 
@@ -174,7 +190,7 @@ class QRZlookup:
         """
         Lookup a call on QRZ
         """
-        logging.info("%s", call)
+        self.logger.debug("%s", call)
         grid = False
         name = False
         error_text = False
@@ -188,10 +204,10 @@ class QRZlookup:
                 return grid, name, nickname, exception
             baseroot = xmltodict.parse(query_result.text)
             root = baseroot.get("QRZDatabase")
-            logging.info("\n\n%s\n\n", root)
+            self.logger.debug("\n\n%s\n\n", root)
             session = root.get("Session")
             if not session.get("Key"):  # key expired get a new one
-                logging.info("no key, getting new one.")
+                self.logger.debug("no key, getting new one.")
                 self.getsession()
                 if self.session:
                     payload = {"s": self.session, "callsign": call}
@@ -199,7 +215,7 @@ class QRZlookup:
                         self.qrzurl, params=payload, timeout=3.0
                     )
             grid, name, nickname, error_text = self.parse_lookup(query_result)
-        logging.info("%s %s %s %s", grid, name, nickname, error_text)
+        self.logger.debug("%s %s %s %s", grid, name, nickname, error_text)
         return grid, name, nickname, error_text
 
     def parse_lookup(self, query_result):
@@ -264,7 +280,7 @@ class QRZlookup:
         </QRZDatabase>
 
         """
-        logging.info("QRZlookup-parse_lookup:")
+        self.logger.debug("QRZlookup-parse_lookup:")
         grid = False
         name = False
         error_text = False
@@ -274,7 +290,7 @@ class QRZlookup:
             root = baseroot.get("QRZDatabase")
             session = root.get("Session")
             callsign = root.get("Callsign")
-            logging.info("\n\n%s\n\n", root)
+            self.logger.debug("\n\n%s\n\n", root)
             if session.get("Error"):
                 error_text = session.get("Error")
                 self.error = error_text
@@ -290,7 +306,7 @@ class QRZlookup:
                         name = f"{name} {callsign.get('name')}"
                 if callsign.get("nickname"):
                     nickname = callsign.get("nickname")
-        logging.info("%s %s %s %s", grid, name, nickname, error_text)
+        self.logger.debug("%s %s %s %s", grid, name, nickname, error_text)
         return grid, name, nickname, error_text
 
 
@@ -308,7 +324,7 @@ class HamQTH:
 
     def getsession(self) -> None:
         """get a session key"""
-        logging.info("Getting session")
+        self.logger.debug("Getting session")
         self.error = False
         self.session = False
         payload = {"u": self.username, "p": self.password}
@@ -317,7 +333,7 @@ class HamQTH:
         except requests.exceptions.Timeout:
             self.error = True
             return
-        logging.info("resultcode: %s", query_result.status_code)
+        self.logger.debug("resultcode: %s", query_result.status_code)
         baseroot = xmltodict.parse(query_result.text)
         root = baseroot.get("HamQTH")
         session = root.get("session")
@@ -326,7 +342,7 @@ class HamQTH:
                 self.session = session.get("session_id")
             if session.get("error"):
                 self.error = session.get("error")
-        logging.info("session: %s", self.session)
+        self.logger.debug("session: %s", self.session)
 
     def lookup(self, call: str) -> tuple:
         """
@@ -340,7 +356,7 @@ class HamQTH:
             except requests.exceptions.Timeout as exception:
                 self.error = True
                 return grid, name, nickname, exception
-            logging.info("resultcode: %s", query_result.status_code)
+            self.logger.debug("resultcode: %s", query_result.status_code)
             baseroot = xmltodict.parse(query_result.text)
             root = baseroot.get("HamQTH")
             search = root.get("search")
@@ -357,7 +373,7 @@ class HamQTH:
                                 self.url, params=payload, timeout=10.0
                             )
             grid, name, nickname, error_text = self.parse_lookup(root)
-        logging.info("%s %s %s %s", grid, name, nickname, error_text)
+        self.logger.debug("%s %s %s %s", grid, name, nickname, error_text)
         return grid, name, nickname, error_text
 
     def parse_lookup(self, root) -> tuple:

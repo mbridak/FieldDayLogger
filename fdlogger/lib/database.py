@@ -1,6 +1,7 @@
 """Database class to store contacts"""
 import logging
 import sqlite3
+from pathlib import Path
 
 
 class DataBase:
@@ -8,6 +9,21 @@ class DataBase:
 
     def __init__(self, database):
         """initializes DataBase instance"""
+        self.logger = logging.getLogger("__name__")
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter(
+            datefmt="%H:%M:%S",
+            fmt="[%(asctime)s] %(levelname)s %(module)s - %(funcName)s Line %(lineno)d:\n%(message)s",
+        )
+        handler.setFormatter(formatter)
+        self.logger.addHandler(handler)
+
+        if Path("./debug").exists():
+            # if True:
+            self.logger.setLevel(logging.DEBUG)
+            print("debugging on")
+        else:
+            self.logger.setLevel(self.logger.warning)
         self.database = database
         self.create_db()
 
@@ -52,7 +68,7 @@ class DataBase:
                 cursor.execute(sql_table)
                 conn.commit()
         except sqlite3.Error as exception:
-            logging.critical("%s", exception)
+            self.logger.critical("%s", exception)
 
     def clear_dirty_flag(self, unique_id) -> None:
         """Clears the dirty flag."""
@@ -64,7 +80,7 @@ class DataBase:
                     cursor.execute(sql)
                     conn.commit()
             except sqlite3.Error as exception:
-                logging.critical("%s", exception)
+                self.logger.critical("%s", exception)
 
     def log_contact(self, logme: tuple) -> None:
         """
@@ -83,7 +99,7 @@ class DataBase:
                 cur.execute(sql, logme)
                 conn.commit()
         except sqlite3.Error as exception:
-            logging.debug("DataBase log_contact: %s", exception)
+            self.logger.debug("DataBase log_contact: %s", exception)
 
     def get_unique_id(self, contact) -> str:
         """get unique id"""
@@ -96,7 +112,7 @@ class DataBase:
                     cursor.execute(sql)
                     unique_id = str(cursor.fetchone()[0])
             except sqlite3.Error as exception:
-                logging.debug("%s", exception)
+                self.logger.debug("%s", exception)
         return unique_id
 
     def delete_contact(self, contact) -> None:
@@ -109,7 +125,7 @@ class DataBase:
                     cur.execute(sql)
                     conn.commit()
             except sqlite3.Error as exception:
-                logging.debug("DataBase delete_contact: %s", exception)
+                self.logger.debug("DataBase delete_contact: %s", exception)
 
     def change_contact(self, qso):
         """Update an existing contact."""
@@ -126,7 +142,7 @@ class DataBase:
                 cur.execute(sql)
                 conn.commit()
         except sqlite3.Error as exception:
-            logging.debug("DataBase change_contact: %s", exception)
+            self.logger.debug("DataBase change_contact: %s", exception)
 
     def stats(self) -> tuple:
         """
@@ -204,7 +220,7 @@ class DataBase:
                 )
                 digital = str(cursor.fetchone()[0])
         except sqlite3.Error as exception:
-            logging.critical("DB-contacts_under_101watts: %s", exception)
+            self.logger.critical("DB-contacts_under_101watts: %s", exception)
             return 0, 0, 0
         return c_dubs, phone, digital
 
@@ -235,7 +251,7 @@ class DataBase:
                 highpower = bool(list(log[0])[0])
                 qrp = not qrpc + qrpp + qrpd
         except sqlite3.Error as exception:
-            logging.critical("qrpcheck: %s", exception)
+            self.logger.critical("qrpcheck: %s", exception)
             return 0, 0
         return qrp, highpower
 
