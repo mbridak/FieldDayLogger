@@ -576,7 +576,7 @@ border-top-color: rgb(255, 255, 255);</string>
          <widget class="QFrame" name="frame_9">
           <property name="minimumSize">
            <size>
-            <width>0</width>
+            <width>72</width>
             <height>0</height>
            </size>
           </property>
@@ -917,6 +917,12 @@ color: rgb(0, 0, 0);</string>
         </item>
         <item>
          <widget class="QFrame" name="frame_8">
+          <property name="minimumSize">
+           <size>
+            <width>72</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="font">
            <font>
             <family>Monospace</family>
@@ -1261,6 +1267,12 @@ color: rgb(0, 0, 0);</string>
         </item>
         <item>
          <widget class="QFrame" name="frame_7">
+          <property name="minimumSize">
+           <size>
+            <width>72</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="font">
            <font>
             <family>Monospace</family>
@@ -1639,6 +1651,12 @@ color: rgb(0, 0, 0);</string>
         </item>
         <item>
          <widget class="QFrame" name="frame_6">
+          <property name="minimumSize">
+           <size>
+            <width>72</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="font">
            <font>
             <family>Monospace</family>
@@ -1652,6 +1670,9 @@ color: rgb(0, 0, 0);</string>
            <enum>QFrame::Plain</enum>
           </property>
           <layout class="QFormLayout" name="formLayout_2">
+           <property name="horizontalSpacing">
+            <number>6</number>
+           </property>
            <property name="leftMargin">
             <number>2</number>
            </property>
@@ -2004,6 +2025,12 @@ color: rgb(0, 0, 0);</string>
         </item>
         <item>
          <widget class="QFrame" name="frame_5">
+          <property name="minimumSize">
+           <size>
+            <width>72</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="font">
            <font>
             <family>Monospace</family>
@@ -2017,6 +2044,15 @@ color: rgb(0, 0, 0);</string>
            <enum>QFrame::Plain</enum>
           </property>
           <layout class="QFormLayout" name="formLayout">
+           <property name="labelAlignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="formAlignment">
+            <set>Qt::AlignHCenter|Qt::AlignTop</set>
+           </property>
+           <property name="horizontalSpacing">
+            <number>6</number>
+           </property>
            <property name="leftMargin">
             <number>2</number>
            </property>
