@@ -757,7 +757,7 @@ color: rgb(211, 215, 207);</string>
           </font>
          </property>
          <property name="placeholderText">
-          <string>20M-CW Tent</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -781,7 +781,7 @@ color: rgb(211, 215, 207);</string>
           </font>
          </property>
          <property name="placeholderText">
-          <string>Bernie</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -871,7 +871,7 @@ color: rgb(211, 215, 207);</string>
           <string/>
          </property>
          <property name="placeholderText">
-          <string>127.0.0.1</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -889,7 +889,7 @@ color: rgb(211, 215, 207);</string>
           <string/>
          </property>
          <property name="placeholderText">
-          <string>12060</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -907,7 +907,7 @@ color: rgb(211, 215, 207);</string>
           <string/>
          </property>
          <property name="placeholderText">
-          <string>12061</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -925,7 +925,7 @@ color: rgb(211, 215, 207);</string>
           <string/>
          </property>
          <property name="placeholderText">
-          <string>12060</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -943,7 +943,7 @@ color: rgb(211, 215, 207);</string>
           <string/>
          </property>
          <property name="placeholderText">
-          <string>12062</string>
+          <string/>
          </property>
         </widget>
        </item>
