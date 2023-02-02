@@ -6,7 +6,6 @@ GPL V3
 
 import logging
 import socket
-from pathlib import Path
 
 # pip3 install -U dicttoxml
 from dicttoxml import dicttoxml
@@ -121,20 +120,6 @@ class N1MM:
         - scoreport, Where to send scores to.
         """
         self.logger = logging.getLogger("__name__")
-        handler = logging.StreamHandler()
-        formatter = logging.Formatter(
-            datefmt="%H:%M:%S",
-            fmt="[%(asctime)s] %(levelname)s %(module)s - %(funcName)s Line %(lineno)d:\n%(message)s",
-        )
-        handler.setFormatter(formatter)
-        self.logger.addHandler(handler)
-
-        if Path("./debug").exists():
-            # if True:
-            self.logger.setLevel(logging.DEBUG)
-            print("debugging on")
-        else:
-            self.logger.setLevel(self.logger.warning)
         self.ip_address = ip_address
         self.radio_port = radioport
         self.contact_port = contactport

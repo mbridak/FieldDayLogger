@@ -1,7 +1,6 @@
 """Database class to store contacts"""
 import logging
 import sqlite3
-from pathlib import Path
 
 
 class DataBase:
@@ -10,20 +9,6 @@ class DataBase:
     def __init__(self, database):
         """initializes DataBase instance"""
         self.logger = logging.getLogger("__name__")
-        handler = logging.StreamHandler()
-        formatter = logging.Formatter(
-            datefmt="%H:%M:%S",
-            fmt="[%(asctime)s] %(levelname)s %(module)s - %(funcName)s Line %(lineno)d:\n%(message)s",
-        )
-        handler.setFormatter(formatter)
-        self.logger.addHandler(handler)
-
-        if Path("./debug").exists():
-            # if True:
-            self.logger.setLevel(logging.DEBUG)
-            print("debugging on")
-        else:
-            self.logger.setLevel(self.logger.warning)
         self.database = database
         self.create_db()
 
