@@ -44,6 +44,7 @@ try:
     from fdlogger.lib.settings import Settings
     from fdlogger.lib.database import DataBase
     from fdlogger.lib.cwinterface import CW
+    from fdlogger.lib.n1mm import N1MM
     from fdlogger.lib.version import __version__
 except ModuleNotFoundError:
     from lib.lookup import HamDBlookup, HamQTH, QRZlookup
@@ -51,6 +52,7 @@ except ModuleNotFoundError:
     from lib.settings import Settings
     from lib.database import DataBase
     from lib.cwinterface import CW
+    from lib.n1mm import N1MM
     from lib.version import __version__
 
 
@@ -212,6 +214,14 @@ class MainWindow(QtWidgets.QMainWindow):
             "multicast_group": "224.1.1.1",
             "multicast_port": 2239,
             "interface_ip": "0.0.0.0",
+            "send_n1mm_packets": 0,
+            "n1mm_station_name": "20M CW Tent",
+            "n1mm_operator": "Bernie",
+            "n1mm_ip": "127.0.0.1",
+            "n1mm_radioport": 12060,
+            "n1mm_contactport": 12061,
+            "n1mm_lookupport": 12060,
+            "n1mm_scoreport": 12062,
         }
         self.reference_preference = self.preference.copy()
         self.look_up = None
@@ -985,6 +995,20 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.setband(str(self.getband(newfreq)))
                 self.setmode(str(self.getmode(newmode)))
                 self.radio_icon.setPixmap(self.radio_green)
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["StationName"] = self.preference.get(
+                    "n1mm_station_name"
+                )
+                self.n1mm.radio_info["Freq"] = newfreq[:-1]
+                self.n1mm.radio_info["TXFreq"] = newfreq[:-1]
+                self.n1mm.radio_info["Mode"] = newmode
+                self.n1mm.radio_info["OpCall"] = self.preference.get("mycallsign")
+                self.n1mm.radio_info["IsRunning"] = str(self.run_state)
+                if self.cat_control.get_ptt() == "0":
+                    self.n1mm.radio_info["IsTransmitting"] = "False"
+                else:
+                    self.n1mm.radio_info["IsTransmitting"] = "True"
+                self.n1mm.send_radio()
         else:
             logging.info("cat_control %s", self.cat_control)
             self.radio_icon.setPixmap(QtGui.QPixmap(self.radio_grey))
@@ -1089,72 +1113,96 @@ class MainWindow(QtWidgets.QMainWindow):
         """send f1"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F1.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F1.text()
             self.cw.sendcw(f"{self.process_macro(self.F1.toolTip())} ")
 
     def sendf2(self):
         """send f2"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F2.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F2.text()
             self.cw.sendcw(f"{self.process_macro(self.F2.toolTip())} ")
 
     def sendf3(self):
         """send f3"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F3.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F3.text()
             self.cw.sendcw(f"{self.process_macro(self.F3.toolTip())} ")
 
     def sendf4(self):
         """send f4"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F4.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F4.text()
             self.cw.sendcw(f"{self.process_macro(self.F4.toolTip())} ")
 
     def sendf5(self):
         """send f5"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F5.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F5.text()
             self.cw.sendcw(f"{self.process_macro(self.F5.toolTip())} ")
 
     def sendf6(self):
         """send f6"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F6.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F6.text()
             self.cw.sendcw(f"{self.process_macro(self.F6.toolTip())} ")
 
     def sendf7(self):
         """send f7"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F7.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F7.text()
             self.cw.sendcw(f"{self.process_macro(self.F7.toolTip())} ")
 
     def sendf8(self):
         """send f8"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F8.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F8.text()
             self.cw.sendcw(f"{self.process_macro(self.F8.toolTip())} ")
 
     def sendf9(self):
         """send f9"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F9.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F9.text()
             self.cw.sendcw(f"{self.process_macro(self.F9.toolTip())} ")
 
     def sendf10(self):
         """send f10"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F10.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F10.text()
             self.cw.sendcw(f"{self.process_macro(self.F10.toolTip())} ")
 
     def sendf11(self):
         """send f11"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F11.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F11.text()
             self.cw.sendcw(f"{self.process_macro(self.F11.toolTip())} ")
 
     def sendf12(self):
         """send f12"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F12.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F12.text()
             self.cw.sendcw(f"{self.process_macro(self.F12.toolTip())} ")
 
     def clearinputs(self):
@@ -1436,6 +1484,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.group_call_indicator.hide()
                 self.mycallEntry.show()
 
+            self.n1mm = N1MM(
+                ip_address=self.preference.get("n1mm_ip"),
+                radioport=self.preference.get("n1mm_radioport"),
+                contactport=self.preference.get("n1mm_contactport"),
+            )
+            self.n1mm.set_station_name(self.preference.get("n1mm_station_name"))
+            self.n1mm.set_operator(self.preference.get("n1mm_operator"))
+
         except KeyError as err:
             logging.warning("Corrupt preference, %s, loading clean version.", err)
             self.preference = self.reference_preference.copy()
@@ -1510,6 +1566,29 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
             except OSError as err:
                 logging.warning("%s", err)
+
+        if self.preference.get("send_n1mm_packets"):
+            self.n1mm.contact_info["rxfreq"] = str(self.oldfreq)[:-1]
+            self.n1mm.contact_info["txfreq"] = str(self.oldfreq)[:-1]
+            self.n1mm.contact_info["mode"] = self.oldmode
+            if self.oldmode in ("CW", "DG"):
+                self.n1mm.contact_info["points"] = "2"
+            else:
+                self.n1mm.contact_info["points"] = "1"
+            self.n1mm.contact_info["band"] = self.band
+            self.n1mm.contact_info["mycall"] = self.preference.get("mycall")
+            self.n1mm.contact_info["IsRunQSO"] = str(self.run_state)
+            self.n1mm.contact_info["timestamp"] = datetime.utcnow().strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
+            self.n1mm.contact_info["call"] = self.callsign_entry.text()
+            self.n1mm.contact_info["gridsquare"] = self.contactlookup.get("grid")
+            self.n1mm.contact_info["exchange1"] = self.class_entry.text()
+            self.n1mm.contact_info["section"] = self.section_entry.text()
+            self.n1mm.contact_info["name"] = self.contactlookup.get("name")
+            self.n1mm.contact_info["power"] = self.power_selector.value()
+            self.n1mm.contact_info["ID"] = unique_id
+            self.n1mm.send_contact_info()
 
         self.sections()
         self.stats()
@@ -2372,6 +2451,29 @@ class EditQSODialog(QtWidgets.QDialog):
                 )
             except OSError as err:
                 logging.warning("%s", err)
+
+        if window.preference.get("send_n1mm_packets"):
+
+            window.n1mm.contact_info["rxfreq"] = self.editFreq.text()[:-1]
+            window.n1mm.contact_info["txfreq"] = self.editFreq.text()[:-1]
+            window.n1mm.contact_info["mode"] = self.editMode.currentText().upper()
+            window.n1mm.contact_info["band"] = self.editBand.currentText()
+            window.n1mm.contact_info["mycall"] = window.preference.get("mycall")
+            window.n1mm.contact_info["IsRunQSO"] = self.contact.get("IsRunQSO")
+            window.n1mm.contact_info["timestamp"] = self.contact.get("date_time")
+            window.n1mm.contact_info["call"] = self.editCallsign.text().upper()
+            window.n1mm.contact_info["gridsquare"] = self.contact.get("grid")
+            window.n1mm.contact_info["exchange1"] = self.editClass.text().upper()
+            window.n1mm.contact_info["section"] = self.editSection.text().upper()
+            window.n1mm.contact_info["name"] = self.contact.get("opname")
+            window.n1mm.contact_info["power"] = self.editPower.value()
+            window.n1mm.contact_info["ID"] = self.contact.get("unique_id")
+            if window.n1mm.contact_info["mode"] in ("CW", "DG"):
+                window.n1mm.contact_info["points"] = "2"
+            else:
+                window.n1mm.contact_info["points"] = "1"
+            window.n1mm.send_contactreplace()
+
         self.change.lineChanged.emit()
 
     def delete_contact(self):
@@ -2392,6 +2494,15 @@ class EditQSODialog(QtWidgets.QDialog):
                 )
             except OSError as err:
                 logging.warning("%s", err)
+
+        if window.preference.get("send_n1mm_packets"):
+            window.n1mm.contactdelete["timestamp"] = datetime.utcnow().strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
+            window.n1mm.contactdelete["call"] = self.contact.get("callsign")
+            window.n1mm.contactdelete["ID"] = self.contact.get("unique_id")
+            window.n1mm.send_contact_delete()
+
         self.change.lineChanged.emit()
         self.close()  # try:
 
