@@ -44,6 +44,7 @@ try:
     from fdlogger.lib.settings import Settings
     from fdlogger.lib.database import DataBase
     from fdlogger.lib.cwinterface import CW
+    from fdlogger.lib.n1mm import N1MM
     from fdlogger.lib.version import __version__
 except ModuleNotFoundError:
     from lib.lookup import HamDBlookup, HamQTH, QRZlookup
@@ -51,6 +52,7 @@ except ModuleNotFoundError:
     from lib.settings import Settings
     from lib.database import DataBase
     from lib.cwinterface import CW
+    from lib.n1mm import N1MM
     from lib.version import __version__
 
 
@@ -212,6 +214,14 @@ class MainWindow(QtWidgets.QMainWindow):
             "multicast_group": "224.1.1.1",
             "multicast_port": 2239,
             "interface_ip": "0.0.0.0",
+            "send_n1mm_packets": 0,
+            "n1mm_station_name": "20M CW Tent",
+            "n1mm_operator": "Bernie",
+            "n1mm_ip": "127.0.0.1",
+            "n1mm_radioport": 12060,
+            "n1mm_contactport": 12061,
+            "n1mm_lookupport": 12060,
+            "n1mm_scoreport": 12062,
         }
         self.reference_preference = self.preference.copy()
         self.look_up = None
@@ -307,9 +317,9 @@ class MainWindow(QtWidgets.QMainWindow):
                             (self.multicast_group, int(self.multicast_port)),
                         )
                     except OSError as err:
-                        logging.warning("%s", err)
+                        logger.warning("%s", err)
                     time.sleep(0.1)  # Do I need this?
-                    self.infobox.insertPlainText(f"Sending {count}\n")
+                    self.infoline.setText(f"Sending {count}\n")
                     app.processEvents()
 
     def clear_dirty_flag(self, unique_id):
@@ -345,7 +355,7 @@ class MainWindow(QtWidgets.QMainWindow):
                             (self.multicast_group, int(self.multicast_port)),
                         )
                     except OSError as err:
-                        logging.warning("%s", err)
+                        logger.warning("%s", err)
 
     def send_chat(self):
         """Sends UDP chat packet with text entered in chat_entry field."""
@@ -359,7 +369,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 bytesToSend, (self.multicast_group, int(self.multicast_port))
             )
         except OSError as err:
-            logging.warning("%s", err)
+            logger.warning("%s", err)
         self.chat_entry.setText("")
 
     def display_chat(self, sender, body):
@@ -397,13 +407,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 json_data = loads(datagram.decode())
             except UnicodeDecodeError as err:
                 the_error = f"Not Unicode: {err}\n{datagram}"
-                logging.info(the_error)
+                logger.info(the_error)
                 continue
             except JSONDecodeError as err:
                 the_error = f"Not JSON: {err}\n{datagram}"
-                logging.info(the_error)
+                logger.info(the_error)
                 continue
-            logging.info("%s", json_data)
+            logger.info("%s", json_data)
 
             if json_data.get("cmd") == "PING":
                 if json_data.get("station"):
@@ -456,7 +466,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 bytesToSend, (self.multicast_group, int(self.multicast_port))
             )
         except OSError as err:
-            logging.warning("%s", err)
+            logger.warning("%s", err)
 
     def send_status_udp(self):
         """Send status update to server informing of our band and mode"""
@@ -477,7 +487,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     bytesToSend, (self.multicast_group, int(self.multicast_port))
                 )
             except OSError as err:
-                logging.warning("%s", err)
+                logger.warning("%s", err)
 
             self.check_for_stale_commands()
 
@@ -511,7 +521,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.contactlookup["bearing"] = self.bearing(
                     self.mygrid, self.contactlookup["grid"]
                 )
-            logging.info("%s", self.contactlookup)
+            logger.info("%s", self.contactlookup)
 
     def distance(self, grid1: str, grid2: str) -> float:
         """
@@ -600,7 +610,7 @@ class MainWindow(QtWidgets.QMainWindow):
         datagram, sender_host, sender_port_number = self.udp_socket.readDatagram(
             self.udp_socket.pendingDatagramSize()
         )
-        logging.info("%s %s %s", sender_host, sender_port_number, datagram)
+        logger.info("%s %s %s", sender_host, sender_port_number, datagram)
 
         if datagram[0:4] != b"\xad\xbc\xcb\xda":
             return  # bail if no wsjt-x magic number
@@ -627,7 +637,7 @@ class MainWindow(QtWidgets.QMainWindow):
             payload = payload[12 + modelen :]
             dxcalllen = self.getint(payload[0:4])
             dxcall = payload[4 : 4 + dxcalllen].decode()
-            logging.info(
+            logger.info(
                 "Status: sv:%s p:%s u:%s df:%s m:%s dxc:%s",
                 version,
                 packettype,
@@ -731,7 +741,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         if not Path("./cwmacros_fd.txt").exists():
-            logging.info("read_cw_macros: copying default macro file.")
+            logger.info("read_cw_macros: copying default macro file.")
             data_path = self.working_path + "/data/cwmacros_fd.txt"
             copyfile(data_path, "./cwmacros_fd.txt")
         with open("./cwmacros_fd.txt", "r", encoding="utf-8") as file_descriptor:
@@ -743,7 +753,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     if mode.strip().upper() != "R" and not self.run_state:
                         self.fkeys[fkey.strip()] = (buttonname.strip(), cwtext.strip())
                 except ValueError as err:
-                    logging.info("read_cw_macros: %s", err)
+                    logger.info("read_cw_macros: %s", err)
         fkeys_keys = self.fkeys.keys()
         if "F1" in fkeys_keys:
             self.F1.setText(f"F1: {self.fkeys['F1'][0]}")
@@ -827,14 +837,14 @@ class MainWindow(QtWidgets.QMainWindow):
             cloudlogurl = self.preference["cloudlogurl"]
 
             payload = "/validate/key=" + cloudlogapi
-            logging.info("%s", cloudlogurl + payload)
+            logger.info("%s", cloudlogurl + payload)
             try:
                 result = requests.get(cloudlogurl + payload, timeout=2.0)
                 self.cloudlogauthenticated = False
                 if result.status_code == 200 or result.status_code == 400:
                     self.cloudlogauthenticated = True
             except requests.exceptions.ConnectionError as exception:
-                logging.warning("cloudlog authentication: %s", exception)
+                logger.warning("cloudlog authentication: %s", exception)
 
     @staticmethod
     def has_internet():
@@ -857,7 +867,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     + "auth/"
                     + self.preference["cloudlogapi"]
                 )
-                logging.warning("%s", test)
+                logger.warning("%s", test)
                 result = requests.get(test, params={}, timeout=2.0)
                 if result.status_code == 200 and result.text.find("<status>") > 0:
                     if (
@@ -869,16 +879,16 @@ class MainWindow(QtWidgets.QMainWindow):
                     ):
                         self.cloudlogauthenticated = True
                         self.cloudlog_icon.setPixmap(self.cloud_green)
-                        logging.info("Cloudlog: Authenticated.")
+                        logger.info("Cloudlog: Authenticated.")
                 else:
-                    logging.warning(
+                    logger.warning(
                         "Cloudlog: %s Unable to authenticate.", result.status_code
                     )
             except requests.exceptions.RequestException as exception:
                 self.infobox.insertPlainText(
                     f"****Cloudlog Auth Error:****\n{exception}\n"
                 )
-                logging.warning("Cloudlog: %s", exception)
+                logger.warning("Cloudlog: %s", exception)
 
     @staticmethod
     def fakefreq(band, mode):
@@ -887,7 +897,7 @@ class MainWindow(QtWidgets.QMainWindow):
         This will return a sane value for a frequency mainly for the cabrillo and adif log.
         Takes a band and mode as input and returns freq in khz.
         """
-        logging.info("fakefreq: band:%s mode:%s", band, mode)
+        logger.info("fakefreq: band:%s mode:%s", band, mode)
         modes = {"CW": 0, "DI": 1, "PH": 2, "FT8": 1, "SSB": 2}
         fakefreqs = {
             "160": ["1830", "1805", "1840"],
@@ -907,7 +917,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "SAT": ["144144", "144144", "144144"],
         }
         freqtoreturn = fakefreqs[band][modes[mode]]
-        logging.info("fakefreq: returning:%s", freqtoreturn)
+        logger.info("fakefreq: returning:%s", freqtoreturn)
         return freqtoreturn
 
     @staticmethod
@@ -985,8 +995,22 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.setband(str(self.getband(newfreq)))
                 self.setmode(str(self.getmode(newmode)))
                 self.radio_icon.setPixmap(self.radio_green)
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["StationName"] = self.preference.get(
+                    "n1mm_station_name"
+                )
+                self.n1mm.radio_info["Freq"] = newfreq[:-1]
+                self.n1mm.radio_info["TXFreq"] = newfreq[:-1]
+                self.n1mm.radio_info["Mode"] = newmode
+                self.n1mm.radio_info["OpCall"] = self.preference.get("mycallsign")
+                self.n1mm.radio_info["IsRunning"] = str(self.run_state)
+                if self.cat_control.get_ptt() == "0":
+                    self.n1mm.radio_info["IsTransmitting"] = "False"
+                else:
+                    self.n1mm.radio_info["IsTransmitting"] = "True"
+                self.n1mm.send_radio()
         else:
-            logging.info("cat_control %s", self.cat_control)
+            logger.info("cat_control %s", self.cat_control)
             self.radio_icon.setPixmap(QtGui.QPixmap(self.radio_grey))
 
     def flash(self):
@@ -1026,19 +1050,19 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.infoline.setText(f"CW speed set to {self.cw.speed}")
         if event_key == Qt.Key_Tab:
             if self.section_entry.hasFocus():
-                logging.info("From section")
+                logger.info("From section")
                 self.callsign_entry.setFocus()
                 self.callsign_entry.deselect()
                 self.callsign_entry.end(False)
                 return
             if self.class_entry.hasFocus():
-                logging.info("From class")
+                logger.info("From class")
                 self.section_entry.setFocus()
                 self.section_entry.deselect()
                 self.section_entry.end(False)
                 return
             if self.callsign_entry.hasFocus():
-                logging.info("From callsign")
+                logger.info("From callsign")
                 _thethread = threading.Thread(
                     target=self.lazy_lookup,
                     args=(self.callsign_entry.text(),),
@@ -1089,72 +1113,96 @@ class MainWindow(QtWidgets.QMainWindow):
         """send f1"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F1.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F1.text()
             self.cw.sendcw(f"{self.process_macro(self.F1.toolTip())} ")
 
     def sendf2(self):
         """send f2"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F2.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F2.text()
             self.cw.sendcw(f"{self.process_macro(self.F2.toolTip())} ")
 
     def sendf3(self):
         """send f3"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F3.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F3.text()
             self.cw.sendcw(f"{self.process_macro(self.F3.toolTip())} ")
 
     def sendf4(self):
         """send f4"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F4.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F4.text()
             self.cw.sendcw(f"{self.process_macro(self.F4.toolTip())} ")
 
     def sendf5(self):
         """send f5"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F5.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F5.text()
             self.cw.sendcw(f"{self.process_macro(self.F5.toolTip())} ")
 
     def sendf6(self):
         """send f6"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F6.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F6.text()
             self.cw.sendcw(f"{self.process_macro(self.F6.toolTip())} ")
 
     def sendf7(self):
         """send f7"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F7.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F7.text()
             self.cw.sendcw(f"{self.process_macro(self.F7.toolTip())} ")
 
     def sendf8(self):
         """send f8"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F8.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F8.text()
             self.cw.sendcw(f"{self.process_macro(self.F8.toolTip())} ")
 
     def sendf9(self):
         """send f9"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F9.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F9.text()
             self.cw.sendcw(f"{self.process_macro(self.F9.toolTip())} ")
 
     def sendf10(self):
         """send f10"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F10.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F10.text()
             self.cw.sendcw(f"{self.process_macro(self.F10.toolTip())} ")
 
     def sendf11(self):
         """send f11"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F11.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F11.text()
             self.cw.sendcw(f"{self.process_macro(self.F11.toolTip())} ")
 
     def sendf12(self):
         """send f12"""
         if self.cw is not None:
             self.infoline.setText(f"Sending {self.process_macro(self.F12.toolTip())}")
+            if self.preference.get("send_n1mm_packets"):
+                self.n1mm.radio_info["FunctionKeyCaption"] = self.F12.text()
             self.cw.sendcw(f"{self.process_macro(self.F12.toolTip())} ")
 
     def clearinputs(self):
@@ -1183,7 +1231,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """lookup my own gridsquare"""
         if self.look_up:
             self.mygrid, _, _, _ = self.look_up.lookup(self.mycallEntry.text())
-            logging.info("my grid: %s", self.mygrid)
+            logger.info("my grid: %s", self.mygrid)
 
     def changemycall(self):
         """change my call"""
@@ -1322,10 +1370,10 @@ class MainWindow(QtWidgets.QMainWindow):
                     "./fd_preferences.json", "wt", encoding="utf-8"
                 ) as file_descriptor:
                     file_descriptor.write(dumps(self.preference, indent=4))
-                    logging.info("No preference, writing dafult.")
+                    logger.info("No preference, writing dafult.")
         except IOError as exception:
-            logging.critical("readpreferences: %s", exception)
-        logging.info(self.preference)
+            logger.critical("readpreferences: %s", exception)
+        logger.info(self.preference)
         try:
             self.mycallEntry.setText(self.preference["mycall"])
             if self.preference["mycall"] != "":
@@ -1392,9 +1440,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.multicast_port = self.preference.get("multicast_port")
             self.interface_ip = self.preference.get("interface_ip")
             # group upd server
-            logging.info("Use group server: %s", self.connect_to_server)
+            logger.info("Use group server: %s", self.connect_to_server)
             if self.connect_to_server:
-                logging.info(
+                logger.info(
                     "Connecting: %s:%s %s",
                     self.multicast_group,
                     self.multicast_port,
@@ -1436,14 +1484,22 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.group_call_indicator.hide()
                 self.mycallEntry.show()
 
+            self.n1mm = N1MM(
+                ip_address=self.preference.get("n1mm_ip"),
+                radioport=self.preference.get("n1mm_radioport"),
+                contactport=self.preference.get("n1mm_contactport"),
+            )
+            self.n1mm.set_station_name(self.preference.get("n1mm_station_name"))
+            self.n1mm.set_operator(self.preference.get("n1mm_operator"))
+
         except KeyError as err:
-            logging.warning("Corrupt preference, %s, loading clean version.", err)
+            logger.warning("Corrupt preference, %s, loading clean version.", err)
             self.preference = self.reference_preference.copy()
             with open(
                 "./fd_preferences.json", "wt", encoding="utf-8"
             ) as file_descriptor:
                 file_descriptor.write(dumps(self.preference, indent=4))
-                logging.info("writing: %s", self.preference)
+                logger.info("writing: %s", self.preference)
 
     def writepreferences(self):
         """
@@ -1454,9 +1510,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 "./fd_preferences.json", "wt", encoding="utf-8"
             ) as file_descriptor:
                 file_descriptor.write(dumps(self.preference, indent=4))
-                logging.info("writing: %s", self.preference)
+                logger.info("writing: %s", self.preference)
         except IOError as exception:
-            logging.critical("writepreferences: %s", exception)
+            logger.critical("writepreferences: %s", exception)
 
     def log_contact(self):
         """Log the current contact"""
@@ -1509,7 +1565,30 @@ class MainWindow(QtWidgets.QMainWindow):
                     bytesToSend, (self.multicast_group, int(self.multicast_port))
                 )
             except OSError as err:
-                logging.warning("%s", err)
+                logger.warning("%s", err)
+
+        if self.preference.get("send_n1mm_packets"):
+            self.n1mm.contact_info["rxfreq"] = str(self.oldfreq)[:-1]
+            self.n1mm.contact_info["txfreq"] = str(self.oldfreq)[:-1]
+            self.n1mm.contact_info["mode"] = self.oldmode
+            if self.oldmode in ("CW", "DG"):
+                self.n1mm.contact_info["points"] = "2"
+            else:
+                self.n1mm.contact_info["points"] = "1"
+            self.n1mm.contact_info["band"] = self.band
+            self.n1mm.contact_info["mycall"] = self.preference.get("mycall")
+            self.n1mm.contact_info["IsRunQSO"] = str(self.run_state)
+            self.n1mm.contact_info["timestamp"] = datetime.utcnow().strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
+            self.n1mm.contact_info["call"] = self.callsign_entry.text()
+            self.n1mm.contact_info["gridsquare"] = self.contactlookup.get("grid")
+            self.n1mm.contact_info["exchange1"] = self.class_entry.text()
+            self.n1mm.contact_info["section"] = self.section_entry.text()
+            self.n1mm.contact_info["name"] = self.contactlookup.get("name")
+            self.n1mm.contact_info["power"] = self.power_selector.value()
+            self.n1mm.contact_info["ID"] = unique_id
+            self.n1mm.send_contact_info()
 
         self.sections()
         self.stats()
@@ -1636,9 +1715,9 @@ class MainWindow(QtWidgets.QMainWindow):
                             partial = abbrev[: -i - 1]
                             self.secPartial[partial] = 1
                     except ValueError as exception:
-                        logging.warning("read_sections: %s", exception)
+                        logger.warning("read_sections: %s", exception)
         except IOError as exception:
-            logging.critical("read_sections: read error: %s", exception)
+            logger.critical("read_sections: read error: %s", exception)
 
     def section_check(self):
         """
@@ -1873,7 +1952,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         )
                         print("-" * 60, end="\r\n", file=file_descriptor)
         except IOError as exception:
-            logging.critical("generate_band_mode_tally: write error: %s", exception)
+            logger.critical("generate_band_mode_tally: write error: %s", exception)
 
     def get_state(self, section):
         """
@@ -1938,7 +2017,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                     file=file_descriptor,
                                 )
             except IOError as exception:
-                logging.warning(
+                logger.warning(
                     "updatemarker: error %s writing to %s", exception, filename
                 )
                 self.infobox.setTextColor(QtGui.QColor(245, 121, 0))
@@ -2078,7 +2157,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     print("<EOR>", end="\r\n", file=file_descriptor)
                     print("", end="\r\n", file=file_descriptor)
         except IOError as exception:
-            logging.critical("adif: IO error: %s", exception)
+            logger.critical("adif: IO error: %s", exception)
         self.infobox.insertPlainText("Done\n\n")
         app.processEvents()
 
@@ -2258,7 +2337,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     )
                 print("END-OF-LOG:", end="\r\n", file=file_descriptor)
         except IOError as exception:
-            logging.critical(
+            logger.critical(
                 "cabrillo: IO error: %s, writing to %s", exception, filename
             )
             self.infobox.insertPlainText(" Failed\n\n")
@@ -2288,7 +2367,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     bytesToSend, (self.multicast_group, int(self.multicast_port))
                 )
             except OSError as err:
-                logging.warning("%s", err)
+                logger.warning("%s", err)
 
 
 class EditQSODialog(QtWidgets.QDialog):
@@ -2371,7 +2450,30 @@ class EditQSODialog(QtWidgets.QDialog):
                     bytesToSend, (window.multicast_group, int(window.multicast_port))
                 )
             except OSError as err:
-                logging.warning("%s", err)
+                logger.warning("%s", err)
+
+        if window.preference.get("send_n1mm_packets"):
+
+            window.n1mm.contact_info["rxfreq"] = self.editFreq.text()[:-1]
+            window.n1mm.contact_info["txfreq"] = self.editFreq.text()[:-1]
+            window.n1mm.contact_info["mode"] = self.editMode.currentText().upper()
+            window.n1mm.contact_info["band"] = self.editBand.currentText()
+            window.n1mm.contact_info["mycall"] = window.preference.get("mycall")
+            window.n1mm.contact_info["IsRunQSO"] = self.contact.get("IsRunQSO")
+            window.n1mm.contact_info["timestamp"] = self.contact.get("date_time")
+            window.n1mm.contact_info["call"] = self.editCallsign.text().upper()
+            window.n1mm.contact_info["gridsquare"] = self.contact.get("grid")
+            window.n1mm.contact_info["exchange1"] = self.editClass.text().upper()
+            window.n1mm.contact_info["section"] = self.editSection.text().upper()
+            window.n1mm.contact_info["name"] = self.contact.get("opname")
+            window.n1mm.contact_info["power"] = self.editPower.value()
+            window.n1mm.contact_info["ID"] = self.contact.get("unique_id")
+            if window.n1mm.contact_info["mode"] in ("CW", "DG"):
+                window.n1mm.contact_info["points"] = "2"
+            else:
+                window.n1mm.contact_info["points"] = "1"
+            window.n1mm.send_contactreplace()
+
         self.change.lineChanged.emit()
 
     def delete_contact(self):
@@ -2391,7 +2493,16 @@ class EditQSODialog(QtWidgets.QDialog):
                     bytesToSend, (window.multicast_group, int(window.multicast_port))
                 )
             except OSError as err:
-                logging.warning("%s", err)
+                logger.warning("%s", err)
+
+        if window.preference.get("send_n1mm_packets"):
+            window.n1mm.contactdelete["timestamp"] = datetime.utcnow().strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
+            window.n1mm.contactdelete["call"] = self.contact.get("callsign")
+            window.n1mm.contactdelete["ID"] = self.contact.get("unique_id")
+            window.n1mm.send_contact_delete()
+
         self.change.lineChanged.emit()
         self.close()  # try:
 
@@ -2464,7 +2575,7 @@ if Path("./debug").exists():
     print("debugging on")
 else:
     print("debugging off")
-    logger.setLevel(logging.WARNING)
+    logger.setLevel(logger.warning)
 
 app = QtWidgets.QApplication(sys.argv)
 app.setStyle("Fusion")

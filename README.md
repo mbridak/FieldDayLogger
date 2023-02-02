@@ -77,6 +77,7 @@ brother.
 
 ## Recent Changes
 
+- [23.2.2] Added N1MM status packets.
 - [23.2.1] Made interface resizable.
 - [23.1.30] Repackaged for PyPi pip installation
 
