@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fdlogger" 
-version = "23.2.3.1"
+version = "23.2.3.2"
 description = "ARRL Field Day logger GUI"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -36,7 +36,7 @@ classifiers = [
 where = ["."]
 
 [tool.setuptools.package-data]
-"fdlogger.data" = ["*.json", "*.txt", "*.SCP", "*.ui", "*.ttf", "*.desktop", "*.png",]
+"fdlogger.data" = ["*.json", "*.txt", "*.SCP", "*.ui", "*.ttf", "*.desktop", "*.png", "*.dat"]
 "fdlogger.icon" = ["*.png", "*.svg"]
 
 [project.scripts]
