@@ -102,6 +102,7 @@ class QRZlookup:
     """
 
     def __init__(self, username: str, password: str) -> None:
+        self.logger = logging.getLogger("__name__")
         self.session = False
         self.expiration = False
         self.error = (
@@ -300,6 +301,7 @@ class HamQTH:
 
     def __init__(self, username: str, password: str) -> None:
         """initialize HamQTH lookup"""
+        self.logger = logging.getLogger("__name__")
         self.username = username
         self.password = password
         self.url = "https://www.hamqth.com/xml.php"
