@@ -23,10 +23,6 @@ class Settings(QtWidgets.QDialog):
         self.preference = None
         self.setup()
 
-    def dictstring(self, the_object: dict, the_key: str) -> str:
-        """Return safe dict string"""
-        return str(the_object.get(the_key)) if the_object.get(the_key) else ""
-
     def setup(self):
         """setup dialog"""
         with open("./fd_preferences.json", "rt", encoding="utf-8") as file_descriptor:
@@ -38,40 +34,26 @@ class Settings(QtWidgets.QDialog):
                 bool(self.preference.get("usehamqth"))
             )
             self.lookup_user_name_field.setText(
-                self.dictstring(self.preference, "lookupusername")
+                str(self.preference.get("lookupusername", ""))
             )
             self.lookup_password_field.setText(
-                self.dictstring(self.preference, "lookuppassword")
+                str(self.preference.get("lookuppassword", ""))
             )
-            self.cloudlogapi_field.setText(
-                self.dictstring(self.preference, "cloudlogapi")
-            )
-            self.cloudlogurl_field.setText(
-                self.dictstring(self.preference, "cloudlogurl")
-            )
-            self.rigcontrolip_field.setText(
-                self.dictstring(self.preference, "CAT_ip")
-            )
-            self.rigcontrolport_field.setText(
-                self.dictstring(self.preference, "CAT_port")
-             )
+            self.cloudlogapi_field.setText(str(self.preference.get("cloudlogapi", "")))
+            self.cloudlogurl_field.setText(str(self.preference.get("cloudlogurl", "")))
+            self.rigcontrolip_field.setText(str(self.preference.get("CAT_ip", "")))
+            self.rigcontrolport_field.setText(str(self.preference.get("CAT_port", "")))
             self.usecloudlog_checkBox.setChecked(bool(self.preference.get("cloudlog")))
             self.userigctld_radioButton.setChecked(
                 bool(self.preference.get("userigctld"))
             )
             self.useflrig_radioButton.setChecked(bool(self.preference.get("useflrig")))
-            self.markerfile_field.setText(
-                self.dictstring(self.preference, "markerfile")
-            )
+            self.markerfile_field.setText(str(self.preference.get("markerfile", "")))
             self.generatemarker_checkbox.setChecked(
                 bool(self.preference.get("usemarker"))
             )
-            self.cwip_field.setText(
-                self.dictstring(self.preference, "cwip")
-            )
-            self.cwport_field.setText(
-                self.dictstring(self.preference, "cwport")
-            )
+            self.cwip_field.setText(str(self.preference.get("cwip", "")))
+            self.cwport_field.setText(str(self.preference.get("cwport", "")))
             self.usecwdaemon_radioButton.setChecked(
                 bool(self.preference.get("cwtype") == 1)
             )
@@ -80,39 +62,25 @@ class Settings(QtWidgets.QDialog):
             )
             self.connect_to_server.setChecked(bool(self.preference.get("useserver")))
             self.multicast_group.setText(
-                self.dictstring(self.preference, "multicast_group")
+                str(self.preference.get("multicast_group", ""))
             )
-            self.multicast_port.setText(
-                self.dictstring(self.preference, "multicast_port")
-            )
-            self.interface_ip.setText(
-                self.dictstring(self.preference, "interface_ip")
-            )
+            self.multicast_port.setText(str(self.preference.get("multicast_port", "")))
+            self.interface_ip.setText(str(self.preference.get("interface_ip", "")))
 
             self.send_n1mm_packets.setChecked(
                 bool(self.preference.get("send_n1mm_packets"))
             )
             self.n1mm_station_name.setText(
-                self.dictstring(self.preference, "n1mm_station_name")
+                str(self.preference.get("n1mm_station_name", ""))
             )
-            self.n1mm_operator.setText(
-                self.dictstring(self.preference,"n1mm_operator")
-            )
-            self.n1mm_ip.setText(
-                self.dictstring(self.preference, "n1mm_ip")
-            )
-            self.n1mm_radioport.setText(
-                self.dictstring(self.preference, "n1mm_radioport")
-            )
+            self.n1mm_operator.setText(str(self.preference.get("n1mm_operator", "")))
+            self.n1mm_ip.setText(str(self.preference.get("n1mm_ip", "")))
+            self.n1mm_radioport.setText(str(self.preference.get("n1mm_radioport", "")))
             self.n1mm_contactport.setText(
-                self.dictstring(self.preference, "n1mm_contactport")
+                str(self.preference.get("n1mm_contactport", ""))
             )
-            self.n1mm_lookupport.setText(
-                self.dictstring(self.preference, "n1mm_lookupport")
-            )
-            self.n1mm_scoreport.setText(
-                self.dictstring(self.preference, "n1mm_scoreport")
-            )
+            self.n1mm_lookupport.setText(str(self.preferenceget("n1mm_lookupport", "")))
+            self.n1mm_scoreport.setText(str(self.preference.get("n1mm_scoreport", "")))
 
     def save_changes(self):
         """

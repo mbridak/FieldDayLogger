@@ -245,10 +245,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_socket.bind(QHostAddress.LocalHost, 2237)
         self.udp_socket.readyRead.connect(self.on_udp_socket_ready_read)
 
-    def dictstring(self, the_object: dict, the_key: str) -> str:
-        """Return safe dict string"""
-        return str(the_object.get(the_key)) if the_object.get(the_key) else ""
-
     def show_people(self):
         """Display operators"""
         rev_dict = {}
@@ -365,7 +361,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """Sends UDP chat packet with text entered in chat_entry field."""
         message = self.chat_entry.text()
         packet = {"cmd": "CHAT"}
-        packet["sender"] = self.dictstring(self.preference, "mycall")
+        packet["sender"] = self.preference.get("mycall", "")
         packet["message"] = message
         bytesToSend = bytes(dumps(packet), encoding="ascii")
         try:
@@ -433,9 +429,11 @@ class MainWindow(QtWidgets.QMainWindow):
             if json_data.get("cmd") == "RESPONSE":
                 if json_data.get("recipient") == self.preference.get("mycall"):
                     if json_data.get("subject") == "HOSTINFO":
-                        self.groupcall = self.dictstring(json_data, "groupcall")
-                        self.myclassEntry.setText(self.dictstring(json_data, "groupclass"))
-                        self.mysectionEntry.setText(self.dictstring(json_data, "groupsection"))
+                        self.groupcall = json_data.get("groupcall", "")
+                        self.myclassEntry.setText(str(json_data.get("groupclass", "")))
+                        self.mysectionEntry.setText(
+                            str(json_data.get("groupsection", ""))
+                        )
                         self.group_call_indicator.setText(self.groupcall.center(14))
                         self.changemyclass()
                         self.changemysection()
@@ -462,7 +460,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """Sends request to server asking for group call/class/section."""
         update = {
             "cmd": "GROUPQUERY",
-            "station": self.dictstring(self.preference, "mycall"),
+            "station": self.preference.get("mycall", ""),
         }
         bytesToSend = bytes(dumps(update), encoding="ascii")
         try:
@@ -1004,13 +1002,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.setmode(str(self.getmode(newmode)))
                 self.radio_icon.setPixmap(self.radio_green)
             if self.preference.get("send_n1mm_packets"):
-                self.n1mm.radio_info["StationName"] = self.dictstring(
-                    self.preference, "n1mm_station_name"
+                self.n1mm.radio_info["StationName"] = self.preference.get(
+                    "n1mm_station_name", ""
                 )
                 self.n1mm.radio_info["Freq"] = newfreq[:-1]
                 self.n1mm.radio_info["TXFreq"] = newfreq[:-1]
                 self.n1mm.radio_info["Mode"] = newmode
-                self.n1mm.radio_info["OpCall"] = self.dictstring(self.preference, "mycallsign")
+                self.n1mm.radio_info["OpCall"] = self.preference.get("mycallsign", "")
                 self.n1mm.radio_info["IsRunning"] = str(self.run_state)
                 if self.cat_control.get_ptt() == "0":
                     self.n1mm.radio_info["IsTransmitting"] = "False"
@@ -2365,7 +2363,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.connect_to_server:
             update = {
                 "cmd": "LOG",
-                "station": self.dictstring(self.preference, "mycall"),
+                "station": self.preference.get("mycall", ""),
             }
             bytesToSend = bytes(dumps(update), encoding="ascii")
             try:
@@ -2459,7 +2457,6 @@ class EditQSODialog(QtWidgets.QDialog):
                 logger.warning("%s", err)
 
         if window.preference.get("send_n1mm_packets"):
-
             window.n1mm.contact_info["rxfreq"] = self.editFreq.text()[:-1]
             window.n1mm.contact_info["txfreq"] = self.editFreq.text()[:-1]
             window.n1mm.contact_info["mode"] = self.editMode.currentText().upper()
