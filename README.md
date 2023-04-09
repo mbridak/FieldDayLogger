@@ -77,6 +77,7 @@ brother.
 
 ## Recent Changes
 
+- [23.4.8] Fixed crash on setting setup.
 - [23.2.3] Fixed crash when qrz or hamqth was used. Fixed crash when not debugging. Contact lookup now shows in infoline. Reduced font size in the group chat window. Improved debug logging.
 - [23.2.2] Added N1MM status packets. fdserver program moved into it's own repo/PyPi package.
 - [23.2.1] Made interface resizable.
