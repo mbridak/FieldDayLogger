@@ -79,7 +79,9 @@ class Settings(QtWidgets.QDialog):
             self.n1mm_contactport.setText(
                 str(self.preference.get("n1mm_contactport", ""))
             )
-            self.n1mm_lookupport.setText(str(self.preferenceget("n1mm_lookupport", "")))
+            self.n1mm_lookupport.setText(
+                str(self.preference.get("n1mm_lookupport", ""))
+            )
             self.n1mm_scoreport.setText(str(self.preference.get("n1mm_scoreport", "")))
 
     def save_changes(self):
