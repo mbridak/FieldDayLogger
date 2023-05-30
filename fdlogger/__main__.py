@@ -211,7 +211,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "cwip": "localhost",
             "cwport": 6789,
             "useserver": 0,
-            "multicast_group": "224.1.1.1",
+            "multicast_group": "239.1.1.1",
             "multicast_port": 2239,
             "interface_ip": "0.0.0.0",
             "send_n1mm_packets": 0,
@@ -2638,7 +2638,7 @@ def run():
     timer2.start(1000)
     timer3.start(15000)
     sys.exit(app.exec())
-    app.exec()
+    # app.exec()
 
 
 if __name__ == "__main__":
