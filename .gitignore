@@ -136,6 +136,4 @@ dmypy.json
 debug
 spots.db
 .vscode/
-cwmacros_fd.txt
-fd_preferences.json
 server_database.db
