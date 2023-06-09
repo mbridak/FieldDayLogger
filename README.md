@@ -77,6 +77,7 @@ brother.
 
 ## Recent Changes
 
+- [23.6.9] Added server dupe check. Thanks @kybrjo, Bugfix: was unable to edit frequency. Thanks @km4ack.
 - [23.5.31] Replaced some deleted stuff. Thanks @ATCUSA for finding it!
 - [23.5.30] Changed default multicast address from 224.1.1.1 to 239.1.1.1
 - [23.4.8] Fixed crash on setting setup.
@@ -121,6 +122,8 @@ pip uninstall fdlogger
 # run it
 fdlogger
 ```
+
+If you get a message about `./local/bin` not being in your PATH, try logging out and right back in. Most of the time your linux distro will detect you now have files in there and add it to your PATH.
 
 ## What to do first
 
@@ -224,6 +227,8 @@ who's wrong. In the end you'll put your big boy pants on and make a decision if
 you'll enter the call or not.
 
 ![Picture showing dup checking](https://github.com/mbridak/FieldDayLogger/raw/main/pics/dupe.png)
+
+If you are using the group server, the client will poll the server as well asking if this is a dupe.
 
 ## Autofill
 
