@@ -447,16 +447,13 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.infoline.setText("Server Generated Log.")
 
                     if json_data.get("subject") == "DUPE":
-                        if json_data.get("isdupe") is True:
+                        if json_data.get("isdupe") is not 0:
                             if json_data.get("contact") == self.callsign_entry.text():
                                 self.flash()
                                 self.infobox.setTextColor(QtGui.QColor(245, 121, 0))
                                 self.infobox.insertPlainText(
-                                    f"{json_data.get('contact')}: "
-                                    f"{json_data.get('band')} "
-                                    f"{json_data.get('mode')} DUPE\n"
+                                    f"{json_data.get('contact')}: " "Server DUPE\n"
                                 )
-                                # FIXME
 
                     self.remove_confirmed_commands(json_data)
                     continue
@@ -2469,6 +2466,7 @@ class EditQSODialog(QtWidgets.QDialog):
             self.editBand.currentText(),
             self.editMode.currentText().upper(),
             self.editPower.value(),
+            self.editFreq.text(),
             self.theitem,
         ]
         self.database.change_contact(qso)
