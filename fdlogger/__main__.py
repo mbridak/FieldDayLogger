@@ -445,6 +445,19 @@ class MainWindow(QtWidgets.QMainWindow):
                         return
                     if json_data.get("subject") == "LOG":
                         self.infoline.setText("Server Generated Log.")
+
+                    if json_data.get("subject") == "DUPE":
+                        if json_data.get("isdupe") is True:
+                            if json_data.get("contact") == self.callsign_entry.text():
+                                self.flash()
+                                self.infobox.setTextColor(QtGui.QColor(245, 121, 0))
+                                self.infobox.insertPlainText(
+                                    f"{json_data.get('contact')}: "
+                                    f"{json_data.get('band')} "
+                                    f"{json_data.get('mode')} DUPE\n"
+                                )
+                                # FIXME
+
                     self.remove_confirmed_commands(json_data)
                     continue
 
@@ -469,6 +482,31 @@ class MainWindow(QtWidgets.QMainWindow):
             )
         except OSError as err:
             logger.warning("%s", err)
+
+    def check_dupe_status_udp(self):
+        """Ask server if our contact is a dupe"""
+        # TODO
+        if self.connect_to_server:
+            if self.groupcall is None and self.preference["mycall"] != "":
+                self.query_group()
+                return
+
+            ask_if_dupe = {
+                "cmd": "DUPE",
+                "mode": self.mode,
+                "band": self.band,
+                "station": self.preference["mycall"],
+                "contact": self.callsign_entry.text(),
+            }
+            bytesToSend = bytes(dumps(ask_if_dupe), encoding="ascii")
+            try:
+                self.server_udp.sendto(
+                    bytesToSend, (self.multicast_group, int(self.multicast_port))
+                )
+            except OSError as err:
+                logger.warning("%s", err)
+
+            self.check_for_stale_commands()
 
     def send_status_udp(self):
         """Send status update to server informing of our band and mode"""
@@ -1766,6 +1804,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def dup_check(self):
         """check for duplicates"""
+        self.check_dupe_status_udp()
         acall = self.callsign_entry.text()
         self.infobox.clear()
         log = self.db.dup_check(acall)
