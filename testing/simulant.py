@@ -24,7 +24,7 @@ parser.add_argument("-p", "--power", type=str, help="Your Power")
 args = parser.parse_args()
 
 MULTICAST_PORT = 2239
-MULTICAST_GROUP = "224.1.1.1"
+MULTICAST_GROUP = "239.1.1.1"
 INTERFACE_IP = "0.0.0.0"
 GROUP_CALL = None
 
