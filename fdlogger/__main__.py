@@ -482,7 +482,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def check_dupe_status_udp(self):
         """Ask server if our contact is a dupe"""
-        # TODO
         if self.connect_to_server:
             if self.groupcall is None and self.preference["mycall"] != "":
                 self.query_group()
