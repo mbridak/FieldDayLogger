@@ -35,6 +35,7 @@ over Multicast UDP.
 - [Features](#features)
   - [Logging](#logging)
   - [Radio Polling with CAT](#radio-polling-with-cat)
+    - [Without CAT](#without-cat)
   - [Cloudlog useage](#cloudlog-useage)
   - [QRZ, HamDB or HamQTH](#qrz-hamdb-or-hamqth)
   - [XPlanet marker file](#xplanet-marker-file)
@@ -160,6 +161,15 @@ polled for band/mode updates automatically. Click the gear icon at the bottom
 of the screen to set the IP and port and choose flrig or rigctld. The default
 ports are 4532 for rigctld and 12345 for flrig.  There is a radio icon at the
 bottom of the logging window to indicate polling status. Green good, Red bad.
+
+### Without CAT
+
+If your radio does not provide CAT control, The frequency can be specified by
+entering the frequency in the callsign field in kilohertz, then pressing the
+spacebar. So a 20M CW contact might be entered as 14032.5
+
+If you do not enter a frequency, a sane value is chosen for you. This is fine.
+Since a specific frequency is not required for Field Day.
 
 ## Cloudlog useage
 
