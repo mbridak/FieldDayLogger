@@ -5,7 +5,7 @@ Email: michael.bridak@gmail.com
 https://github.com/mbridak/FieldDayLogger
 GPL V3
 """
-# pylint: disable=too-many-lines, invalid-name, no-member, no-value-for-parameter
+# pylint: disable=too-many-lines, invalid-name, no-member, no-value-for-parameter, line-too-long
 # Nothing to see here move along.
 # xplanet -body earth -window -longitude -117 -latitude 38
 # -config Default -projection azmithal -radius 200 -wait 5
@@ -177,6 +177,23 @@ class MainWindow(QtWidgets.QMainWindow):
         self.F10.clicked.connect(self.sendf10)
         self.F11.clicked.connect(self.sendf11)
         self.F12.clicked.connect(self.sendf12)
+        self.fakefreqs = {
+            "160": ["1830", "1805", "1840"],
+            "80": ["3530", "3559", "3970"],
+            "60": ["5332", "5373", "5405"],
+            "40": ["7030", "7040", "7250"],
+            "30": ["10130", "10130", "0000"],
+            "20": ["14030", "14070", "14250"],
+            "17": ["18080", "18100", "18150"],
+            "15": ["21065", "21070", "21200"],
+            "12": ["24911", "24920", "24970"],
+            "10": ["28065", "28070", "28400"],
+            "6": ["50.030", "50300", "50125"],
+            "2": ["144030", "144144", "144250"],
+            "222": ["222100", "222070", "222100"],
+            "432": ["432070", "432200", "432100"],
+            "SAT": ["144144", "144144", "144144"],
+        }
         self.contactlookup = {
             "call": "",
             "grid": "",
@@ -447,7 +464,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.infoline.setText("Server Generated Log.")
 
                     if json_data.get("subject") == "DUPE":
-                        if json_data.get("isdupe") is not 0:
+                        if json_data.get("isdupe") != 0:
                             if json_data.get("contact") == self.callsign_entry.text():
                                 self.flash()
                                 self.infobox.setTextColor(QtGui.QColor(245, 121, 0))
@@ -930,8 +947,16 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
                 logger.warning("Cloudlog: %s", exception)
 
-    @staticmethod
-    def fakefreq(band, mode):
+    def set_fakefreq(self, newfreq):
+        """doc"""
+        if self.getband(str(newfreq)) != "0":
+            modes = {"CW": 0, "DI": 1, "PH": 2, "FT8": 1, "SSB": 2}
+            self.fakefreqs[self.getband(str(newfreq))][modes[self.mode]] = str(
+                newfreq / 1000
+            )
+            self.setband(str(self.getband(str(newfreq))))
+
+    def fakefreq(self, band, mode):
         """
         If unable to obtain a frequency from the rig,
         This will return a sane value for a frequency mainly for the cabrillo and adif log.
@@ -939,24 +964,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         logger.info("fakefreq: band:%s mode:%s", band, mode)
         modes = {"CW": 0, "DI": 1, "PH": 2, "FT8": 1, "SSB": 2}
-        fakefreqs = {
-            "160": ["1830", "1805", "1840"],
-            "80": ["3530", "3559", "3970"],
-            "60": ["5332", "5373", "5405"],
-            "40": ["7030", "7040", "7250"],
-            "30": ["10130", "10130", "0000"],
-            "20": ["14030", "14070", "14250"],
-            "17": ["18080", "18100", "18150"],
-            "15": ["21065", "21070", "21200"],
-            "12": ["24911", "24920", "24970"],
-            "10": ["28065", "28070", "28400"],
-            "6": ["50.030", "50300", "50125"],
-            "2": ["144030", "144144", "144250"],
-            "222": ["222100", "222070", "222100"],
-            "432": ["432070", "432200", "432100"],
-            "SAT": ["144144", "144144", "144144"],
-        }
-        freqtoreturn = fakefreqs[band][modes[mode]]
+        freqtoreturn = self.fakefreqs[band][modes[mode]]
         logger.info("fakefreq: returning:%s", freqtoreturn)
         return freqtoreturn
 
@@ -1328,6 +1336,16 @@ class MainWindow(QtWidgets.QMainWindow):
             self.mysectionEntry.setStyleSheet("border: 1px solid red;")
         self.writepreferences()
 
+    def is_floatable(self, item: str) -> bool:
+        """check to see if string can be a float"""
+        if item.isnumeric():
+            return True
+        try:
+            _test = float(item)
+        except ValueError:
+            return False
+        return True
+
     def calltest(self):
         """
         Test and strip callsign of bad characters, advance to next input field if space pressed.
@@ -1336,6 +1354,12 @@ class MainWindow(QtWidgets.QMainWindow):
         if len(text):
             if text[-1] == " ":
                 self.callsign_entry.setText(text.strip())
+                if self.is_floatable(self.callsign_entry.text()):
+                    vfo = float(text.strip())
+                    vfo = int(vfo * 1000)
+                    self.set_fakefreq(vfo)
+                    self.clearinputs()
+                    return
                 _thethread = threading.Thread(
                     target=self.lazy_lookup,
                     args=(self.callsign_entry.text(),),
@@ -1347,7 +1371,7 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 washere = self.callsign_entry.cursorPosition()
                 cleaned = "".join(
-                    ch for ch in text if ch.isalnum() or ch == "/"
+                    ch for ch in text if ch.isalnum() or ch == "/" or ch == "."
                 ).upper()
                 self.callsign_entry.setText(cleaned)
                 self.callsign_entry.setCursorPosition(washere)
@@ -1497,10 +1521,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.group_call_indicator.show()
                 self.mycallEntry.hide()
                 self.server_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                if sys.platform.startswith('darwin'):
-                    self.server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+                if sys.platform.startswith("darwin"):
+                    self.server_udp.setsockopt(
+                        socket.SOL_SOCKET, socket.SO_REUSEPORT, 1
+                    )
                 else:
-                    self.server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                    self.server_udp.setsockopt(
+                        socket.SOL_SOCKET, socket.SO_REUSEADDR, 1
+                    )
                 self.server_udp.bind(("", int(self.multicast_port)))
                 mreq = socket.inet_aton(self.multicast_group) + socket.inet_aton(
                     self.interface_ip
