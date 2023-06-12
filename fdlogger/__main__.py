@@ -1497,7 +1497,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.group_call_indicator.show()
                 self.mycallEntry.hide()
                 self.server_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                self.server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                if sys.platform.startswith('darwin'):
+                    self.server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+                else:
+                    self.server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 self.server_udp.bind(("", int(self.multicast_port)))
                 mreq = socket.inet_aton(self.multicast_group) + socket.inet_aton(
                     self.interface_ip
