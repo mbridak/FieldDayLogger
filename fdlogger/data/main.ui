@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>932</width>
+    <height>698</height>
    </rect>
   </property>
   <property name="font">
@@ -143,6 +143,9 @@ border-top-color: rgb(255, 255, 255);</string>
                <bold>false</bold>
               </font>
              </property>
+             <property name="toolTip">
+              <string>CW contacts</string>
+             </property>
              <property name="text">
               <string>000</string>
              </property>
@@ -186,6 +189,9 @@ border-top-color: rgb(255, 255, 255);</string>
                <pointsize>12</pointsize>
                <bold>false</bold>
               </font>
+             </property>
+             <property name="toolTip">
+              <string>Phone Contacts</string>
              </property>
              <property name="text">
               <string>000</string>
@@ -231,6 +237,9 @@ border-top-color: rgb(255, 255, 255);</string>
                <bold>false</bold>
               </font>
              </property>
+             <property name="toolTip">
+              <string>Digital Contacts</string>
+             </property>
              <property name="text">
               <string>000</string>
              </property>
@@ -274,6 +283,9 @@ border-top-color: rgb(255, 255, 255);</string>
                <pointsize>12</pointsize>
                <bold>false</bold>
               </font>
+             </property>
+             <property name="toolTip">
+              <string>QSO Points</string>
              </property>
              <property name="text">
               <string>0000000</string>
@@ -319,6 +331,9 @@ border-top-color: rgb(255, 255, 255);</string>
                <bold>false</bold>
               </font>
              </property>
+             <property name="toolTip">
+              <string>Qs Per Hour</string>
+             </property>
              <property name="text">
               <string>00</string>
              </property>
@@ -362,6 +377,9 @@ border-top-color: rgb(255, 255, 255);</string>
                <pointsize>12</pointsize>
                <bold>false</bold>
               </font>
+             </property>
+             <property name="toolTip">
+              <string>Qs Per 15 minutes</string>
              </property>
              <property name="text">
               <string>00</string>
@@ -417,6 +435,12 @@ border-top-color: rgb(255, 255, 255);</string>
                <property name="whatsThis">
                 <string>Enter other operators callsign.</string>
                </property>
+               <property name="accessibleName">
+                <string>Callsign Entry</string>
+               </property>
+               <property name="accessibleDescription">
+                <string>Text entery box, for entering the callsign of the contact.</string>
+               </property>
                <property name="maxLength">
                 <number>14</number>
                </property>
@@ -440,6 +464,15 @@ border-top-color: rgb(255, 255, 255);</string>
                <property name="focusPolicy">
                 <enum>Qt::ClickFocus</enum>
                </property>
+               <property name="toolTip">
+                <string>Class Entry</string>
+               </property>
+               <property name="accessibleName">
+                <string>Class entry</string>
+               </property>
+               <property name="accessibleDescription">
+                <string>Text entery box, for entering the class of the contact.</string>
+               </property>
                <property name="placeholderText">
                 <string>Class</string>
                </property>
@@ -456,6 +489,15 @@ border-top-color: rgb(255, 255, 255);</string>
                </property>
                <property name="focusPolicy">
                 <enum>Qt::ClickFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Section Entry</string>
+               </property>
+               <property name="accessibleName">
+                <string>Section Entry</string>
+               </property>
+               <property name="accessibleDescription">
+                <string>Text entry box to enter the contacts ARRL section.</string>
                </property>
                <property name="placeholderText">
                 <string>Section</string>
@@ -2495,6 +2537,15 @@ color: rgb(0, 0, 0);</string>
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
+          <property name="toolTip">
+           <string>F1</string>
+          </property>
+          <property name="accessibleName">
+           <string>F1</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>Function Key 1</string>
+          </property>
           <property name="text">
            <string>F1</string>
           </property>
@@ -2504,6 +2555,9 @@ color: rgb(0, 0, 0);</string>
          <widget class="QPushButton" name="F2">
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="toolTip">
+           <string>F2</string>
           </property>
           <property name="text">
            <string>F2</string>
@@ -2515,6 +2569,9 @@ color: rgb(0, 0, 0);</string>
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
+          <property name="toolTip">
+           <string>F3</string>
+          </property>
           <property name="text">
            <string>F3</string>
           </property>
@@ -2524,6 +2581,9 @@ color: rgb(0, 0, 0);</string>
          <widget class="QPushButton" name="F4">
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="toolTip">
+           <string>F4</string>
           </property>
           <property name="text">
            <string>F4</string>
@@ -2535,6 +2595,9 @@ color: rgb(0, 0, 0);</string>
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
+          <property name="toolTip">
+           <string>F5</string>
+          </property>
           <property name="text">
            <string>F5</string>
           </property>
@@ -2544,6 +2607,9 @@ color: rgb(0, 0, 0);</string>
          <widget class="QPushButton" name="F6">
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="toolTip">
+           <string>F6</string>
           </property>
           <property name="text">
            <string>F6</string>
@@ -2562,6 +2628,9 @@ color: rgb(0, 0, 0);</string>
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
+          <property name="toolTip">
+           <string>F7</string>
+          </property>
           <property name="text">
            <string>F7</string>
           </property>
@@ -2571,6 +2640,9 @@ color: rgb(0, 0, 0);</string>
          <widget class="QPushButton" name="F8">
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="toolTip">
+           <string>F8</string>
           </property>
           <property name="text">
            <string>F8</string>
@@ -2582,6 +2654,9 @@ color: rgb(0, 0, 0);</string>
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
+          <property name="toolTip">
+           <string>F9</string>
+          </property>
           <property name="text">
            <string>F9</string>
           </property>
@@ -2591,6 +2666,9 @@ color: rgb(0, 0, 0);</string>
          <widget class="QPushButton" name="F10">
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="toolTip">
+           <string>F10</string>
           </property>
           <property name="text">
            <string>F10</string>
@@ -2602,6 +2680,9 @@ color: rgb(0, 0, 0);</string>
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
+          <property name="toolTip">
+           <string>F11</string>
+          </property>
           <property name="text">
            <string>F11</string>
           </property>
@@ -2611,6 +2692,9 @@ color: rgb(0, 0, 0);</string>
          <widget class="QPushButton" name="F12">
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="toolTip">
+           <string>F12</string>
           </property>
           <property name="text">
            <string>F12</string>
@@ -2731,6 +2815,9 @@ color: rgb(0, 0, 0);</string>
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
+          <property name="toolTip">
+           <string>Press to generate logs</string>
+          </property>
           <property name="styleSheet">
            <string notr="true">background-color: rgb(92, 53, 102);</string>
           </property>
@@ -2802,6 +2889,9 @@ color: rgb(0, 0, 0);</string>
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
+          <property name="toolTip">
+           <string>Band selector</string>
+          </property>
           <item>
            <property name="text">
             <string>160</string>
@@ -2869,6 +2959,9 @@ color: rgb(0, 0, 0);</string>
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
+          <property name="toolTip">
+           <string>Mode selector</string>
+          </property>
           <item>
            <property name="text">
             <string>CW</string>
@@ -2910,6 +3003,9 @@ color: rgb(0, 0, 0);</string>
           </property>
           <property name="focusPolicy">
            <enum>Qt::ClickFocus</enum>
+          </property>
+          <property name="toolTip">
+           <string>Power used for contact.</string>
           </property>
           <property name="buttonSymbols">
            <enum>QAbstractSpinBox::UpDownArrows</enum>
@@ -3071,6 +3167,9 @@ color: rgb(0, 0, 0);</string>
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
+          <property name="toolTip">
+           <string>Run or Search and Pounce</string>
+          </property>
           <property name="text">
            <string>SP</string>
           </property>
@@ -3092,6 +3191,9 @@ color: rgb(0, 0, 0);</string>
           </property>
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="toolTip">
+           <string>Settings</string>
           </property>
           <property name="text">
            <string/>
