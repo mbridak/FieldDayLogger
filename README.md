@@ -78,6 +78,7 @@ brother.
 
 ## Recent Changes
 
+- [23.6.18] Small visual change to interface.
 - [23.6.12] Merged PR from @wvolz to handle MacOS port reuse.
 - [23.6.9] Added server dupe check. Thanks @kybrjo, Be sure to pip update the fdserver for this. Bugfix: was unable to edit frequency. Thanks @km4ack.
 - [23.5.31] Replaced some deleted stuff. Thanks @ATCUSA for finding it!
