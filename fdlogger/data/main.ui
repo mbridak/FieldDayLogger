@@ -54,10 +54,13 @@ color: rgb(211, 215, 207);</string>
            </font>
           </property>
           <property name="frameShape">
-           <enum>QFrame::WinPanel</enum>
+           <enum>QFrame::Box</enum>
           </property>
           <property name="frameShadow">
            <enum>QFrame::Plain</enum>
+          </property>
+          <property name="lineWidth">
+           <number>1</number>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_10">
            <item>
@@ -107,7 +110,7 @@ color: rgb(211, 215, 207);</string>
 border-top-color: rgb(255, 255, 255);</string>
           </property>
           <property name="frameShape">
-           <enum>QFrame::WinPanel</enum>
+           <enum>QFrame::Box</enum>
           </property>
           <property name="frameShadow">
            <enum>QFrame::Plain</enum>
@@ -408,7 +411,7 @@ border-top-color: rgb(255, 255, 255);</string>
              </font>
             </property>
             <property name="frameShape">
-             <enum>QFrame::WinPanel</enum>
+             <enum>QFrame::Box</enum>
             </property>
             <property name="frameShadow">
              <enum>QFrame::Plain</enum>
@@ -519,10 +522,13 @@ border-top-color: rgb(255, 255, 255);</string>
              <string notr="true"/>
             </property>
             <property name="frameShape">
-             <enum>QFrame::WinPanel</enum>
+             <enum>QFrame::Box</enum>
             </property>
             <property name="frameShadow">
              <enum>QFrame::Plain</enum>
+            </property>
+            <property name="lineWidth">
+             <number>1</number>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
@@ -558,7 +564,7 @@ border-top-color: rgb(255, 255, 255);</string>
           <item>
            <widget class="QFrame" name="chat_window">
             <property name="frameShape">
-             <enum>QFrame::WinPanel</enum>
+             <enum>QFrame::Box</enum>
             </property>
             <property name="frameShadow">
              <enum>QFrame::Plain</enum>
@@ -629,10 +635,13 @@ border-top-color: rgb(255, 255, 255);</string>
            </font>
           </property>
           <property name="frameShape">
-           <enum>QFrame::WinPanel</enum>
+           <enum>QFrame::Box</enum>
           </property>
           <property name="frameShadow">
            <enum>QFrame::Plain</enum>
+          </property>
+          <property name="lineWidth">
+           <number>1</number>
           </property>
           <layout class="QFormLayout" name="formLayout_5">
            <property name="horizontalSpacing">
@@ -972,7 +981,7 @@ color: rgb(0, 0, 0);</string>
            </font>
           </property>
           <property name="frameShape">
-           <enum>QFrame::WinPanel</enum>
+           <enum>QFrame::Box</enum>
           </property>
           <property name="frameShadow">
            <enum>QFrame::Plain</enum>
@@ -1322,10 +1331,13 @@ color: rgb(0, 0, 0);</string>
            </font>
           </property>
           <property name="frameShape">
-           <enum>QFrame::WinPanel</enum>
+           <enum>QFrame::Box</enum>
           </property>
           <property name="frameShadow">
            <enum>QFrame::Plain</enum>
+          </property>
+          <property name="lineWidth">
+           <number>1</number>
           </property>
           <layout class="QFormLayout" name="formLayout_3">
            <property name="leftMargin">
@@ -1706,7 +1718,7 @@ color: rgb(0, 0, 0);</string>
            </font>
           </property>
           <property name="frameShape">
-           <enum>QFrame::WinPanel</enum>
+           <enum>QFrame::Box</enum>
           </property>
           <property name="frameShadow">
            <enum>QFrame::Plain</enum>
@@ -2080,7 +2092,7 @@ color: rgb(0, 0, 0);</string>
            </font>
           </property>
           <property name="frameShape">
-           <enum>QFrame::WinPanel</enum>
+           <enum>QFrame::Box</enum>
           </property>
           <property name="frameShadow">
            <enum>QFrame::Plain</enum>
