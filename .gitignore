@@ -137,3 +137,5 @@ debug
 spots.db
 .vscode/
 server_database.db
+cwmacros_fd.txt
+fd_preferences.json
