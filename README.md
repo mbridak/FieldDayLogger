@@ -78,6 +78,7 @@ brother.
 
 ## Recent Changes
 
+- [23.6.22] Fix postcloudlog, Value unpack count mismatch.
 - [23.6.21] Fixed xplanet marker file. I think.
 - [23.6.18] Small visual change to interface.
 - [23.6.12] Merged PR from @wvolz to handle MacOS port reuse.

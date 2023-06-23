@@ -2255,6 +2255,7 @@ class MainWindow(QtWidgets.QMainWindow):
             grid,
             opname,
             _,
+            _,
         ) = contact
         if mode == "DI":
             mode = "FT8"
