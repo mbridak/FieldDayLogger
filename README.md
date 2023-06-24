@@ -78,6 +78,7 @@ brother.
 
 ## Recent Changes
 
+- [23.6.24] Fix 6M CW default frequency.
 - [23.6.23] Entering freq in Khz in the callsign field sets the VFO.
 - [23.6.22] Fix postcloudlog, Value unpack count mismatch.
 - [23.6.21] Fixed xplanet marker file. I think.
