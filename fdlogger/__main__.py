@@ -1263,12 +1263,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def changeband(self):
         """change band"""
-        self.band = self.band_selector.currentText()
-        if self.cat_control:
-            self.cat_control.set_vfo(
-                int(float(self.fakefreq(self.band, self.mode)) * 1000)
-            )
-        self.send_status_udp()
+        if self.band != self.band_selector.currentText():
+            self.band = self.band_selector.currentText()
+            if self.cat_control:
+                self.cat_control.set_vfo(
+                    int(float(self.fakefreq(self.band, self.mode)) * 1000)
+                )
+            self.send_status_udp()
 
     def changemode(self):
         """change mode"""

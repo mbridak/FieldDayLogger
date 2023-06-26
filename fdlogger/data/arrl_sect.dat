@@ -83,6 +83,7 @@ WTX TX 5 WTX West Texas
 MAR -- C MAR Maritime
 SK  -- C SK Saskatchewan
 NL  -- C NL Newfoundland/Labrador
+NS  -- C NS Nova Scotia
 AB  -- C AB Alberta
 QC  -- C QC Quebec
 BC  -- C BC British Columbia
@@ -92,9 +93,11 @@ MB  -- C MB Manitoba
 PE  -- C PE Prince Edward Island
 #
 GTA -- C GTA Greater Toronto Area
+GH  -- C GH Golden Horseshoe
 ONE -- C ONE Ontario East
 ONN -- C ONN Ontario North
 ONS -- C ONS Ontario South
+TER -- C Territories C
 #
 DX  -- - DX Foreign
 #
