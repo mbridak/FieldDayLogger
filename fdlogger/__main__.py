@@ -964,6 +964,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         logger.info("fakefreq: band:%s mode:%s", band, mode)
         modes = {"CW": 0, "DI": 1, "PH": 2, "FT8": 1, "SSB": 2}
+        if not band:
+            return 0
         freqtoreturn = self.fakefreqs[band][modes[mode]]
         logger.info("fakefreq: returning:%s", freqtoreturn)
         return freqtoreturn
@@ -1041,7 +1043,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.oldfreq = newfreq
                 self.set_fakefreq(int(newfreq))
                 self.oldmode = newmode
-                self.setband(str(self.getband(newfreq)))
+                if self.getband(newfreq) == 0:
+                    self.setband(str(self.getband(oldfreq)))
+                else:
+                    self.setband(str(self.getband(newfreq)))
                 self.setmode(str(self.getmode(newmode)))
                 self.radio_icon.setPixmap(self.radio_green)
             if self.preference.get("send_n1mm_packets"):
