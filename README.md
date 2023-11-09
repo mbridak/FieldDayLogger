@@ -78,6 +78,7 @@ brother.
 
 ## Recent Changes
 
+- [23.11.9] Merged from @wvolz fixing crash related to tuning to a non ham band.
 - [23.6.25] Fixed missing Canadian sections.
 - [23.6.24] Fix 6M CW default frequency. Wierdness with VFO fixed.
 - [23.6.23] Entering freq in Khz in the callsign field sets the VFO.
