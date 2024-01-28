@@ -20,6 +20,7 @@ import pkgutil
 
 # from xmlrpc.client import ServerProxy, Error
 import struct
+import datetime as dt
 import os
 import socket
 import sys
@@ -122,7 +123,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """Initialize"""
         super().__init__(*args, **kwargs)
         self.working_path = os.path.dirname(
-            pkgutil.get_loader("fdlogger").get_filename()
+            __loader__.get_filename()
         )
         data_path = self.working_path + "/data/main.ui"
         uic.loadUi(data_path, self)
@@ -654,7 +655,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def update_time(self):
         """updates the time"""
         now = datetime.now().isoformat(" ")[5:19].replace("-", "/")
-        utcnow = datetime.utcnow().isoformat(" ")[5:19].replace("-", "/")
+        utcnow = datetime.now(dt.UTC).isoformat(" ")[5:19].replace("-", "/")
         self.localtime.setText(now)
         self.utctime.setText(utcnow)
 
@@ -1278,8 +1279,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def changemode(self):
         """change mode"""
-        self.mode = self.mode_selector.currentText()
-        self.send_status_udp()
+        if self.mode != self.mode_selector.currentText():
+            self.mode = self.mode_selector.currentText()
+            if self.mode == "PH":
+                if int(self.oldfreq) < 10000000:
+                    self.cat_control.set_mode("LSB")
+                else:
+                    self.cat_control.set_mode("USB")
+            self.cat_control.set_mode(self.mode)
+            self.send_status_udp()
 
     def changepower(self):
         """change power"""
@@ -1634,7 +1642,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 "mode": self.mode,
                 "band": self.band,
                 "frequency": self.oldfreq,
-                "date_and_time": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+                "date_and_time": datetime.now(dt.UTC).strftime("%Y-%m-%d %H:%M:%S"),
                 "power": int(self.power_selector.value()),
                 "grid": self.contactlookup["grid"],
                 "opname": self.contactlookup["name"],
@@ -1662,7 +1670,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.n1mm.contact_info["band"] = self.band
             self.n1mm.contact_info["mycall"] = self.preference.get("mycall")
             self.n1mm.contact_info["IsRunQSO"] = str(self.run_state)
-            self.n1mm.contact_info["timestamp"] = datetime.utcnow().strftime(
+            self.n1mm.contact_info["timestamp"] = datetime.now(dt.UTC).strftime(
                 "%Y-%m-%d %H:%M:%S"
             )
             self.n1mm.contact_info["call"] = self.callsign_entry.text()
@@ -2464,7 +2472,7 @@ class EditQSODialog(QtWidgets.QDialog):
         """initialize dialog"""
         super().__init__(parent)
         self.working_path = os.path.dirname(
-            pkgutil.get_loader("fdlogger").get_filename()
+            __loader__.get_filename()
         )
         data_path = self.working_path + "/data/dialog.ui"
         uic.loadUi(data_path, self)
@@ -2580,7 +2588,7 @@ class EditQSODialog(QtWidgets.QDialog):
                 logger.warning("%s", err)
 
         if window.preference.get("send_n1mm_packets"):
-            window.n1mm.contactdelete["timestamp"] = datetime.utcnow().strftime(
+            window.n1mm.contactdelete["timestamp"] = datetime.now(dt.UTC).strftime(
                 "%Y-%m-%d %H:%M:%S"
             )
             window.n1mm.contactdelete["call"] = self.contact.get("callsign")
@@ -2598,7 +2606,7 @@ class StartUp(QtWidgets.QDialog):
         """initialize dialog"""
         super().__init__(parent)
         self.working_path = os.path.dirname(
-            pkgutil.get_loader("fdlogger").get_filename()
+            __loader__.get_filename()
         )
         data_path = self.working_path + "/data/startup.ui"
         uic.loadUi(data_path, self)
@@ -2663,7 +2671,7 @@ else:
 
 app = QtWidgets.QApplication(sys.argv)
 app.setStyle("Fusion")
-working_path = os.path.dirname(pkgutil.get_loader("fdlogger").get_filename())
+working_path = os.path.dirname(__loader__.get_filename())
 font_path = working_path + "/data"
 families = load_fonts_from_dir(os.fspath(font_path))
 window = MainWindow()
@@ -2709,7 +2717,7 @@ timer3.timeout.connect(window.send_status_udp)
 
 def run():
     """Main Entry"""
-    PATH = os.path.dirname(pkgutil.get_loader("fdlogger").get_filename())
+    PATH = os.path.dirname(__loader__.get_filename())
     os.system(
         "xdg-icon-resource install --size 64 --context apps --mode user "
         f"{PATH}/icon/k6gte-fdlogger.png k6gte-fdlogger"
