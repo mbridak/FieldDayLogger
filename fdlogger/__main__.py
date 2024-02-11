@@ -16,7 +16,8 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from json import dumps, loads, JSONDecodeError
 from shutil import copyfile
-import pkgutil
+
+# import pkgutil
 
 # from xmlrpc.client import ServerProxy, Error
 import struct
@@ -1043,7 +1044,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.set_fakefreq(int(newfreq))
                 self.oldmode = newmode
                 if self.getband(newfreq) == 0:
-                    self.setband(str(self.getband(oldfreq)))
+                    self.setband(str(self.getband(self.oldfreq)))
                 else:
                     self.setband(str(self.getband(newfreq)))
                 self.setmode(str(self.getmode(newmode)))
