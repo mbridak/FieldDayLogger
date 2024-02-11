@@ -122,9 +122,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         """Initialize"""
         super().__init__(*args, **kwargs)
-        self.working_path = os.path.dirname(
-            __loader__.get_filename()
-        )
+        self.working_path = os.path.dirname(__loader__.get_filename())
         data_path = self.working_path + "/data/main.ui"
         uic.loadUi(data_path, self)
         self.chat_window.hide()
@@ -2057,6 +2055,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 return state
         except IndexError:
             return False
+        except KeyError:
+            return False
         return False
 
     @staticmethod
@@ -2471,9 +2471,7 @@ class EditQSODialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
         """initialize dialog"""
         super().__init__(parent)
-        self.working_path = os.path.dirname(
-            __loader__.get_filename()
-        )
+        self.working_path = os.path.dirname(__loader__.get_filename())
         data_path = self.working_path + "/data/dialog.ui"
         uic.loadUi(data_path, self)
         self.deleteButton.clicked.connect(self.delete_contact)
@@ -2605,9 +2603,7 @@ class StartUp(QtWidgets.QDialog):
     def __init__(self, parent=None):
         """initialize dialog"""
         super().__init__(parent)
-        self.working_path = os.path.dirname(
-            __loader__.get_filename()
-        )
+        self.working_path = os.path.dirname(__loader__.get_filename())
         data_path = self.working_path + "/data/startup.ui"
         uic.loadUi(data_path, self)
         self.continue_pushButton.clicked.connect(self.store)
