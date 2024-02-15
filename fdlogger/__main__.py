@@ -1066,6 +1066,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             logger.info("cat_control %s", self.cat_control)
             self.radio_icon.setPixmap(QtGui.QPixmap(self.radio_grey))
+            self.oldmode = self.mode # Set so the UDP packet sends mode when no radio connected - NY4I
 
     def flash(self):
         """Flash the screen"""
@@ -1666,7 +1667,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.contact_info["points"] = "2"
             else:
                 self.n1mm.contact_info["points"] = "1"
-            self.n1mm.contact_info["band"] = self.band
+            self.n1mm.contact_info["band"] = self.n1mm.bandToUDPBand[self.band]
             self.n1mm.contact_info["mycall"] = self.preference.get("mycall")
             self.n1mm.contact_info["IsRunQSO"] = str(self.run_state)
             self.n1mm.contact_info["timestamp"] = datetime.now(dt.UTC).strftime(
@@ -2665,6 +2666,8 @@ if Path("./debug").exists():
 else:
     print("debugging off")
     logger.setLevel(logging.WARNING)
+
+
 
 app = QtWidgets.QApplication(sys.argv)
 app.setStyle("Fusion")
