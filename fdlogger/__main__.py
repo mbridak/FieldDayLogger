@@ -2667,8 +2667,6 @@ else:
     print("debugging off")
     logger.setLevel(logging.WARNING)
 
-
-
 app = QtWidgets.QApplication(sys.argv)
 app.setStyle("Fusion")
 working_path = os.path.dirname(__loader__.get_filename())
