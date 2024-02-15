@@ -99,6 +99,20 @@ class N1MM:
         "StationName": "",
         "ID": "",
     }
+    
+    bandToUDPBand = {
+       "160" : "1.8",
+       "80"  : "3.5",
+       "40"  : "7",
+       "20"  : "14",
+       "15"  : "21",
+       "10"  : "28",
+       "6"   : "50",
+       "2"   : "144",
+       "222" : "222",
+       "432" : "420",
+       "SAT" : "144", # The fakefreqs are 2m so I picked 2m for SAT - NY4I
+    }
 
     def __init__(
         self,
