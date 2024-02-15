@@ -1660,8 +1660,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 logger.warning("%s", err)
 
         if self.preference.get("send_n1mm_packets"):
-            self.n1mm.contact_info["rxfreq"] = str(self.oldfreq)[:-1]
-            self.n1mm.contact_info["txfreq"] = str(self.oldfreq)[:-1]
+            if self.oldfreq == 0:
+               self.n1mm.contact_info["rxfreq"] = str(self.fakefreq(self.band, self.mode))
+               self.n1mm.contact_info["txfreq"] = str(self.fakefreq(self.band, self.mode))
+            else:
+                self.n1mm.contact_info["rxfreq"] = str(self.oldfreq)[:-1]
+                self.n1mm.contact_info["txfreq"] = str(self.oldfreq)[:-1]
+                
             self.n1mm.contact_info["mode"] = self.oldmode
             if self.oldmode in ("CW", "DG"):
                 self.n1mm.contact_info["points"] = "2"
