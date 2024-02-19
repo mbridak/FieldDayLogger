@@ -654,7 +654,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def update_time(self):
         """updates the time"""
         now = datetime.now().isoformat(" ")[5:19].replace("-", "/")
-        utcnow = datetime.now(dt.UTC).isoformat(" ")[5:19].replace("-", "/")
+        utcnow = datetime.now(dt.timezone.utc).isoformat(" ")[5:19].replace("-", "/")
         self.localtime.setText(now)
         self.utctime.setText(utcnow)
 
@@ -1641,7 +1641,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 "mode": self.mode,
                 "band": self.band,
                 "frequency": self.oldfreq,
-                "date_and_time": datetime.now(dt.UTC).strftime("%Y-%m-%d %H:%M:%S"),
+                "date_and_time": datetime.now(dt.timezone.utc).strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                ),
                 "power": int(self.power_selector.value()),
                 "grid": self.contactlookup["grid"],
                 "opname": self.contactlookup["name"],
@@ -1669,9 +1671,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.n1mm.contact_info["band"] = self.band
             self.n1mm.contact_info["mycall"] = self.preference.get("mycall")
             self.n1mm.contact_info["IsRunQSO"] = str(self.run_state)
-            self.n1mm.contact_info["timestamp"] = datetime.now(dt.UTC).strftime(
-                "%Y-%m-%d %H:%M:%S"
-            )
+            self.n1mm.contact_info["timestamp"] = datetime.now(
+                dt.timezone.utc
+            ).strftime("%Y-%m-%d %H:%M:%S")
             self.n1mm.contact_info["call"] = self.callsign_entry.text()
             self.n1mm.contact_info["gridsquare"] = self.contactlookup.get("grid")
             self.n1mm.contact_info["exchange1"] = self.class_entry.text()
@@ -2587,9 +2589,9 @@ class EditQSODialog(QtWidgets.QDialog):
                 logger.warning("%s", err)
 
         if window.preference.get("send_n1mm_packets"):
-            window.n1mm.contactdelete["timestamp"] = datetime.now(dt.UTC).strftime(
-                "%Y-%m-%d %H:%M:%S"
-            )
+            window.n1mm.contactdelete["timestamp"] = datetime.now(
+                dt.timezone.utc
+            ).strftime("%Y-%m-%d %H:%M:%S")
             window.n1mm.contactdelete["call"] = self.contact.get("callsign")
             window.n1mm.contactdelete["ID"] = self.contact.get("unique_id")
             window.n1mm.send_contact_delete()
