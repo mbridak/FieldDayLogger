@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fdlogger" 
-version = "24.2.19"
+version = "24.2.21"
 description = "ARRL Field Day logger GUI"
 readme = "README.md"
 requires-python = ">=3.9"

@@ -18,7 +18,7 @@ class N1MM:
     """ "Send N1MM style packets"""
 
     radio_info = {
-        "app": "K6GTE-WFD",
+        "app": "K6GTE-FDLOGGER",
         "StationName": "",
         "uNICORNbLOOD": "1",
         "RadioNr": "1",
@@ -43,8 +43,8 @@ class N1MM:
     }
 
     contact_info = {
-        "app": "K6GTE-WFD",
-        "contestname": "Winter Field Day",
+        "app": "K6GTE-FDLOGGER",
+        "contestname": "ARRL Field Day",
         "contestnr": "1",
         "timestamp": "",
         "mycall": "",
@@ -92,26 +92,26 @@ class N1MM:
     }
 
     contactdelete = {
-        "app": "K6GTE-WFD",
+        "app": "K6GTE-FDLOGGER",
         "timestamp": "",
         "call": "",
         "contestnr": "1",
         "StationName": "",
         "ID": "",
     }
-    
+
     bandToUDPBand = {
-       "160" : "1.8",
-       "80"  : "3.5",
-       "40"  : "7",
-       "20"  : "14",
-       "15"  : "21",
-       "10"  : "28",
-       "6"   : "50",
-       "2"   : "144",
-       "222" : "222",
-       "432" : "420",
-       "SAT" : "144", # The fakefreqs are 2m so I picked 2m for SAT - NY4I
+        "160": "1.8",
+        "80": "3.5",
+        "40": "7",
+        "20": "14",
+        "15": "21",
+        "10": "28",
+        "6": "50",
+        "2": "144",
+        "222": "222",
+        "432": "420",
+        "SAT": "144",  # The fakefreqs are 2m so I picked 2m for SAT - NY4I
     }
 
     def __init__(
