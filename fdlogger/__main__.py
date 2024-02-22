@@ -6,6 +6,7 @@ https://github.com/mbridak/FieldDayLogger
 GPL V3
 """
 # pylint: disable=too-many-lines, invalid-name, no-member, no-value-for-parameter, line-too-long
+# pylint: disable=logging-fstring-interpolation
 # Nothing to see here move along.
 # xplanet -body earth -window -longitude -117 -latitude 38
 # -config Default -projection azmithal -radius 200 -wait 5
@@ -16,8 +17,6 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from json import dumps, loads, JSONDecodeError
 from shutil import copyfile
-
-# import pkgutil
 
 # from xmlrpc.client import ServerProxy, Error
 import struct
@@ -32,8 +31,6 @@ import queue
 import time
 from itertools import chain
 
-# from time import gmtime, strftime
-
 import requests
 from PyQt5.QtNetwork import QUdpSocket, QHostAddress
 from PyQt5.QtGui import QFontDatabase
@@ -47,6 +44,7 @@ try:
     from fdlogger.lib.database import DataBase
     from fdlogger.lib.cwinterface import CW
     from fdlogger.lib.n1mm import N1MM
+    from fdlogger.lib.edit_opon import OpOn
     from fdlogger.lib.version import __version__
 except ModuleNotFoundError:
     from lib.lookup import HamDBlookup, HamQTH, QRZlookup
@@ -55,6 +53,7 @@ except ModuleNotFoundError:
     from lib.database import DataBase
     from lib.cwinterface import CW
     from lib.n1mm import N1MM
+    from lib.edit_opon import OpOn
     from lib.version import __version__
 
 
@@ -119,6 +118,7 @@ class MainWindow(QtWidgets.QMainWindow):
     groupcall = None
     server_commands = []
     server_seen = None
+    opon_dialog = None
 
     def __init__(self, *args, **kwargs):
         """Initialize"""
@@ -261,6 +261,49 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_socket = QUdpSocket()
         self.udp_socket.bind(QHostAddress.LocalHost, 2237)
         self.udp_socket.readyRead.connect(self.on_udp_socket_ready_read)
+
+    def get_opon(self) -> None:
+        """
+        Ctrl+O Open the OPON dialog.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
+        self.opon_dialog = OpOn(os.path.dirname(__loader__.get_filename()))
+        self.opon_dialog.accepted.connect(self.new_op)
+        self.opon_dialog.open()
+
+    def new_op(self) -> None:
+        """
+        Called when the user clicks the OK button on the OPON dialog.
+        Create the new directory and copy the phonetic files.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
+        if self.opon_dialog.NewOperator.text():
+            newop = self.opon_dialog.NewOperator.text().upper()
+            if newop:
+                self.n1mm.set_operator(newop)
+                self.preference["mycall"] = newop
+                self.preference["n1mm_operator"] = newop
+                logger.debug(f"{newop=}")
+                self.writepreferences()
+        self.opon_dialog.close()
+
+        # self.make_op_dir()
 
     def show_people(self):
         """Display operators"""
@@ -1066,7 +1109,9 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             logger.info("cat_control %s", self.cat_control)
             self.radio_icon.setPixmap(QtGui.QPixmap(self.radio_grey))
-            self.oldmode = self.mode # Set so the UDP packet sends mode when no radio connected - NY4I
+            self.oldmode = (
+                self.mode
+            )  # Set so the UDP packet sends mode when no radio connected - NY4I
 
     def flash(self):
         """Flash the screen"""
@@ -1396,6 +1441,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 ).upper()
                 self.callsign_entry.setText(cleaned)
                 self.callsign_entry.setCursorPosition(washere)
+                if cleaned == "OPON":
+                    self.get_opon()
+                    self.clearinputs()
+                    return
                 self.super_check()
 
     def classtest(self):
@@ -1663,12 +1712,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if self.preference.get("send_n1mm_packets"):
             if self.oldfreq == 0:
-               self.n1mm.contact_info["rxfreq"] = str(self.fakefreq(self.band, self.mode))
-               self.n1mm.contact_info["txfreq"] = str(self.fakefreq(self.band, self.mode))
+                self.n1mm.contact_info["rxfreq"] = str(
+                    self.fakefreq(self.band, self.mode)
+                )
+                self.n1mm.contact_info["txfreq"] = str(
+                    self.fakefreq(self.band, self.mode)
+                )
             else:
                 self.n1mm.contact_info["rxfreq"] = str(self.oldfreq)[:-1]
                 self.n1mm.contact_info["txfreq"] = str(self.oldfreq)[:-1]
-                
+
             self.n1mm.contact_info["mode"] = self.oldmode
             if self.oldmode in ("CW", "DG"):
                 self.n1mm.contact_info["points"] = "2"
@@ -2577,7 +2630,10 @@ class EditQSODialog(QtWidgets.QDialog):
 
     def delete_contact(self):
         """delete the contact"""
+        oldguy = self.database.contact_by_id(self.theitem)
+        logging.critical(f"{oldguy=}")
         self.database.delete_contact(self.theitem)
+        logging.critical(f"{self.theitem=}")
         if window.connect_to_server:
             stale = datetime.now() + timedelta(seconds=30)
             command = {}
@@ -2598,8 +2654,8 @@ class EditQSODialog(QtWidgets.QDialog):
             window.n1mm.contactdelete["timestamp"] = datetime.now(
                 dt.timezone.utc
             ).strftime("%Y-%m-%d %H:%M:%S")
-            window.n1mm.contactdelete["call"] = self.contact.get("callsign")
-            window.n1mm.contactdelete["ID"] = self.contact.get("unique_id")
+            window.n1mm.contactdelete["call"] = oldguy[0][1]
+            window.n1mm.contactdelete["ID"] = self.unique_id
             window.n1mm.send_contact_delete()
 
         self.change.lineChanged.emit()
