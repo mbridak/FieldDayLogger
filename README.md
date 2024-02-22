@@ -78,6 +78,7 @@ brother.
 
 ## Recent Changes
 
+- [24.2.21] Added OPON.
 - [24.2.19] Corrected the datetime.utcnow() deprecation to work on Python 3.9+
 - [24.2.11] Trapped a KeyError in get_state()
 - [24.1.27] Removed some datetime.utcnow() and pkgutil.getloader() deprecations.
