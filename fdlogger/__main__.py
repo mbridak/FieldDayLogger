@@ -2631,9 +2631,7 @@ class EditQSODialog(QtWidgets.QDialog):
     def delete_contact(self):
         """delete the contact"""
         oldguy = self.database.contact_by_id(self.theitem)
-        logging.critical(f"{oldguy=}")
         self.database.delete_contact(self.theitem)
-        logging.critical(f"{self.theitem=}")
         if window.connect_to_server:
             stale = datetime.now() + timedelta(seconds=30)
             command = {}
