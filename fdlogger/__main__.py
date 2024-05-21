@@ -1215,7 +1215,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.infoline.setText(f"Sending {self.process_macro(self.F1.toolTip())}")
             if self.preference.get("send_n1mm_packets"):
                 self.n1mm.radio_info["FunctionKeyCaption"] = self.F1.text()
-            self.cw.sendcw(f"{self.process_macro(self.F1.toolTip())} ")
+            if self.cw.servertype == 3:
+                if self.cat_control is not None:
+                    self.cat_control.sendcw(f"{self.process_macro(self.F1.toolTip())} ")
+            else:
+                self.cw.sendcw(f"{self.process_macro(self.F1.toolTip())} ")
 
     def sendf2(self):
         """send f2"""
@@ -1223,7 +1227,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.infoline.setText(f"Sending {self.process_macro(self.F2.toolTip())}")
             if self.preference.get("send_n1mm_packets"):
                 self.n1mm.radio_info["FunctionKeyCaption"] = self.F2.text()
-            self.cw.sendcw(f"{self.process_macro(self.F2.toolTip())} ")
+            if self.cw.servertype == 3:
+                if self.cat_control is not None:
+                    self.cat_control.sendcw(f"{self.process_macro(self.F2.toolTip())} ")
+            else:
+                self.cw.sendcw(f"{self.process_macro(self.F2.toolTip())} ")
 
     def sendf3(self):
         """send f3"""
@@ -1231,7 +1239,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.infoline.setText(f"Sending {self.process_macro(self.F3.toolTip())}")
             if self.preference.get("send_n1mm_packets"):
                 self.n1mm.radio_info["FunctionKeyCaption"] = self.F3.text()
-            self.cw.sendcw(f"{self.process_macro(self.F3.toolTip())} ")
+            if self.cw.servertype == 3:
+                if self.cat_control is not None:
+                    self.cat_control.sendcw(f"{self.process_macro(self.F3.toolTip())} ")
+            else:
+                self.cw.sendcw(f"{self.process_macro(self.F3.toolTip())} ")
 
     def sendf4(self):
         """send f4"""
@@ -1239,7 +1251,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.infoline.setText(f"Sending {self.process_macro(self.F4.toolTip())}")
             if self.preference.get("send_n1mm_packets"):
                 self.n1mm.radio_info["FunctionKeyCaption"] = self.F4.text()
-            self.cw.sendcw(f"{self.process_macro(self.F4.toolTip())} ")
+            if self.cw.servertype == 3:
+                if self.cat_control is not None:
+                    self.cat_control.sendcw(f"{self.process_macro(self.F4.toolTip())} ")
+            else:
+                self.cw.sendcw(f"{self.process_macro(self.F4.toolTip())} ")
 
     def sendf5(self):
         """send f5"""
@@ -1247,7 +1263,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.infoline.setText(f"Sending {self.process_macro(self.F5.toolTip())}")
             if self.preference.get("send_n1mm_packets"):
                 self.n1mm.radio_info["FunctionKeyCaption"] = self.F5.text()
-            self.cw.sendcw(f"{self.process_macro(self.F5.toolTip())} ")
+            if self.cw.servertype == 3:
+                if self.cat_control is not None:
+                    self.cat_control.sendcw(f"{self.process_macro(self.F5.toolTip())} ")
+            else:
+                self.cw.sendcw(f"{self.process_macro(self.F5.toolTip())} ")
 
     def sendf6(self):
         """send f6"""
@@ -1255,7 +1275,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.infoline.setText(f"Sending {self.process_macro(self.F6.toolTip())}")
             if self.preference.get("send_n1mm_packets"):
                 self.n1mm.radio_info["FunctionKeyCaption"] = self.F6.text()
-            self.cw.sendcw(f"{self.process_macro(self.F6.toolTip())} ")
+            if self.cw.servertype == 3:
+                if self.cat_control is not None:
+                    self.cat_control.sendcw(f"{self.process_macro(self.F6.toolTip())} ")
+            else:
+                self.cw.sendcw(f"{self.process_macro(self.F6.toolTip())} ")
 
     def sendf7(self):
         """send f7"""
@@ -1263,7 +1287,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.infoline.setText(f"Sending {self.process_macro(self.F7.toolTip())}")
             if self.preference.get("send_n1mm_packets"):
                 self.n1mm.radio_info["FunctionKeyCaption"] = self.F7.text()
-            self.cw.sendcw(f"{self.process_macro(self.F7.toolTip())} ")
+            if self.cw.servertype == 3:
+                if self.cat_control is not None:
+                    self.cat_control.sendcw(f"{self.process_macro(self.F7.toolTip())} ")
+            else:
+                self.cw.sendcw(f"{self.process_macro(self.F7.toolTip())} ")
 
     def sendf8(self):
         """send f8"""
@@ -1271,7 +1299,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.infoline.setText(f"Sending {self.process_macro(self.F8.toolTip())}")
             if self.preference.get("send_n1mm_packets"):
                 self.n1mm.radio_info["FunctionKeyCaption"] = self.F8.text()
-            self.cw.sendcw(f"{self.process_macro(self.F8.toolTip())} ")
+            if self.cw.servertype == 3:
+                if self.cat_control is not None:
+                    self.cat_control.sendcw(f"{self.process_macro(self.F8.toolTip())} ")
+            else:
+                self.cw.sendcw(f"{self.process_macro(self.F8.toolTip())} ")
 
     def sendf9(self):
         """send f9"""
@@ -1279,7 +1311,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.infoline.setText(f"Sending {self.process_macro(self.F9.toolTip())}")
             if self.preference.get("send_n1mm_packets"):
                 self.n1mm.radio_info["FunctionKeyCaption"] = self.F9.text()
-            self.cw.sendcw(f"{self.process_macro(self.F9.toolTip())} ")
+            if self.cw.servertype == 3:
+                if self.cat_control is not None:
+                    self.cat_control.sendcw(f"{self.process_macro(self.F9.toolTip())} ")
+            else:
+                self.cw.sendcw(f"{self.process_macro(self.F9.toolTip())} ")
 
     def sendf10(self):
         """send f10"""
@@ -1287,7 +1323,13 @@ class MainWindow(QtWidgets.QMainWindow):
             self.infoline.setText(f"Sending {self.process_macro(self.F10.toolTip())}")
             if self.preference.get("send_n1mm_packets"):
                 self.n1mm.radio_info["FunctionKeyCaption"] = self.F10.text()
-            self.cw.sendcw(f"{self.process_macro(self.F10.toolTip())} ")
+            if self.cw.servertype == 3:
+                if self.cat_control is not None:
+                    self.cat_control.sendcw(
+                        f"{self.process_macro(self.F10.toolTip())} "
+                    )
+            else:
+                self.cw.sendcw(f"{self.process_macro(self.F10.toolTip())} ")
 
     def sendf11(self):
         """send f11"""
@@ -1295,7 +1337,13 @@ class MainWindow(QtWidgets.QMainWindow):
             self.infoline.setText(f"Sending {self.process_macro(self.F11.toolTip())}")
             if self.preference.get("send_n1mm_packets"):
                 self.n1mm.radio_info["FunctionKeyCaption"] = self.F11.text()
-            self.cw.sendcw(f"{self.process_macro(self.F11.toolTip())} ")
+            if self.cw.servertype == 3:
+                if self.cat_control is not None:
+                    self.cat_control.sendcw(
+                        f"{self.process_macro(self.F11.toolTip())} "
+                    )
+            else:
+                self.cw.sendcw(f"{self.process_macro(self.F11.toolTip())} ")
 
     def sendf12(self):
         """send f12"""
@@ -1303,7 +1351,13 @@ class MainWindow(QtWidgets.QMainWindow):
             self.infoline.setText(f"Sending {self.process_macro(self.F12.toolTip())}")
             if self.preference.get("send_n1mm_packets"):
                 self.n1mm.radio_info["FunctionKeyCaption"] = self.F12.text()
-            self.cw.sendcw(f"{self.process_macro(self.F12.toolTip())} ")
+            if self.cw.servertype == 3:
+                if self.cat_control is not None:
+                    self.cat_control.sendcw(
+                        f"{self.process_macro(self.F12.toolTip())} "
+                    )
+            else:
+                self.cw.sendcw(f"{self.process_macro(self.F12.toolTip())} ")
 
     def clearinputs(self):
         """clear text entry fields"""

@@ -1,4 +1,5 @@
 """CAT interface abstraction"""
+
 import logging
 import socket
 import xmlrpc.client
@@ -63,6 +64,34 @@ class CAT:
             self.rigctrlsocket = None
             self.online = False
             self.logger.debug("%s", exception)
+
+    def sendcw(self, texttosend):
+        """..."""
+        self.logger.debug(f"{texttosend=} {self.interface=}")
+        if self.interface == "flrig":
+            ...
+            return
+        if self.interface == "rigctld":
+            self.sendcwrigctl(texttosend)
+
+    def sendcwrigctl(self, texttosend):
+        """..."""
+        if self.rigctrlsocket:
+            try:
+                self.online = True
+                self.rigctrlsocket.send(bytes(f"b{texttosend}\n", "utf-8"))
+                _ = self.rigctrlsocket.recv(1024).decode().strip()
+                return True
+            except socket.error as exception:
+                self.online = False
+                self.logger.debug("setvfo_rigctld: %s", f"{exception}")
+                self.rigctrlsocket = None
+                return False
+        self.__initialize_rigctrld()
+        return False
+
+    def sendcwxmlrpc(self, texttosend):
+        """..."""
 
     def get_vfo(self) -> str:
         """Poll the radio for current vfo using the interface"""

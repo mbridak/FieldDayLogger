@@ -520,22 +520,6 @@ color: rgb(211, 215, 207);</string>
        <string>CW</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_6">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_10">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>CW_Address:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_11">
          <property name="font">
@@ -552,8 +536,8 @@ color: rgb(211, 215, 207);</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="0" alignment="Qt::AlignHCenter">
-        <widget class="QRadioButton" name="usecwdaemon_radioButton">
+       <item row="0" column="1" colspan="3">
+        <widget class="QLineEdit" name="cwip_field">
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
@@ -561,7 +545,23 @@ color: rgb(211, 215, 207);</string>
           </font>
          </property>
          <property name="text">
-          <string>cwdaemon</string>
+          <string>localhost</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1" colspan="3">
+        <widget class="QLineEdit" name="cwport_field">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="inputMethodHints">
+          <set>Qt::ImhDigitsOnly</set>
+         </property>
+         <property name="text">
+          <string>6789</string>
          </property>
         </widget>
        </item>
@@ -578,7 +578,36 @@ color: rgb(211, 215, 207);</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="2" alignment="Qt::AlignHCenter">
+       <item row="2" column="0" alignment="Qt::AlignHCenter">
+        <widget class="QRadioButton" name="usecwdaemon_radioButton">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>cwdaemon</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_10">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>CW_Address:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3" alignment="Qt::AlignHCenter">
         <widget class="QRadioButton" name="radioButton_5">
          <property name="font">
           <font>
@@ -591,24 +620,8 @@ color: rgb(211, 215, 207);</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1" colspan="2">
-        <widget class="QLineEdit" name="cwport_field">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="inputMethodHints">
-          <set>Qt::ImhDigitsOnly</set>
-         </property>
-         <property name="text">
-          <string>6789</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1" colspan="2">
-        <widget class="QLineEdit" name="cwip_field">
+       <item row="2" column="2">
+        <widget class="QRadioButton" name="usecat4cw_radioButton">
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
@@ -616,7 +629,7 @@ color: rgb(211, 215, 207);</string>
           </font>
          </property>
          <property name="text">
-          <string>localhost</string>
+          <string>CAT</string>
          </property>
         </widget>
        </item>
