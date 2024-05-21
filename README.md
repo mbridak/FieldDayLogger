@@ -46,6 +46,7 @@ over Multicast UDP.
   - [Autofill](#autofill)
   - [CW Macros](#cw-macros)
   - [CW Macros (Run vs S\&P)](#cw-macros-run-vs-sp)
+  - [CW Macros without a winkeyer](#cw-macros-without-a-winkeyer)
   - [CWDAEMON speed changes](#cwdaemon-speed-changes)
   - [When the event is over](#when-the-event-is-over)
   - [Group / Club logging](#group--club-logging)
@@ -78,6 +79,7 @@ brother.
 
 ## Recent Changes
 
+- [24.5.21] Add sending CW via CAT(rigctld)
 - [24.2.21] Added OPON.
 - [24.2.19] Corrected the datetime.utcnow() deprecation to work on Python 3.9+
 - [24.2.11] Trapped a KeyError in get_state()
@@ -296,6 +298,12 @@ of the screen.
 
 This can also be used to reload the macros if you edit them while the program
 is running.
+
+## CW Macros without a winkeyer
+
+You can send CW macros if you don't have a k1el winkeyer or workalike as long as you
+use rigctld for CAT control and your radio supports it. In the settings dialog under
+the CW tab, choose CAT.
 
 ## CWDAEMON speed changes
 
