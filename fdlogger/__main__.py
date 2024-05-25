@@ -1370,7 +1370,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """change band"""
         if self.band != self.band_selector.currentText():
             self.band = self.band_selector.currentText()
-            if self.cat_control:
+            if self.cat_control is not None:
                 self.cat_control.set_vfo(
                     int(float(self.fakefreq(self.band, self.mode)) * 1000)
                 )
@@ -1380,12 +1380,13 @@ class MainWindow(QtWidgets.QMainWindow):
         """change mode"""
         if self.mode != self.mode_selector.currentText():
             self.mode = self.mode_selector.currentText()
-            if self.mode == "PH":
-                if int(self.oldfreq) < 10000000:
-                    self.cat_control.set_mode("LSB")
-                else:
-                    self.cat_control.set_mode("USB")
-            self.cat_control.set_mode(self.mode)
+            if self.cat_control is not None:
+                if self.mode == "PH":
+                    if int(self.oldfreq) < 10000000:
+                        self.cat_control.set_mode("LSB")
+                    else:
+                        self.cat_control.set_mode("USB")
+                self.cat_control.set_mode(self.mode)
             self.send_status_udp()
 
     def changepower(self):
