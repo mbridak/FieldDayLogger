@@ -79,6 +79,7 @@ brother.
 
 ## Recent Changes
 
+- [24.5.26] Fixed FT8 logging.
 - [24.5.25] Fixed crash changing modes with no CAT.
 - [24.5.21] Add sending CW via CAT(rigctld)
 - [24.2.21] Added OPON.

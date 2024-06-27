@@ -792,6 +792,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     grid, name, _, _ = self.look_up.lookup(call)
             hisclass, hissect = self.getvalue("SRX_STRING").split(" ")
             # power = int(float(self.getvalue("TX_PWR")))
+            unique_id = uuid.uuid4().hex
             contact = (
                 call,
                 hisclass,
@@ -803,8 +804,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.preference["power"],
                 grid,
                 name,
+                unique_id,
             )
-            self.db.log_contact(contact)
+            self.db.log_ft8_contact(contact)
             self.sections()
             self.stats()
             self.updatemarker()
