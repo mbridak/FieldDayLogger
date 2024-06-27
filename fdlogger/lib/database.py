@@ -1,4 +1,5 @@
 """Database class to store contacts"""
+
 import logging
 import sqlite3
 
@@ -79,6 +80,25 @@ class DataBase:
                     "(callsign, class, section, date_time, frequency, "
                     "band, mode, power, grid, opname, unique_id, dirty) "
                     "VALUES(?,?,?,datetime('now'),?,?,?,?,?,?,?,1)"
+                )
+                cur = conn.cursor()
+                cur.execute(sql, logme)
+                conn.commit()
+        except sqlite3.Error as exception:
+            self.logger.debug("DataBase log_contact: %s", exception)
+
+    def log_ft8_contact(self, logme: tuple) -> None:
+        """
+        Inserts a contact into the db.
+        pass in (hiscall, hisclass, hissection, band, mode, int(power), grid, name)
+        """
+        try:
+            with sqlite3.connect(self.database) as conn:
+                sql = (
+                    "INSERT INTO contacts"
+                    "(callsign, class, section, date_time, frequency, "
+                    "band, mode, power, grid, opname, unique_id, dirty) "
+                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,1)"
                 )
                 cur = conn.cursor()
                 cur.execute(sql, logme)
