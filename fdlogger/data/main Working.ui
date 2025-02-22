@@ -659,9 +659,27 @@ border-top-color: rgb(255, 255, 255);</string>
            <property name="bottomMargin">
             <number>2</number>
            </property>
-
-
-           <!-- Div 1 -->
+           <item row="0" column="0" colspan="2">
+            <widget class="QLabel" name="label_15">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>DX</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
            <item row="4" column="0" colspan="2">
             <widget class="QLabel" name="label_16">
              <property name="font">
@@ -676,16 +694,15 @@ border-top-color: rgb(255, 255, 255);</string>
 color: rgb(0, 0, 0);</string>
              </property>
              <property name="text">
-              <string>DIV 1</string>
+              <string>1</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
-
-           <item row="6" column="0" colspan="2">
-            <widget class="QLabel" name="Section_WC">
+           <item row="6" column="0">
+            <widget class="QLabel" name="Section_GP">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -697,15 +714,44 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>WC</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>GP</string>
              </property>
             </widget>
            </item>
-           
-           <!-- Div 2 -->
+           <item row="11" column="0">
+            <widget class="QLabel" name="Section_ME">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>ME</string>
+             </property>
+            </widget>
+           </item>
+           <item row="13" column="0">
+            <widget class="QLabel" name="Section_NH">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>NH</string>
+             </property>
+            </widget>
+           </item>
            <item row="14" column="0" colspan="2">
             <widget class="QLabel" name="label_17">
              <property name="font">
@@ -720,18 +766,15 @@ color: rgb(0, 0, 0);</string>
 color: rgb(0, 0, 0);</string>
              </property>
              <property name="text">
-              <string>DIV 2</string>
+              <string>2</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
-           
- 
-            
-           <item row="20" column="0" colspan="2">
-            <widget class="QLabel" name="Section_EC">
+           <item row="6" column="1">
+            <widget class="QLabel" name="Section_RI">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -743,39 +786,12 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>EC</string>
-             </property>
-              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>RI</string>
              </property>
             </widget>
            </item>
-
-           <!-- Div 3 -->
-          <item row="21" column="0" colspan="2">
-            <widget class="QLabel" name="label_16">
-             <property name="font">
-              <font>
-               <family>JetBrains Mono</family>
-               <pointsize>12</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(211, 215, 207);
-color: rgb(0, 0, 0);</string>
-             </property>
-             <property name="text">
-              <string>DIV 3</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-
-           <item row="22" column="0" colspan="2">
-            <widget class="QLabel" name="Section_NC">
+           <item row="11" column="1">
+            <widget class="QLabel" name="Section_WMA">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -787,39 +803,12 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>NC</string>
-             </property>
-              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>WMA</string>
              </property>
             </widget>
            </item>
-
-    <!-- Div 4 -->
-          <item row="23" column="0" colspan="2">
-            <widget class="QLabel" name="label_16">
-             <property name="font">
-              <font>
-               <family>JetBrains Mono</family>
-               <pointsize>12</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(211, 215, 207);
-color: rgb(0, 0, 0);</string>
-             </property>
-             <property name="text">
-              <string>DIV 4</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-
-           <item row="24" column="0" colspan="2">
-            <widget class="QLabel" name="Section_FS">
+           <item row="8" column="0">
+            <widget class="QLabel" name="Section_EMA">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -831,17 +820,149 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>FS</string>
+              <string>EMA</string>
              </property>
-              <property name="alignment">
+            </widget>
+           </item>
+           <item row="8" column="1">
+            <widget class="QLabel" name="Section_VT">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>VT</string>
+             </property>
+            </widget>
+           </item>
+           <item row="16" column="0">
+            <widget class="QLabel" name="Section_ENY">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>ENY</string>
+             </property>
+            </widget>
+           </item>
+           <item row="16" column="1">
+            <widget class="QLabel" name="Section_NNY">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>NNY</string>
+             </property>
+            </widget>
+           </item>
+           <item row="18" column="0">
+            <widget class="QLabel" name="Section_NLI">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>NLI</string>
+             </property>
+            </widget>
+           </item>
+           <item row="18" column="1">
+            <widget class="QLabel" name="Section_SNJ">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>SNJ</string>
+             </property>
+            </widget>
+           </item>
+           <item row="20" column="0">
+            <widget class="QLabel" name="Section_NNJ">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>NNJ</string>
+             </property>
+            </widget>
+           </item>
+           <item row="20" column="1">
+            <widget class="QLabel" name="Section_WNY">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>WNY</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="2">
+            <widget class="QLabel" name="Section_DX">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>DX</string>
+             </property>
+             <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
-
-
-
-          
           </layout>
          </widget>
         </item>
@@ -878,56 +999,7 @@ color: rgb(0, 0, 0);</string>
            <property name="bottomMargin">
             <number>2</number>
            </property>
-
-
-           
-    <!-- Div 5 -->
-          <item row="0" column="0" colspan="2">
-            <widget class="QLabel" name="label_16">
-             <property name="font">
-              <font>
-               <family>JetBrains Mono</family>
-               <pointsize>12</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(211, 215, 207);
-color: rgb(0, 0, 0);</string>
-             </property>
-             <property name="text">
-              <string>DIV 5</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-
-           <item row="1" column="0" colspan="2">
-            <widget class="QLabel" name="Section_KN">
-             <property name="font">
-              <font>
-               <family>JetBrains Mono</family>
-               <pointsize>12</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">color: rgb(136, 138, 133);</string>
-             </property>
-             <property name="text">
-              <string>KN</string>
-             </property>
-              <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-
-           <!-- Div 6 -->
-
-           <item row="2" column="0" colspan="2">
+           <item row="0" column="0" colspan="2">
             <widget class="QLabel" name="label_18">
              <property name="font">
               <font>
@@ -941,104 +1013,83 @@ color: rgb(0, 0, 0);</string>
 color: rgb(0, 0, 0);</string>
              </property>
              <property name="text">
-              <string>DIV 6</string>
+              <string>3</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
-
+           <item row="1" column="0">
+            <widget class="QLabel" name="Section_DE">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>DE</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="Section_MDC">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>MDC</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="Section_EPA">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>EPA</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLabel" name="Section_WPA">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>WPA</string>
+             </property>
+            </widget>
+           </item>
            <item row="3" column="0" colspan="2">
-            <widget class="QLabel" name="Section_NW">
-             <property name="font">
-              <font>
-               <family>JetBrains Mono</family>
-               <pointsize>12</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">color: rgb(136, 138, 133);</string>
-             </property>
-             <property name="text">
-              <string>NW</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-
-
-           <item row="4" column="0" colspan="2">
-            <widget class="QLabel" name="Section_GP">
-             <property name="font">
-              <font>
-               <family>JetBrains Mono</family>
-               <pointsize>12</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">color: rgb(136, 138, 133);</string>
-             </property>
-             <property name="text">
-              <string>GP</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-
-
-           <item row="5" column="0" colspan="2">
-            <widget class="QLabel" name="Section_MP">
-             <property name="font">
-              <font>
-               <family>JetBrains Mono</family>
-               <pointsize>12</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">color: rgb(136, 138, 133);</string>
-             </property>
-             <property name="text">
-              <string>MP</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-
-
-           <item row="6" column="0" colspan="2">
-            <widget class="QLabel" name="Section_LP">
-             <property name="font">
-              <font>
-               <family>JetBrains Mono</family>
-               <pointsize>12</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">color: rgb(136, 138, 133);</string>
-             </property>
-             <property name="text">
-              <string>LP</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-
-           <!-- DX -->
-           <item row="8" column="0" colspan="2">
-            <widget class="QLabel" name="label_15">
+            <widget class="QLabel" name="label_19">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1051,16 +1102,15 @@ color: rgb(0, 0, 0);</string>
 color: rgb(0, 0, 0);</string>
              </property>
              <property name="text">
-              <string>DX</string>
+              <string>4</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
-
- <item row="9" column="0" colspan="2">
-            <widget class="QLabel" name="Section_DX">
+           <item row="4" column="0">
+            <widget class="QLabel" name="Section_AL">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1072,16 +1122,197 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>DX</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>AL</string>
              </property>
             </widget>
            </item>
-           
-
-           
+           <item row="4" column="1">
+            <widget class="QLabel" name="Section_SC">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>SC</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="Section_GA">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>GA</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QLabel" name="Section_SFL">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>SFL</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QLabel" name="Section_KY">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>KY</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QLabel" name="Section_TN">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>TN</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="0">
+            <widget class="QLabel" name="Section_NC">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>NC</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="1">
+            <widget class="QLabel" name="Section_VA">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>VA</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0">
+            <widget class="QLabel" name="Section_NFL">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>NFL</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="1">
+            <widget class="QLabel" name="Section_VI">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>VI</string>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="0">
+            <widget class="QLabel" name="Section_PR">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>PR</string>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="1">
+            <widget class="QLabel" name="Section_WCF">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>WCF</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -1121,8 +1352,6 @@ color: rgb(0, 0, 0);</string>
            <property name="bottomMargin">
             <number>2</number>
            </property>
-
-           <!-- SADAC 1-->
            <item row="0" column="0" colspan="2">
             <widget class="QLabel" name="label_20">
              <property name="font">
@@ -1137,16 +1366,15 @@ color: rgb(0, 0, 0);</string>
 color: rgb(0, 0, 0);</string>
              </property>
              <property name="text">
-              <string>SADAC</string>
+              <string>5</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
-          
-            <item row="1" column="0" colspan="2">
-            <widget class="QLabel" name="Section_AO">
+           <item row="1" column="0">
+            <widget class="QLabel" name="Section_AR">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1158,17 +1386,12 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>AO</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>AR</string>
              </property>
             </widget>
            </item>
-
-          
-            <item row="2" column="0" colspan="2">
-            <widget class="QLabel" name="Section_AQ">
+           <item row="1" column="1">
+            <widget class="QLabel" name="Section_NTX">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1180,17 +1403,12 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>AQ</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>NTX</string>
              </property>
             </widget>
            </item>
-
-                     
-            <item row="3" column="0" colspan="2">
-            <widget class="QLabel" name="Section_BW">
+           <item row="2" column="0">
+            <widget class="QLabel" name="Section_LA">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1202,17 +1420,12 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>BW</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>LA</string>
              </property>
             </widget>
            </item>
-
-                     
-            <item row="4" column="0" colspan="2">
-            <widget class="QLabel" name="Section_CD">
+           <item row="2" column="1">
+            <widget class="QLabel" name="Section_OK">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1224,17 +1437,12 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>CD</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>OK</string>
              </property>
             </widget>
            </item>
-
-                     
-            <item row="5" column="0" colspan="2">
-            <widget class="QLabel" name="Section_KM">
+           <item row="3" column="0">
+            <widget class="QLabel" name="Section_MS">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1246,17 +1454,12 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>KM</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>MS</string>
              </property>
             </widget>
            </item>
-
-                     
-            <item row="6" column="0" colspan="2">
-            <widget class="QLabel" name="Section_LS">
+           <item row="3" column="1">
+            <widget class="QLabel" name="Section_STX">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1268,17 +1471,12 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>LS</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>STX</string>
              </property>
             </widget>
            </item>
-
-                     
-            <item row="7" column="0" colspan="2">
-            <widget class="QLabel" name="Section_MG">
+           <item row="4" column="0">
+            <widget class="QLabel" name="Section_NM">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1290,18 +1488,12 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>MG</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>NM</string>
              </property>
             </widget>
            </item>
-
-
-                     
-            <item row="8" column="0" colspan="2">
-            <widget class="QLabel" name="Section_MI">
+           <item row="4" column="1">
+            <widget class="QLabel" name="Section_WTX">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1313,17 +1505,33 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>MI</string>
+              <string>WTX</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0" colspan="2">
+            <widget class="QLabel" name="label_21">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>6</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
-
-                     
-            <item row="9" column="0" colspan="2">
-            <widget class="QLabel" name="Section_MW">
+           <item row="6" column="0">
+            <widget class="QLabel" name="Section_GP">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1335,15 +1543,163 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>MW</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>GP</string>
              </property>
             </widget>
-           </item>  
-
-
+           </item>
+           <item row="6" column="1">
+            <widget class="QLabel" name="Section_SCV">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>SCV</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="0">
+            <widget class="QLabel" name="Section_LAX">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>LAX</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="1">
+            <widget class="QLabel" name="Section_SDG">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>SDG</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0">
+            <widget class="QLabel" name="Section_ORG">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>ORG</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="1">
+            <widget class="QLabel" name="Section_SF">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>SF</string>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="0">
+            <widget class="QLabel" name="Section_PAC">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>PAC</string>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="1">
+            <widget class="QLabel" name="Section_SJV">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>SJV</string>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="0">
+            <widget class="QLabel" name="Section_SB">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>SB</string>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="1">
+            <widget class="QLabel" name="Section_SV">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>SV</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -1383,8 +1739,6 @@ color: rgb(0, 0, 0);</string>
            <property name="bottomMargin">
             <number>2</number>
            </property>
-
-           <!-- SADAC 2 -->
            <item row="0" column="0" colspan="2">
             <widget class="QLabel" name="label_22">
              <property name="font">
@@ -1399,17 +1753,15 @@ color: rgb(0, 0, 0);</string>
 color: rgb(0, 0, 0);</string>
              </property>
              <property name="text">
-              <string>SADAC</string>
+              <string>7</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
-
-             
-            <item row="1" column="0" colspan="2">
-            <widget class="QLabel" name="Section_MU">
+           <item row="1" column="0">
+            <widget class="QLabel" name="Section_AK">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1421,17 +1773,12 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>MU</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>AK</string>
              </property>
             </widget>
-           </item>  
-
-               
-            <item row="2" column="0" colspan="2">
-            <widget class="QLabel" name="Section_MZ">
+           </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="Section_NV">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1443,17 +1790,12 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>MZ</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>NV</string>
              </property>
             </widget>
-           </item>  
-
-               
-            <item row="3" column="0" colspan="2">
-            <widget class="QLabel" name="Section_NA">
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="Section_AZ">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1465,17 +1807,12 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>NA</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>AZ</string>
              </property>
             </widget>
-           </item>  
-
-               
-            <item row="4" column="0" colspan="2">
-            <widget class="QLabel" name="Section_SC">
+           </item>
+           <item row="2" column="1">
+            <widget class="QLabel" name="Section_OR">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1487,17 +1824,12 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>SC</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>OR</string>
              </property>
             </widget>
-           </item>  
-
-               
-            <item row="5" column="0" colspan="2">
-            <widget class="QLabel" name="Section_SZ">
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="Section_EWA">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1509,17 +1841,12 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>SZ</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>EWA</string>
              </property>
             </widget>
-           </item>  
-
-               
-            <item row="6" column="0" colspan="2">
-            <widget class="QLabel" name="Section_TZ">
+           </item>
+           <item row="3" column="1">
+            <widget class="QLabel" name="Section_UT">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1531,17 +1858,12 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>TZ</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>UT</string>
              </property>
             </widget>
-           </item>  
-
-               
-            <item row="7" column="0" colspan="2">
-            <widget class="QLabel" name="Section_ZM">
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="Section_ID">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1553,17 +1875,12 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>ZM</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>ID</string>
              </property>
             </widget>
-           </item>  
-
-               
-            <item row="8" column="0" colspan="2">
-            <widget class="QLabel" name="Section_ZW">
+           </item>
+           <item row="4" column="1">
+            <widget class="QLabel" name="Section_WWA">
              <property name="font">
               <font>
                <family>JetBrains Mono</family>
@@ -1575,21 +1892,651 @@ color: rgb(0, 0, 0);</string>
               <string notr="true">color: rgb(136, 138, 133);</string>
              </property>
              <property name="text">
-              <string>ZW</string>
+              <string>WWA</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="Section_MT">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>MT</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QLabel" name="Section_WY">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>WY</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0" colspan="2">
+            <widget class="QLabel" name="label_23">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>8</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
             </widget>
-           </item>  
-           
-           
+           </item>
+           <item row="7" column="0">
+            <widget class="QLabel" name="Section_MI">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>MI</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="1">
+            <widget class="QLabel" name="Section_WV">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>WV</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0">
+            <widget class="QLabel" name="Section_OH">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>OH</string>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="0" colspan="2">
+            <widget class="QLabel" name="label_24">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>9</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="0">
+            <widget class="QLabel" name="Section_IL">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>IL</string>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="1">
+            <widget class="QLabel" name="Section_WI">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>WI</string>
+             </property>
+            </widget>
+           </item>
+           <item row="11" column="0">
+            <widget class="QLabel" name="Section_IN">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>IN</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
-
-        
-        
+        <item>
+         <widget class="QFrame" name="frame_5">
+          <property name="minimumSize">
+           <size>
+            <width>72</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>JetBrains Monoe</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::Box</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Plain</enum>
+          </property>
+          <layout class="QFormLayout" name="formLayout">
+           <property name="labelAlignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="formAlignment">
+            <set>Qt::AlignHCenter|Qt::AlignTop</set>
+           </property>
+           <property name="horizontalSpacing">
+            <number>6</number>
+           </property>
+           <property name="leftMargin">
+            <number>2</number>
+           </property>
+           <property name="topMargin">
+            <number>2</number>
+           </property>
+           <property name="rightMargin">
+            <number>2</number>
+           </property>
+           <property name="bottomMargin">
+            <number>2</number>
+           </property>
+           <item row="0" column="0" colspan="2">
+            <widget class="QLabel" name="label_25">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="Section_CO">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>CO</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="Section_MO">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>MO</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="Section_IA">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>IA</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLabel" name="Section_ND">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>ND</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="Section_KS">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>KS</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLabel" name="Section_NE">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>NE</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="Section_MN">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>MN</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLabel" name="Section_SD">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>SD</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0" colspan="2">
+            <widget class="QLabel" name="label_26">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(211, 215, 207);
+color: rgb(0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>CANADA</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="0">
+            <widget class="QLabel" name="Section_AB">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>AB</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0">
+            <widget class="QLabel" name="Section_BC">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>BC</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="1">
+            <widget class="QLabel" name="Section_ONE">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>ONE</string>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="0">
+            <widget class="QLabel" name="Section_GH">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>GH</string>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="1">
+            <widget class="QLabel" name="Section_ONN">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>ONN</string>
+             </property>
+            </widget>
+           </item>
+           <item row="11" column="1">
+            <widget class="QLabel" name="Section_ONS">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>ONS</string>
+             </property>
+            </widget>
+           </item>
+           <item row="12" column="1">
+            <widget class="QLabel" name="Section_QC">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>QC</string>
+             </property>
+            </widget>
+           </item>
+           <item row="13" column="0">
+            <widget class="QLabel" name="Section_NL">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>NL</string>
+             </property>
+            </widget>
+           </item>
+           <item row="13" column="1">
+            <widget class="QLabel" name="Section_SK">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>SK</string>
+             </property>
+            </widget>
+           </item>
+           <item row="14" column="1">
+            <widget class="QLabel" name="Section_TER">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>TER</string>
+             </property>
+            </widget>
+           </item>
+           <item row="12" column="0">
+            <widget class="QLabel" name="Section_NB">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>NB</string>
+             </property>
+            </widget>
+           </item>
+           <item row="11" column="0">
+            <widget class="QLabel" name="Section_MB">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>MB</string>
+             </property>
+            </widget>
+           </item>
+           <item row="14" column="0">
+            <widget class="QLabel" name="Section_NS">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>NS</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="1">
+            <widget class="QLabel" name="Section_PE">
+             <property name="font">
+              <font>
+               <family>JetBrains Mono</family>
+               <pointsize>12</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(136, 138, 133);</string>
+             </property>
+             <property name="text">
+              <string>PE</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
        </layout>
       </item>
       <item>
