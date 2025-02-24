@@ -1640,7 +1640,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.interface_ip,
                 )
                 self.chat_window.show()
-                self.frame_5.hide()
+                # self.frame_5.hide()
                 self.frame_6.hide()
                 self.frame_7.hide()
                 self.frame_8.hide()
@@ -2383,7 +2383,6 @@ class MainWindow(QtWidgets.QMainWindow):
         comment = "ARRL-FD"
         adifq += f"<COMMENT:{len(comment)}>{comment}"
         adifq += "<EOR>"
-
         payload_dict = {
             "key": self.preference["cloudlogapi"],
             "station_profile_id": self.preference["cloudlogstationid"],
@@ -2391,7 +2390,12 @@ class MainWindow(QtWidgets.QMainWindow):
             "string": adifq,
         }
         json_data = dumps(payload_dict)
-        _ = requests.post(self.preference["cloudlogurl"] + "qso/", json_data, timeout=5)
+        print(self.preference["cloudlogurl"] + "qso/")
+        print(payload_dict)
+        result = requests.post(self.preference["cloudlogurl"] + "qso/", json_data, timeout=5)
+        print(result.status_code)
+        print(result.headers)
+        print(result.content)
 
     def cabrillo(self):
         """
