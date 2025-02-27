@@ -141,10 +141,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.callsign_entry.textEdited.connect(self.calltest)
         self.class_entry.textEdited.connect(self.classtest)
         self.section_entry.textEdited.connect(self.sectiontest)
+        self.rstin_entry.textEdited.connect(self.rstintest)
+        self.rstout_entry.textEdited.connect(self.rstouttest)
+        self.notes_entry.textEdited.connect(self.notestest)
         self.callsign_entry.returnPressed.connect(self.log_contact)
         self.chat_entry.returnPressed.connect(self.send_chat)
         self.class_entry.returnPressed.connect(self.log_contact)
         self.section_entry.returnPressed.connect(self.log_contact)
+        self.rstin_entry.returnPressed.connect(self.log_contact)
+        self.rstout_entry.returnPressed.connect(self.log_contact)
+        self.notes_entry.returnPressed.connect(self.log_contact)
         self.mycallEntry.textEdited.connect(self.changemycall)
         self.myclassEntry.textEdited.connect(self.changemyclass)
         self.mysectionEntry.textEdited.connect(self.changemysection)
@@ -1157,9 +1163,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if event_key == Qt.Key_Tab:
             if self.section_entry.hasFocus():
                 logger.info("From section")
-                self.callsign_entry.setFocus()
-                self.callsign_entry.deselect()
-                self.callsign_entry.end(False)
+                self.rstin_entry.setFocus()
+                self.rstin_entry.deselect()
+                self.rstin_entry.end(False)
                 return
             if self.class_entry.hasFocus():
                 logger.info("From class")
@@ -1167,6 +1173,25 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.section_entry.deselect()
                 self.section_entry.end(False)
                 return
+            if self.rstin_entry.hasFocus():
+                logger.info("From Section")
+                self.rstout_entry.setFocus()
+                self.rstout_entry.deselect()
+                self.rstout_entry.end(False)
+                return
+            if self.rstout_entry.hasFocus():
+                logger.info("From Section")
+                self.notes_entry.setFocus()
+                self.notes_entry.deselect()
+                self.notes_entry.end(False)
+                return     
+            if self.notes_entry.hasFocus():
+                logger.info("From Section")
+                self.callsign_entry.setFocus()
+                self.callsign_entry.deselect()
+                self.callsign_entry.end(False)
+                return     
+                
             if self.callsign_entry.hasFocus():
                 logger.info("From callsign")
                 _thethread = threading.Thread(
@@ -1371,8 +1396,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.class_entry.clear()
         self.section_entry.clear()
         self.callsign_entry.setFocus()
-        self.rstin_entry.clear()  
-        self.rstout_entry.clear()  
+        #self.rstin_entry.clear()  
+        #self.rstout_entry.clear()  
         self.notes_entry.clear()   
 
     def changeband(self):
@@ -1529,19 +1554,68 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def sectiontest(self):
         """
-        Test and strip section of bad characters, advance to next input field if space pressed.
+        Test and strip class of bad characters, advance to next input field if space pressed.
         """
         text = self.section_entry.text()
         if len(text):
             if text[-1] == " ":
                 self.section_entry.setText(text.strip())
+                self.rstin_entry.setFocus()
+                self.rstin_entry.deselect()
+            else:
+                washere = self.section_entry.cursorPosition()
+                cleaned = "".join(ch for ch in text if ch.isalnum()).upper()
+                self.section_entry.setText(cleaned)
+                self.section_entry.setCursorPosition(washere)
+
+    def rstintest(self):
+        """
+        Test and strip class of bad characters, advance to next input field if space pressed.
+        """
+        text = self.rstin_entry.text()
+        if len(text):
+            if text[-1] == " ":
+                self.rstin_entry.setText(text.strip())
+                self.rstout_entry.setFocus()
+                self.rstout_entry.deselect()
+            else:
+                washere = self.rstin_entry.cursorPosition()
+                cleaned = "".join(ch for ch in text if ch.isalnum()).upper()
+                self.rstin_entry.setText(cleaned)
+                self.rstin_entry.setCursorPosition(washere)
+
+    def rstouttest(self):
+        """
+        Test and strip class of bad characters, advance to next input field if space pressed.
+        """
+        text = self.rstout_entry.text()
+        if len(text):
+            if text[-1] == " ":
+                self.rstout_entry.setText(text.strip())
+                self.notes_entry.setFocus()
+                self.notes_entry.deselect()
+            else:
+                washere = self.rstout_entry.cursorPosition()
+                cleaned = "".join(ch for ch in text if ch.isalnum()).upper()
+                self.rstout_entry.setText(cleaned)
+                self.rstout_entry.setCursorPosition(washere)
+
+    def notestest(self):
+        """
+        Test and strip section of bad characters, advance to next input field if space pressed.
+        """
+        text = self.notes_entry.text()
+        if len(text):
+            if text[-1] == " ":
+                self.notes_entry.setText(text.strip())
                 self.callsign_entry.setFocus()
                 self.callsign_entry.deselect()
             else:
-                washere = self.section_entry.cursorPosition()
+                washere = self.notes_entry.cursorPosition()
                 cleaned = "".join(ch for ch in text if ch.isalpha()).upper()
-                self.section_entry.setText(cleaned)
-                self.section_entry.setCursorPosition(washere)
+                self.notes_entry.setText(cleaned)
+                self.notes_entry.setCursorPosition(washere)
+
 
     @staticmethod
     def highlighted(state):
@@ -1726,6 +1800,8 @@ class MainWindow(QtWidgets.QMainWindow):
             len(self.callsign_entry.text()) == 0
             or len(self.class_entry.text()) == 0
             or len(self.section_entry.text()) == 0
+            or len(self.rstin_entry.text()) == 0
+            or len(self.rstout_entry.text()) == 0
         ):
             return
         if not self.cat_control:
@@ -1735,18 +1811,23 @@ class MainWindow(QtWidgets.QMainWindow):
             self.callsign_entry.text(),
             self.class_entry.text(),
             self.section_entry.text(),
-            self.rstin_entry.text() if self.rstin_entry.text() else "599",  # Default to 599 if empty
-            self.rstout_entry.text() if self.rstout_entry.text() else "599",  # Default to 599 if empty
-            self.notes_entry.text() if self.notes_entry.text() else "",  # Empty string if no notes
+
             self.oldfreq,
             self.band,
             self.mode,
             int(self.power_selector.value()),
             self.contactlookup["grid"],
             self.contactlookup["name"],
+            self.rstin_entry.text() if self.rstin_entry.text() else "599",  # Default to 599 if empty
+            self.rstout_entry.text() if self.rstout_entry.text() else "599",  # Default to 599 if empty
+            self.notes_entry.text() if self.notes_entry.text() else "",  # Empty string if no notes
             unique_id,
         )
         self.db.log_contact(contact)
+
+        # Refresh Log Contacts Window
+        self.logwindow()
+        self.clearinputs()
 
         stale = datetime.now() + timedelta(seconds=30)
         if self.connect_to_server:
@@ -1767,6 +1848,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 "power": int(self.power_selector.value()),
                 "grid": self.contactlookup["grid"],
                 "opname": self.contactlookup["name"],
+                "rstin" : self.contactlookup["rstin"],
+                "rstout" : self.contactlookup["rstout"],
+                #"notes" : self.contactlookup["notes"],
                 "station": self.preference["mycall"],
                 "unique_id": unique_id,
                 "expire": stale.isoformat(),
@@ -1841,10 +1925,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 band,
                 mode,
                 power,
+                grid,
+                opname,
+                rstin,
+                rstout,
+                notes,
                 _,
-                _,
-                _,
-                _,
+                _
             ) = contact
             logline = (
                 f"{str(logid).rjust(3,'0')} {hiscall.ljust(15)} {hisclass.rjust(3)} "
@@ -2528,7 +2615,7 @@ class EditQSODialog(QtWidgets.QDialog):
             thefreq,
             theband,
             themode,
-            thepower,
+            thepower
         ) = linetopass.split()
         self.editCallsign.setText(thecall)
         self.editClass.setText(theclass)
@@ -2539,15 +2626,15 @@ class EditQSODialog(QtWidgets.QDialog):
         self.editPower.setValue(int(thepower[: len(thepower) - 1]))
         
         # Get the RST and notes values from the database
-        contact_info = self.database.contact_by_id(self.theitem)
-        if contact_info and len(contact_info) > 0:
-            _, _, _, _, rstin, rstout, note, _, _, _, _, _, _, _, _, _ = contact_info[0]
-            if hasattr(self, 'editRSTin'):
-                self.editRSTin.setText(rstin)
-            if hasattr(self, 'editRSTout'):
-                self.editRSTout.setText(rstout)
-            if hasattr(self, 'editNotes'):
-                self.editNotes.setText(note)
+        #contact_info = self.database.contact_by_id(self.theitem)
+        # if contact_info and len(contact_info) > 0:
+        #     _, _, _, _, rstin, rstout, note, _, _, _, _, _, _, _, _, _ = contact_info[0]
+        #     if hasattr(self, 'editRSTin'):
+        #         self.editRSTin.setText(rstin)
+        #     if hasattr(self, 'editRSTout'):
+        #         self.editRSTout.setText(rstout)
+        #     if hasattr(self, 'editNotes'):
+        #         self.editNotes.setText(note)
         
         date_time = thedate + " " + thetime
         now = QtCore.QDateTime.fromString(date_time, "yyyy-MM-dd hh:mm:ss")

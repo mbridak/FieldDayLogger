@@ -544,6 +544,9 @@ border-top-color: rgb(255, 255, 255);</string>
                <property name="placeholderText">
                 <string>RST IN</string>
                </property>
+               <property name="value">
+                <string>59</string>
+               </property>
               </widget>
              </item>
              <item>
