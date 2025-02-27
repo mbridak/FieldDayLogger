@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#fdlogger/__main__.py
 """
 K6GTE Field Day logger
 Email: michael.bridak@gmail.com
@@ -797,6 +798,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 call,
                 hisclass,
                 hissect,
+                "-",
+                "-",
+                "",
                 the_dt,
                 freq,
                 band,
@@ -1367,6 +1371,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.class_entry.clear()
         self.section_entry.clear()
         self.callsign_entry.setFocus()
+        self.rstin_entry.clear()  
+        self.rstout_entry.clear()  
+        self.notes_entry.clear()   
 
     def changeband(self):
         """change band"""
@@ -1728,6 +1735,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.callsign_entry.text(),
             self.class_entry.text(),
             self.section_entry.text(),
+            self.rstin_entry.text() if self.rstin_entry.text() else "599",  # Default to 599 if empty
+            self.rstout_entry.text() if self.rstout_entry.text() else "599",  # Default to 599 if empty
+            self.notes_entry.text() if self.notes_entry.text() else "",  # Empty string if no notes
             self.oldfreq,
             self.band,
             self.mode,
@@ -1745,6 +1755,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 "hiscall": self.callsign_entry.text(),
                 "class": self.class_entry.text(),
                 "section": self.section_entry.text(),
+                "rstin": self.rstin_entry.text() if self.rstin_entry.text() else "599",
+                "rstout": self.rstout_entry.text() if self.rstout_entry.text() else "599",
+                "note": self.notes_entry.text() if self.notes_entry.text() else "",
                 "mode": self.mode,
                 "band": self.band,
                 "frequency": self.oldfreq,
@@ -1766,47 +1779,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
             except OSError as err:
                 logger.warning("%s", err)
-
-        if self.preference.get("send_n1mm_packets"):
-            if self.oldfreq == 0:
-                self.n1mm.contact_info["rxfreq"] = str(
-                    self.fakefreq(self.band, self.mode)
-                )
-                self.n1mm.contact_info["txfreq"] = str(
-                    self.fakefreq(self.band, self.mode)
-                )
-            else:
-                self.n1mm.contact_info["rxfreq"] = str(self.oldfreq)[:-1]
-                self.n1mm.contact_info["txfreq"] = str(self.oldfreq)[:-1]
-
-            self.n1mm.contact_info["mode"] = self.oldmode
-            if self.oldmode in ("CW", "DG"):
-                self.n1mm.contact_info["points"] = "2"
-            else:
-                self.n1mm.contact_info["points"] = "1"
-            self.n1mm.contact_info["band"] = self.n1mm.bandToUDPBand[self.band]
-            self.n1mm.contact_info["mycall"] = self.preference.get("mycall")
-            self.n1mm.contact_info["IsRunQSO"] = str(self.run_state)
-            self.n1mm.contact_info["timestamp"] = datetime.now(
-                dt.timezone.utc
-            ).strftime("%Y-%m-%d %H:%M:%S")
-            self.n1mm.contact_info["call"] = self.callsign_entry.text()
-            self.n1mm.contact_info["gridsquare"] = self.contactlookup.get("grid")
-            self.n1mm.contact_info["exchange1"] = self.class_entry.text()
-            self.n1mm.contact_info["section"] = self.section_entry.text()
-            self.n1mm.contact_info["name"] = self.contactlookup.get("name")
-            self.n1mm.contact_info["power"] = self.power_selector.value()
-            self.n1mm.contact_info["ID"] = unique_id
-            self.n1mm.send_contact_info()
-
-        self.sections()
-        self.stats()
-        self.updatemarker()
-        self.logwindow()
-        self.clearinputs()
-        self.postcloudlog()
-        self.clearcontactlookup()
-
     def stats(self):
         """
         Get an idea of how you're doing points wise.
@@ -2598,6 +2570,7 @@ class EditQSODialog(QtWidgets.QDialog):
         self.change = QsoEdit()
         self.unique_id = None
 
+
     def set_up(self, linetopass, thedatabase):
         """Set up variables"""
         (
@@ -2619,18 +2592,39 @@ class EditQSODialog(QtWidgets.QDialog):
         self.editBand.setCurrentIndex(self.editBand.findText(theband.replace("M", "")))
         self.editMode.setCurrentIndex(self.editMode.findText(themode))
         self.editPower.setValue(int(thepower[: len(thepower) - 1]))
+        
+        # Get the RST and notes values from the database
+        contact_info = self.database.contact_by_id(self.theitem)
+        if contact_info and len(contact_info) > 0:
+            _, _, _, _, rstin, rstout, note, _, _, _, _, _, _, _, _, _ = contact_info[0]
+            if hasattr(self, 'editRSTin'):
+                self.editRSTin.setText(rstin)
+            if hasattr(self, 'editRSTout'):
+                self.editRSTout.setText(rstout)
+            if hasattr(self, 'editNotes'):
+                self.editNotes.setText(note)
+        
         date_time = thedate + " " + thetime
         now = QtCore.QDateTime.fromString(date_time, "yyyy-MM-dd hh:mm:ss")
         self.editDateTime.setDateTime(now)
         self.database = thedatabase
         self.unique_id = self.database.get_unique_id(self.theitem)
 
+
+
     def save_changes(self):
         """Save update to db"""
+        rstin = self.editRSTin.text() if hasattr(self, 'editRSTin') else ""
+        rstout = self.editRSTout.text() if hasattr(self, 'editRSTout') else ""
+        notes = self.editNotes.text() if hasattr(self, 'editNotes') else ""
+
         qso = [
             self.editCallsign.text().upper(),
             self.editClass.text().upper(),
             self.editSection.text().upper(),
+            rstin,
+            rstout,
+            notes,
             self.editDateTime.text(),
             self.editBand.currentText(),
             self.editMode.currentText().upper(),
@@ -2638,7 +2632,9 @@ class EditQSODialog(QtWidgets.QDialog):
             self.editFreq.text(),
             self.theitem,
         ]
+
         self.database.change_contact(qso)
+
         if window.connect_to_server:
             stale = datetime.now() + timedelta(seconds=30)
             command = {"cmd": "UPDATE"}
