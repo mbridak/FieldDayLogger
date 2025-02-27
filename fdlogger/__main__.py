@@ -209,6 +209,8 @@ class MainWindow(QtWidgets.QMainWindow):
             "nickname": "",
             "error": "",
             "distance": "",
+            "rstin": "",
+            "rstout" : ""
         }
         self.preference = {
             "mycall": "",
@@ -1010,6 +1012,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 newfreq / 1000
             )
             self.setband(str(self.getband(str(newfreq))))
+            self.freq_entry.text = str(self.getband(str(newfreq)))
 
     def fakefreq(self, band, mode):
         """
@@ -1409,6 +1412,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     int(float(self.fakefreq(self.band, self.mode)) * 1000)
                 )
             self.send_status_udp()
+        
 
     def changemode(self):
         """change mode"""
@@ -1804,6 +1808,12 @@ class MainWindow(QtWidgets.QMainWindow):
             or len(self.rstout_entry.text()) == 0
         ):
             return
+        
+        if len(self.freq_entry.text()) == 0:
+            self.freq_entry.text == self.oldfreq / 1000
+        else:
+            self.oldfreq = int(self.freq_entry.text()) * 1000
+
         if not self.cat_control:
             self.oldfreq = int(float(self.fakefreq(self.band, self.mode)) * 1000)
         unique_id = uuid.uuid4().hex
@@ -1936,7 +1946,7 @@ class MainWindow(QtWidgets.QMainWindow):
             logline = (
                 f"{str(logid).rjust(3,'0')} {hiscall.ljust(15)} {hisclass.rjust(3)} "
                 f"{hissection.rjust(3)} {the_datetime} {str(frequency).rjust(9)} "
-                f"{str(band).rjust(3)}M {mode} {str(power).rjust(3)}W"
+                f"{str(band).rjust(3)}M {mode} {str(power).rjust(3)}W {str(rstin).rjust(3)} {str(rstout).rjust(3)} {str(notes).rjust(3)} "
             )
             self.listWidget.addItem(logline)
             self.dupdict[f"{hiscall}{band}{mode}"] = True
@@ -2382,21 +2392,39 @@ class MainWindow(QtWidgets.QMainWindow):
         contact = self.db.fetch_last_contact()
         if not contact:
             return
+        # (
+        #     _,
+        #     hiscall,
+        #     hisclass,
+        #     hissection,
+        #     the_datetime,
+        #     freq,
+        #     band,
+        #     mode,
+        #     _,
+        #     grid,
+        #     opname,
+        #     _,
+        #     _,
+        # ) = contact
         (
-            _,
-            hiscall,
-            hisclass,
-            hissection,
-            the_datetime,
-            freq,
-            band,
-            mode,
-            _,
-            grid,
-            opname,
-            _,
-            _,
-        ) = contact
+                _,
+                hiscall,
+                hisclass,
+                hissection,
+                the_datetime,
+                freq,
+                band,
+                mode,
+                _,
+                grid,
+                opname,
+                rstin,
+                rstout,
+                _,
+                _,
+                _
+            ) = contact
         if mode == "DI":
             mode = "FT8"
         if mode == "PH":

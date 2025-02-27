@@ -507,7 +507,47 @@ border-top-color: rgb(255, 255, 255);</string>
                </property>
               </widget>
              </item>
-
+            <item>
+              <widget class="QLineEdit" name="freq_entry">
+               <property name="font">
+                <font>
+                 <family>JetBrains Mono</family>
+                 <pointsize>12</pointsize>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::ClickFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Frequency MHz</string>
+               </property>
+               <property name="statusTip">
+                <string>Frequency MHz.</string>
+               </property>
+               <property name="whatsThis">
+                <string>Frequency MHz.</string>
+               </property>
+               <property name="accessibleName">
+                <string>Frequency MHz</string>
+               </property>
+               <property name="accessibleDescription">
+                <string>Text entery box, for entering the Frequency MHz of the contact.</string>
+               </property>
+               <property name="maxLength">
+                <number>14</number>
+               </property>
+               <property name="frame">
+                <bool>true</bool>
+               </property>
+               <property name="placeholderText">
+                <string>Frequency MHz</string>
+               </property>
+               <property name="value">
+                <string></string>
+               </property>
+              </widget>
+             </item>
              <item>
               <widget class="QLineEdit" name="rstin_entry">
                <property name="font">
