@@ -507,6 +507,121 @@ border-top-color: rgb(255, 255, 255);</string>
                </property>
               </widget>
              </item>
+
+             <item>
+              <widget class="QLineEdit" name="rstin_entry">
+               <property name="font">
+                <font>
+                 <family>JetBrains Mono</family>
+                 <pointsize>12</pointsize>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::ClickFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Enter other operators RST IN.</string>
+               </property>
+               <property name="statusTip">
+                <string>Enter other operators RST IN.</string>
+               </property>
+               <property name="whatsThis">
+                <string>Enter other operators RST IN.</string>
+               </property>
+               <property name="accessibleName">
+                <string>RST IN Entry</string>
+               </property>
+               <property name="accessibleDescription">
+                <string>Text entery box, for entering the RST IN of the contact.</string>
+               </property>
+               <property name="maxLength">
+                <number>14</number>
+               </property>
+               <property name="frame">
+                <bool>true</bool>
+               </property>
+               <property name="placeholderText">
+                <string>RST IN</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="rstout_entry">
+               <property name="font">
+                <font>
+                 <family>JetBrains Mono</family>
+                 <pointsize>12</pointsize>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::ClickFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Enter other operators RST OUT.</string>
+               </property>
+               <property name="statusTip">
+                <string>Enter other operators RST OUT.</string>
+               </property>
+               <property name="whatsThis">
+                <string>Enter other operators RST OUT.</string>
+               </property>
+               <property name="accessibleName">
+                <string>RST OUT Entry</string>
+               </property>
+               <property name="accessibleDescription">
+                <string>Text entery box, for entering the RST OUT of the contact.</string>
+               </property>
+               <property name="maxLength">
+                <number>14</number>
+               </property>
+               <property name="frame">
+                <bool>true</bool>
+               </property>
+               <property name="placeholderText">
+                <string>RST OUT</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="notes_entry">
+               <property name="font">
+                <font>
+                 <family>JetBrains Mono</family>
+                 <pointsize>12</pointsize>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::ClickFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Enter other operators notes.</string>
+               </property>
+               <property name="statusTip">
+                <string>Enter other operators notes.</string>
+               </property>
+               <property name="whatsThis">
+                <string>Enter other operators notes.</string>
+               </property>
+               <property name="accessibleName">
+                <string>notes Entry</string>
+               </property>
+               <property name="accessibleDescription">
+                <string>Text entery box, for entering the notes of the contact.</string>
+               </property>
+               <property name="maxLength">
+                <number>14</number>
+               </property>
+               <property name="frame">
+                <bool>true</bool>
+               </property>
+               <property name="placeholderText">
+                <string>Notes</string>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>

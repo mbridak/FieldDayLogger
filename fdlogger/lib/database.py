@@ -1,3 +1,4 @@
+#fdlogger/lib/database.py
 """Database class to store contacts"""
 
 import logging
@@ -41,6 +42,9 @@ class DataBase:
                     "callsign text NOT NULL, "
                     "class text NOT NULL, "
                     "section text NOT NULL, "
+                    "rstin text NOT NULL, "
+                    "rstout text NOT NULL, "
+                    "note text NOT NULL, "
                     "date_time text NOT NULL, "
                     "frequency INTEGER DEFAULT 0, "
                     "band text NOT NULL, "
@@ -71,15 +75,15 @@ class DataBase:
     def log_contact(self, logme: tuple) -> None:
         """
         Inserts a contact into the db.
-        pass in (hiscall, hisclass, hissection, band, mode, int(power), grid, name)
+        pass in (hiscall, hisclass, hissection, rstin, rstout, note, band, mode, int(power), grid, name)
         """
         try:
             with sqlite3.connect(self.database) as conn:
                 sql = (
                     "INSERT INTO contacts"
-                    "(callsign, class, section, date_time, frequency, "
+                    "(callsign, class, section, rstin, rstout, note, date_time, frequency, "
                     "band, mode, power, grid, opname, unique_id, dirty) "
-                    "VALUES(?,?,?,datetime('now'),?,?,?,?,?,?,?,1)"
+                    "VALUES(?,?,?,?,?,?,datetime('now'),?,?,?,?,?,?,?,1)"
                 )
                 cur = conn.cursor()
                 cur.execute(sql, logme)
@@ -90,15 +94,15 @@ class DataBase:
     def log_ft8_contact(self, logme: tuple) -> None:
         """
         Inserts a contact into the db.
-        pass in (hiscall, hisclass, hissection, band, mode, int(power), grid, name)
+        pass in (hiscall, hisclass, hissection, rstin, rstout, note, date_time, frequency, band, mode, int(power), grid, name)
         """
         try:
             with sqlite3.connect(self.database) as conn:
                 sql = (
                     "INSERT INTO contacts"
-                    "(callsign, class, section, date_time, frequency, "
+                    "(callsign, class, section, rstin, rstout, note, date_time, frequency, "
                     "band, mode, power, grid, opname, unique_id, dirty) "
-                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,1)"
+                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)"
                 )
                 cur = conn.cursor()
                 cur.execute(sql, logme)
