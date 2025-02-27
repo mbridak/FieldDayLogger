@@ -118,4 +118,15 @@ NB   NE 0 NE Nebraska
 ONT  -- C ON Ontario
 NT   -- C NWT Northwest Territories/Yukon/Nunavut
 ST   TX 5 STX South Texas
-SFLA FL 4 SFL Southern Florida
+SFLA FL 4 SFL Southern Floridassss
+#
+# info about South African Provinces
+# section_abbrev state_abbrev call_area abbrev name
+GP GP ZA GP Gauteng
+EC EC ZA EC Eastern Cape
+FS FS ZA FS Free State
+KZN KZ ZA KZN KwaZulu-Natal
+MP MP ZA MP Mpumalanga
+NC NC ZA NC Northen Cape
+NW NW ZA NW North West
+WC WC ZA WC Western Cape

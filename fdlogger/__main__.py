@@ -128,7 +128,7 @@ class MainWindow(QtWidgets.QMainWindow):
         data_path = self.working_path + "/data/main.ui"
         uic.loadUi(data_path, self)
         self.chat_window.hide()
-        self.frame_5.show()
+       # self.frame_5.show()
         self.frame_6.show()
         self.frame_7.show()
         self.frame_8.show()
@@ -1647,7 +1647,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.interface_ip,
                 )
                 self.chat_window.show()
-                self.frame_5.hide()
+                # self.frame_5.hide()
                 self.frame_6.hide()
                 self.frame_7.hide()
                 self.frame_8.hide()
@@ -1681,7 +1681,7 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 self.groupcall = None
                 self.chat_window.hide()
-                self.frame_5.show()
+#                self.frame_5.show()
                 self.frame_6.show()
                 self.frame_7.show()
                 self.frame_8.show()
@@ -1878,7 +1878,7 @@ class MainWindow(QtWidgets.QMainWindow):
         Reads in the ARRL sections into some internal dictionaries.
         """
         try:
-            data_path = self.working_path + "/data/arrl_sect.dat"
+            data_path = self.working_path + "/data/sarl_sect.dat"
             with open(data_path, "r", encoding="utf-8") as file_descriptor:
                 while 1:
                     line = (
@@ -1982,106 +1982,48 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def sections_col1(self):
         """display sections worked"""
-        self.Section_DX.setStyleSheet(self.worked_section("DX"))
-        self.Section_CT.setStyleSheet(self.worked_section("CT"))
-        self.Section_RI.setStyleSheet(self.worked_section("RI"))
-        self.Section_EMA.setStyleSheet(self.worked_section("EMA"))
-        self.Section_VT.setStyleSheet(self.worked_section("VT"))
-        self.Section_ME.setStyleSheet(self.worked_section("ME"))
-        self.Section_WMA.setStyleSheet(self.worked_section("WMA"))
-        self.Section_NH.setStyleSheet(self.worked_section("NH"))
-        self.Section_ENY.setStyleSheet(self.worked_section("ENY"))
-        self.Section_NNY.setStyleSheet(self.worked_section("NNY"))
-        self.Section_NLI.setStyleSheet(self.worked_section("NLI"))
-        self.Section_SNJ.setStyleSheet(self.worked_section("SNJ"))
-        self.Section_NNJ.setStyleSheet(self.worked_section("NNJ"))
-        self.Section_WNY.setStyleSheet(self.worked_section("WNY"))
+       # self.Section_DX.setStyleSheet(self.worked_section("DX"))
+        self.Section_WC.setStyleSheet(self.worked_section("WC"))
+        self.Section_EC.setStyleSheet(self.worked_section("EC"))
+        self.Section_NC.setStyleSheet(self.worked_section("NC"))
+        self.Section_FS.setStyleSheet(self.worked_section("FS"))
+ 
 
     def sections_col2(self):
         """display sections worked"""
-        self.Section_DE.setStyleSheet(self.worked_section("DE"))
-        self.Section_MDC.setStyleSheet(self.worked_section("MDC"))
-        self.Section_EPA.setStyleSheet(self.worked_section("EPA"))
-        self.Section_WPA.setStyleSheet(self.worked_section("WPA"))
-        self.Section_AL.setStyleSheet(self.worked_section("AL"))
-        self.Section_SC.setStyleSheet(self.worked_section("SC"))
-        self.Section_GA.setStyleSheet(self.worked_section("GA"))
-        self.Section_SFL.setStyleSheet(self.worked_section("SFL"))
-        self.Section_KY.setStyleSheet(self.worked_section("KY"))
-        self.Section_TN.setStyleSheet(self.worked_section("TN"))
-        self.Section_NC.setStyleSheet(self.worked_section("NC"))
-        self.Section_VA.setStyleSheet(self.worked_section("VA"))
-        self.Section_NFL.setStyleSheet(self.worked_section("NFL"))
-        self.Section_VI.setStyleSheet(self.worked_section("VI"))
-        self.Section_PR.setStyleSheet(self.worked_section("PR"))
-        self.Section_WCF.setStyleSheet(self.worked_section("WCF"))
+        self.Section_KN.setStyleSheet(self.worked_section("KN"))
+        self.Section_NW.setStyleSheet(self.worked_section("NW"))
+        self.Section_GP.setStyleSheet(self.worked_section("GP"))
+        self.Section_MP.setStyleSheet(self.worked_section("MP"))
+        self.Section_LP.setStyleSheet(self.worked_section("LP"))
+        self.Section_DX.setStyleSheet(self.worked_section("DX"))
 
     def sections_col3(self):
         """display sections worked"""
-        self.Section_AR.setStyleSheet(self.worked_section("AR"))
-        self.Section_NTX.setStyleSheet(self.worked_section("NTX"))
-        self.Section_LA.setStyleSheet(self.worked_section("LA"))
-        self.Section_OK.setStyleSheet(self.worked_section("OK"))
-        self.Section_MS.setStyleSheet(self.worked_section("MS"))
-        self.Section_STX.setStyleSheet(self.worked_section("STX"))
-        self.Section_NM.setStyleSheet(self.worked_section("NM"))
-        self.Section_WTX.setStyleSheet(self.worked_section("WTX"))
-        self.Section_EB.setStyleSheet(self.worked_section("EB"))
-        self.Section_SCV.setStyleSheet(self.worked_section("SCV"))
-        self.Section_LAX.setStyleSheet(self.worked_section("LAX"))
-        self.Section_SDG.setStyleSheet(self.worked_section("SDG"))
-        self.Section_ORG.setStyleSheet(self.worked_section("ORG"))
-        self.Section_SF.setStyleSheet(self.worked_section("SF"))
-        self.Section_PAC.setStyleSheet(self.worked_section("PAC"))
-        self.Section_SJV.setStyleSheet(self.worked_section("SJV"))
-        self.Section_SB.setStyleSheet(self.worked_section("SB"))
-        self.Section_SV.setStyleSheet(self.worked_section("SV"))
+        self.Section_AO.setStyleSheet(self.worked_section("AO"))
+        self.Section_AQ.setStyleSheet(self.worked_section("AQ"))
+        self.Section_BW.setStyleSheet(self.worked_section("BW"))
+        self.Section_CD.setStyleSheet(self.worked_section("CD"))
+        self.Section_KM.setStyleSheet(self.worked_section("KM"))
+        self.Section_LS.setStyleSheet(self.worked_section("LS"))
+        self.Section_MG.setStyleSheet(self.worked_section("MG"))
+        self.Section_MI.setStyleSheet(self.worked_section("MI"))
+        self.Section_MW.setStyleSheet(self.worked_section("MW"))
 
     def sections_col4(self):
         """display sections worked"""
-        self.Section_AK.setStyleSheet(self.worked_section("AK"))
-        self.Section_NV.setStyleSheet(self.worked_section("NV"))
-        self.Section_AZ.setStyleSheet(self.worked_section("AZ"))
-        self.Section_OR.setStyleSheet(self.worked_section("OR"))
-        self.Section_EWA.setStyleSheet(self.worked_section("EWA"))
-        self.Section_UT.setStyleSheet(self.worked_section("UT"))
-        self.Section_ID.setStyleSheet(self.worked_section("ID"))
-        self.Section_WWA.setStyleSheet(self.worked_section("WWA"))
-        self.Section_MT.setStyleSheet(self.worked_section("MT"))
-        self.Section_WY.setStyleSheet(self.worked_section("WY"))
-        self.Section_MI.setStyleSheet(self.worked_section("MI"))
-        self.Section_WV.setStyleSheet(self.worked_section("WV"))
-        self.Section_OH.setStyleSheet(self.worked_section("OH"))
-        self.Section_IL.setStyleSheet(self.worked_section("IL"))
-        self.Section_WI.setStyleSheet(self.worked_section("WI"))
-        self.Section_IN.setStyleSheet(self.worked_section("IN"))
+        self.Section_MU.setStyleSheet(self.worked_section("MU"))
+        self.Section_MZ.setStyleSheet(self.worked_section("MZ"))
+        self.Section_NA.setStyleSheet(self.worked_section("NA"))
+        self.Section_SC.setStyleSheet(self.worked_section("SC"))
+        self.Section_SZ.setStyleSheet(self.worked_section("SZ"))
+        self.Section_TZ.setStyleSheet(self.worked_section("TZ"))
+        self.Section_ZM.setStyleSheet(self.worked_section("ZM"))
+        self.Section_ZW.setStyleSheet(self.worked_section("ZW")) 
 
-    def sections_col5(self):
-        """display sections worked"""
-        self.Section_CO.setStyleSheet(self.worked_section("CO"))
-        self.Section_MO.setStyleSheet(self.worked_section("MO"))
-        self.Section_IA.setStyleSheet(self.worked_section("IA"))
-        self.Section_ND.setStyleSheet(self.worked_section("ND"))
-        self.Section_KS.setStyleSheet(self.worked_section("KS"))
-        self.Section_NE.setStyleSheet(self.worked_section("NE"))
-        self.Section_MN.setStyleSheet(self.worked_section("MN"))
-        self.Section_SD.setStyleSheet(self.worked_section("SD"))
-
-        self.Section_AB.setStyleSheet(self.worked_section("AB"))
-        self.Section_BC.setStyleSheet(self.worked_section("BC"))
-        self.Section_GH.setStyleSheet(self.worked_section("GH"))
-        self.Section_MB.setStyleSheet(self.worked_section("MB"))
-        self.Section_NB.setStyleSheet(self.worked_section("NB"))
-        self.Section_NL.setStyleSheet(self.worked_section("NL"))
-        self.Section_NS.setStyleSheet(self.worked_section("NS"))
-
-        self.Section_PE.setStyleSheet(self.worked_section("PE"))
-        self.Section_ONE.setStyleSheet(self.worked_section("ONE"))
-        self.Section_ONN.setStyleSheet(self.worked_section("ONN"))
-        self.Section_ONS.setStyleSheet(self.worked_section("ONS"))
-        self.Section_QC.setStyleSheet(self.worked_section("QC"))
-        self.Section_SK.setStyleSheet(self.worked_section("SK"))
-        self.Section_TER.setStyleSheet(self.worked_section("TER"))
+#    def sections_col5(self):
+#        """display sections worked"""
+       
 
     def sections(self):
         """
@@ -2092,7 +2034,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.sections_col2()
         self.sections_col3()
         self.sections_col4()
-        self.sections_col5()
 
     def get_band_mode_tally(self, band, mode):
         """
@@ -2414,7 +2355,6 @@ class MainWindow(QtWidgets.QMainWindow):
         comment = "ARRL-FD"
         adifq += f"<COMMENT:{len(comment)}>{comment}"
         adifq += "<EOR>"
-
         payload_dict = {
             "key": self.preference["cloudlogapi"],
             "station_profile_id": self.preference["cloudlogstationid"],
@@ -2422,7 +2362,12 @@ class MainWindow(QtWidgets.QMainWindow):
             "string": adifq,
         }
         json_data = dumps(payload_dict)
-        _ = requests.post(self.preference["cloudlogurl"] + "qso/", json_data, timeout=5)
+        print(self.preference["cloudlogurl"] + "qso/")
+        print(payload_dict)
+        result = requests.post(self.preference["cloudlogurl"] + "qso/", json_data, timeout=5)
+        print(result.status_code)
+        print(result.headers)
+        print(result.content)
 
     def cabrillo(self):
         """

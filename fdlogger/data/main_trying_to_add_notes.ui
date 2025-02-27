@@ -398,6 +398,9 @@ border-top-color: rgb(255, 255, 255);</string>
        </layout>
       </item>
       <item>
+
+
+
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -509,7 +512,7 @@ border-top-color: rgb(255, 255, 255);</string>
              </item>
 
              <item>
-              <widget class="QLineEdit" name="rstin_entry">
+              <widget class="QLineEdit" name="test">
                <property name="font">
                 <font>
                  <family>JetBrains Mono</family>
@@ -521,108 +524,74 @@ border-top-color: rgb(255, 255, 255);</string>
                 <enum>Qt::ClickFocus</enum>
                </property>
                <property name="toolTip">
-                <string>Enter other operators RST IN.</string>
-               </property>
-               <property name="statusTip">
-                <string>Enter other operators RST IN.</string>
-               </property>
-               <property name="whatsThis">
-                <string>Enter other operators RST IN.</string>
+                <string>test Entry</string>
                </property>
                <property name="accessibleName">
-                <string>RST IN Entry</string>
+                <string>test Entry</string>
                </property>
                <property name="accessibleDescription">
-                <string>Text entery box, for entering the RST IN of the contact.</string>
-               </property>
-               <property name="maxLength">
-                <number>14</number>
-               </property>
-               <property name="frame">
-                <bool>true</bool>
+                <string>test entry box to enter the contacts ARRL section.</string>
                </property>
                <property name="placeholderText">
-                <string>RST IN</string>
+                <string>test</string>
                </property>
               </widget>
              </item>
-             <item>
-              <widget class="QLineEdit" name="rstout_entry">
-               <property name="font">
-                <font>
-                 <family>JetBrains Mono</family>
-                 <pointsize>12</pointsize>
-                 <bold>false</bold>
-                </font>
-               </property>
-               <property name="focusPolicy">
-                <enum>Qt::ClickFocus</enum>
-               </property>
-               <property name="toolTip">
-                <string>Enter other operators RST OUT.</string>
-               </property>
-               <property name="statusTip">
-                <string>Enter other operators RST OUT.</string>
-               </property>
-               <property name="whatsThis">
-                <string>Enter other operators RST OUT.</string>
-               </property>
-               <property name="accessibleName">
-                <string>RST OUT Entry</string>
-               </property>
-               <property name="accessibleDescription">
-                <string>Text entery box, for entering the RST OUT of the contact.</string>
-               </property>
-               <property name="maxLength">
-                <number>14</number>
-               </property>
-               <property name="frame">
-                <bool>true</bool>
-               </property>
-               <property name="placeholderText">
-                <string>RST OUT</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="notes_entry">
-               <property name="font">
-                <font>
-                 <family>JetBrains Mono</family>
-                 <pointsize>12</pointsize>
-                 <bold>false</bold>
-                </font>
-               </property>
-               <property name="focusPolicy">
-                <enum>Qt::ClickFocus</enum>
-               </property>
-               <property name="toolTip">
-                <string>Enter other operators notes.</string>
-               </property>
-               <property name="statusTip">
-                <string>Enter other operators notes.</string>
-               </property>
-               <property name="whatsThis">
-                <string>Enter other operators notes.</string>
-               </property>
-               <property name="accessibleName">
-                <string>notes Entry</string>
-               </property>
-               <property name="accessibleDescription">
-                <string>Text entery box, for entering the notes of the contact.</string>
-               </property>
-               <property name="maxLength">
-                <number>14</number>
-               </property>
-               <property name="frame">
-                <bool>true</bool>
-               </property>
-               <property name="placeholderText">
-                <string>Notes</string>
-               </property>
-              </widget>
-             </item>
+
+
             </layout>
+
+
+
+
+         <layout class="QVBoxLayout" name="verticalLayout_2a">
+          <item>
+ <widget class="QFrame" name="frame_3a">
+            <property name="font">
+             <font>
+              <family>JetBrains Mono</family>
+              <pointsize>12</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Box</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <item>
+              <widget class="QLineEdit" name="other_entry">
+               <property name="font">
+                <font>
+                 <family>JetBrains Mono</family>
+                 <pointsize>12</pointsize>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::ClickFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Other Entry</string>
+               </property>
+               <property name="accessibleName">
+                <string>Other Entry</string>
+               </property>
+               <property name="accessibleDescription">
+                <string>Other Entry.</string>
+               </property>
+               <property name="placeholderText">
+                <string>Other Entry</string>
+               </property>
+              </widget>
+             </item>
+            </widget>          
+            </item>
+
+          </layout>
+          
+
            </widget>
           </item>
           <item>
