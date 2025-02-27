@@ -654,9 +654,6 @@ border-top-color: rgb(255, 255, 255);</string>
                <property name="accessibleDescription">
                 <string>Text entery box, for entering the notes of the contact.</string>
                </property>
-               <property name="maxLength">
-                <number>14</number>
-               </property>
                <property name="frame">
                 <bool>true</bool>
                </property>

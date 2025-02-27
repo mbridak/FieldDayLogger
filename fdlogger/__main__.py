@@ -1610,15 +1610,15 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         text = self.notes_entry.text()
         if len(text):
-            if text[-1] == " ":
-                self.notes_entry.setText(text.strip())
-                self.callsign_entry.setFocus()
-                self.callsign_entry.deselect()
-            else:
-                washere = self.notes_entry.cursorPosition()
-                cleaned = "".join(ch for ch in text if ch.isalpha()).upper()
-                self.notes_entry.setText(cleaned)
-                self.notes_entry.setCursorPosition(washere)
+            # if text[-1] == " ":
+            #     self.notes_entry.setText(text.strip())
+            #     self.callsign_entry.setFocus()
+            #     self.callsign_entry.deselect()
+            # else:
+            washere = self.notes_entry.cursorPosition()
+            #cleaned = "".join(ch for ch in text if ch.isalpha()).upper()
+            #self.notes_entry.setText(self.notes_entry.text().replace(" ","_"))
+            #self.notes_entry.setCursorPosition(washere)
 
 
     @staticmethod
@@ -1830,7 +1830,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.contactlookup["name"],
             self.rstin_entry.text() if self.rstin_entry.text() else "599",  # Default to 599 if empty
             self.rstout_entry.text() if self.rstout_entry.text() else "599",  # Default to 599 if empty
-            self.notes_entry.text() if self.notes_entry.text() else "",  # Empty string if no notes
+            self.notes_entry.text().replace(" ","_") if self.notes_entry.text() else "_",  # Empty string if no notes
             unique_id,
         )
         self.db.log_contact(contact)
@@ -1848,7 +1848,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 "section": self.section_entry.text(),
                 "rstin": self.rstin_entry.text() if self.rstin_entry.text() else "599",
                 "rstout": self.rstout_entry.text() if self.rstout_entry.text() else "599",
-                "note": self.notes_entry.text() if self.notes_entry.text() else "",
+                "note": self.notes_entry.text().replace(" ","_") if self.notes_entry.text() else "",
                 "mode": self.mode,
                 "band": self.band,
                 "frequency": self.oldfreq,
@@ -2643,7 +2643,10 @@ class EditQSODialog(QtWidgets.QDialog):
             thefreq,
             theband,
             themode,
-            thepower
+            thepower,
+            rstin,
+            rstout,
+            notes
         ) = linetopass.split()
         self.editCallsign.setText(thecall)
         self.editClass.setText(theclass)
