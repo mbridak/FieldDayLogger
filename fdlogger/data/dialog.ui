@@ -198,6 +198,51 @@ color: rgb(211, 215, 207);</string>
      </property>
     </widget>
    </item>
+   <!-- RST In Row 10 -->>
+  <item row="10" column="1">
+    <widget class="QLineEdit" name="editRstIn">
+     <property name="font">
+      <font>
+       <family>JetBrains Mono</family>
+       <pointsize>12</pointsize>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="maxLength">
+      <number>4</number>
+     </property>
+    </widget>
+   </item>
+  <item row="11" column="1">
+    <widget class="QLineEdit" name="editRstOut">
+     <property name="font">
+      <font>
+       <family>JetBrains Mono</family>
+       <pointsize>12</pointsize>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="maxLength">
+      <number>4</number>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="1">
+      <widget class="QTextEdit" name="editNotes">
+        <property name="font">
+        <font>
+          <family>JetBrains Mono</family>
+          <pointsize>9</pointsize>
+        </font>
+        </property>
+        <property name="focusPolicy">
+        <enum>Qt::ClickFocus</enum>
+        </property>
+        <property name="readOnly">
+        <bool>false</bool>
+        </property>
+      </widget>
+      </item>
    <item row="1" column="1">
     <widget class="QLineEdit" name="editClass">
      <property name="font">
@@ -265,6 +310,57 @@ color: rgb(211, 215, 207);</string>
      </property>
      <property name="text">
       <string>Date/Time:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+    <item row="10" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="font">
+      <font>
+       <family>JetBrains Mono</family>
+       <pointsize>12</pointsize>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>RST IN:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="font">
+      <font>
+       <family>JetBrains Mono</family>
+       <pointsize>12</pointsize>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>RST OUT:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="font">
+      <font>
+       <family>JetBrains Mono</family>
+       <pointsize>12</pointsize>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Notes:</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -339,7 +435,7 @@ color: rgb(211, 215, 207);</string>
      </property>
     </widget>
    </item>
-   <item row="10" column="0">
+   <item row="14" column="0">
     <widget class="QPushButton" name="deleteButton">
      <property name="font">
       <font>
@@ -357,7 +453,7 @@ color: rgb(255, 255, 255);</string>
      </property>
     </widget>
    </item>
-   <item row="10" column="1">
+   <item row="14" column="1">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="font">
       <font>

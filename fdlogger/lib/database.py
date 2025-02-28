@@ -143,8 +143,9 @@ class DataBase:
                 sql = (
                     f"update contacts set callsign = '{qso[0]}', class = '{qso[1]}', "
                     f"section = '{qso[2]}', date_time = '{qso[3]}', band = '{qso[4]}', "
-                    f"mode = '{qso[5]}', power = '{qso[6]}', frequency = '{qso[7]}' "
-                    f"where id='{qso[8]}';"
+                    f"mode = '{qso[5]}', power = '{qso[6]}', frequency = '{qso[7]}', "
+                    f"rstin = '{qso[8]}', rstout = '{qso[9]}', note = '{qso[10]}' "
+                    f"where id='{qso[11]}';"
                 )
                 cur = conn.cursor()
                 cur.execute(sql)

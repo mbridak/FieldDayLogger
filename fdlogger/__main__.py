@@ -2264,7 +2264,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 print("<EOH>", end="\r\n", file=file_descriptor)
                 for contact in log:
                     (
-                        _,
+                       _,
                         hiscall,
                         hisclass,
                         hissection,
@@ -2272,9 +2272,12 @@ class MainWindow(QtWidgets.QMainWindow):
                         freq,
                         band,
                         mode,
-                        _,
+                        power,
                         grid,
                         opname,
+                        rstin,
+                        rstout,
+                        notes,
                         _,
                         _,
                     ) = contact
@@ -2323,10 +2326,12 @@ class MainWindow(QtWidgets.QMainWindow):
                     )
                     print(f"<FREQ:{len(freq)}>{freq}", end="\r\n", file=file_descriptor)
                     print(
-                        f"<RST_SENT:{len(rst)}>{rst}", end="\r\n", file=file_descriptor
+                        # f"<RST_SENT:{len(rst)}>{rst}", end="\r\n", file=file_descriptor
+                        f"<RST_SENT:{len(rstout)}>{rstout}", end="\r\n", file=file_descriptor
                     )
                     print(
-                        f"<RST_RCVD:{len(rst)}>{rst}", end="\r\n", file=file_descriptor
+                        # f"<RST_RCVD:{len(rst)}>{rst}", end="\r\n", file=file_descriptor
+                        f"<RST_RCVD:{len(rstin)}>{rstin}", end="\r\n", file=file_descriptor
                     )
                     print(
                         "<STX_STRING:"
@@ -2555,9 +2560,12 @@ class MainWindow(QtWidgets.QMainWindow):
                         freq,
                         band,
                         mode,
-                        _,
-                        _,
-                        _,
+                        power,
+                        grid,
+                        opname,
+                        rstin,
+                        rstout,
+                        notes,
                         _,
                         _,
                     ) = contact
@@ -2576,7 +2584,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         f"QSO: {freq.rjust(6)} {mode} {loggeddate} {loggedtime} "
                         f"{self.preference['mycall']} {self.preference['myclass']} "
                         f"{self.preference['mysection']} {hiscall} "
-                        f"{hisclass} {hissection}",
+                        f"{hisclass} {hissection} {power} {rstin} {rstout} {grid} '{opname}' {notes}",
                         end="\r\n",
                         file=file_descriptor,
                     )
@@ -2655,10 +2663,12 @@ class EditQSODialog(QtWidgets.QDialog):
         self.editBand.setCurrentIndex(self.editBand.findText(theband.replace("M", "")))
         self.editMode.setCurrentIndex(self.editMode.findText(themode))
         self.editPower.setValue(int(thepower[: len(thepower) - 1]))
-        
+        self.editRstIn.setText(rstin)
+        self.editRstOut.setText(rstout)
+        self.editNotes.setText(notes.replace("_"," "))
         # Get the RST and notes values from the database
         #contact_info = self.database.contact_by_id(self.theitem)
-        # if contact_info and len(contact_info) > 0:
+        # if contact_info and len(contact_info) > 0:    
         #     _, _, _, _, rstin, rstout, note, _, _, _, _, _, _, _, _, _ = contact_info[0]
         #     if hasattr(self, 'editRSTin'):
         #         self.editRSTin.setText(rstin)
@@ -2677,23 +2687,23 @@ class EditQSODialog(QtWidgets.QDialog):
 
     def save_changes(self):
         """Save update to db"""
-        rstin = self.editRSTin.text() if hasattr(self, 'editRSTin') else ""
-        rstout = self.editRSTout.text() if hasattr(self, 'editRSTout') else ""
-        notes = self.editNotes.text() if hasattr(self, 'editNotes') else ""
+        #rstin = self.editRSTin.text() if hasattr(self, 'editRSTin') else ""
+        #rstout = self.editRSTout.text() if hasattr(self, 'editRSTout') else ""
+        #notes = self.editNotes.text() if hasattr(self, 'editNotes') else ""
 
         qso = [
             self.editCallsign.text().upper(),
             self.editClass.text().upper(),
             self.editSection.text().upper(),
-            rstin,
-            rstout,
-            notes,
             self.editDateTime.text(),
             self.editBand.currentText(),
             self.editMode.currentText().upper(),
             self.editPower.value(),
-            self.editFreq.text(),
-            self.theitem,
+            self.editFreq.text(), # 7
+            self.editRstIn.text().replace(" ",""), # 8
+            self.editRstOut.text().replace(" ",""), # 9
+            self.editNotes.toPlainText().rstrip().replace(" ","_").replace("\n",",_"), # 10
+            self.theitem, # 11
         ]
 
         self.database.change_contact(qso)
