@@ -2493,7 +2493,14 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Generates a cabrillo log file.
         """
-        filename = self.preference["mycall"].upper() + ".log"
+        # get current date and time
+        current_datetime = datetime.now().strftime("%Y-%m-%d %H-%M-%S")
+        print("Current date & time : ", current_datetime)
+
+        # convert datetime obj to string
+        str_current_datetime = str(current_datetime)
+
+        filename = self.preference["mycall"].upper() + " " + str_current_datetime + ".log"
         self.infobox.setTextColor(QtGui.QColor(211, 215, 207))
         self.infobox.insertPlainText(f"Saving cabrillo to: {filename}\n")
         app.processEvents()
