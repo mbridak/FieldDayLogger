@@ -144,12 +144,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rstin_entry.textEdited.connect(self.rstintest)
         self.rstout_entry.textEdited.connect(self.rstouttest)
         self.notes_entry.textEdited.connect(self.notestest)
+        self.freq_entry.textEdited.connect(self.freqtest)
+        
         self.callsign_entry.returnPressed.connect(self.log_contact)
         self.chat_entry.returnPressed.connect(self.send_chat)
         self.class_entry.returnPressed.connect(self.log_contact)
         self.section_entry.returnPressed.connect(self.log_contact)
         self.rstin_entry.returnPressed.connect(self.log_contact)
         self.rstout_entry.returnPressed.connect(self.log_contact)
+        self.freq_entry.returnPressed.connect(self.log_contact)
         self.notes_entry.returnPressed.connect(self.log_contact)
         self.mycallEntry.textEdited.connect(self.changemycall)
         self.myclassEntry.textEdited.connect(self.changemyclass)
@@ -1012,7 +1015,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 newfreq / 1000
             )
             self.setband(str(self.getband(str(newfreq))))
-            self.freq_entry.text = str(self.getband(str(newfreq)))
+            self.freq_entry.text = str(self.getband(str(newfreq))) / 1000
 
     def fakefreq(self, band, mode):
         """
@@ -1026,6 +1029,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return 0
         freqtoreturn = self.fakefreqs[band][modes[mode]]
         logger.info("fakefreq: returning:%s", freqtoreturn)
+        
         return freqtoreturn
 
     @staticmethod
@@ -1166,6 +1170,12 @@ class MainWindow(QtWidgets.QMainWindow):
         if event_key == Qt.Key_Tab:
             if self.section_entry.hasFocus():
                 logger.info("From section")
+                self.freq_entry.setFocus()
+                self.freq_entry.deselect()
+                self.freq_entry.end(False)
+                return
+            if self.freq_entry.hasFocus():
+                logger.info("From Frequency")
                 self.rstin_entry.setFocus()
                 self.rstin_entry.deselect()
                 self.rstin_entry.end(False)
@@ -1176,14 +1186,15 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.section_entry.deselect()
                 self.section_entry.end(False)
                 return
+           
             if self.rstin_entry.hasFocus():
-                logger.info("From Section")
+                logger.info("From RST IN")
                 self.rstout_entry.setFocus()
                 self.rstout_entry.deselect()
                 self.rstout_entry.end(False)
                 return
             if self.rstout_entry.hasFocus():
-                logger.info("From Section")
+                logger.info("From RST OUT")
                 self.notes_entry.setFocus()
                 self.notes_entry.deselect()
                 self.notes_entry.end(False)
@@ -1405,14 +1416,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def changeband(self):
         """change band"""
+        vfo = int(float(self.fakefreq(self.band, self.mode)) * 1000)
         if self.band != self.band_selector.currentText():
             self.band = self.band_selector.currentText()
             if self.cat_control is not None:
-                self.cat_control.set_vfo(
-                    int(float(self.fakefreq(self.band, self.mode)) * 1000)
-                )
+                self.cat_control.set_vfo(vfo)
             self.send_status_udp()
-        
+        if len(self.freq_entry.text()) == 0:
+            self.freq_entry.text == vfo / 1000
 
     def changemode(self):
         """change mode"""
@@ -1571,6 +1582,23 @@ class MainWindow(QtWidgets.QMainWindow):
                 cleaned = "".join(ch for ch in text if ch.isalnum()).upper()
                 self.section_entry.setText(cleaned)
                 self.section_entry.setCursorPosition(washere)
+    
+    def freqtest(self):
+        """
+        Test and strip class of bad characters, advance to next input field if space pressed.
+        """
+        text = self.freq_entry.text()
+        if len(text):
+            if text[-1] == " ":
+                self.freq_entry.setText(text.strip())
+                self.rstin_entry.setFocus()
+                self.rstin_entry.deselect()
+            else:
+                washere = self.freq_entry.cursorPosition()
+                cleaned = "".join(ch for ch in text if ch.isalnum()).upper()
+                self.freq_entry.setText(cleaned)
+                self.freq_entry.setCursorPosition(washere)
+
 
     def rstintest(self):
         """
@@ -1809,13 +1837,15 @@ class MainWindow(QtWidgets.QMainWindow):
         ):
             return
         
-        if len(self.freq_entry.text()) == 0:
-            self.freq_entry.text == self.oldfreq / 1000
-        else:
-            self.oldfreq = int(self.freq_entry.text()) * 1000
+        
 
         if not self.cat_control:
-            self.oldfreq = int(float(self.fakefreq(self.band, self.mode)) * 1000)
+            if len(self.freq_entry.text()) == 0:
+                self.oldfreq = int(float(self.fakefreq(self.band, self.mode)) * 1000)
+                self.freq_entry.text == self.oldfreq / 1000
+            else:
+                self.oldfreq = int(self.freq_entry.text()) * 1000
+            
         unique_id = uuid.uuid4().hex
         contact = (
             self.callsign_entry.text(),

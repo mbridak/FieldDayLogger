@@ -417,7 +417,6 @@ border-top-color: rgb(255, 255, 255);</string>
              <enum>QFrame::Plain</enum>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_9">
-            <!-- top of entry-->
              <item>
               <widget class="QLineEdit" name="callsign_entry">
                <property name="font">
@@ -447,9 +446,6 @@ border-top-color: rgb(255, 255, 255);</string>
                </property>
                <property name="maxLength">
                 <number>14</number>
-               </property>
-               <property name="fixedWidth">
-                <number>130</number>
                </property>
                <property name="frame">
                 <bool>true</bool>
@@ -483,9 +479,6 @@ border-top-color: rgb(255, 255, 255);</string>
                <property name="placeholderText">
                 <string>Class</string>
                </property>
-               <property name="fixedWidth">
-                <number>80</number>
-               </property>
               </widget>
              </item>
              <item>
@@ -501,19 +494,16 @@ border-top-color: rgb(255, 255, 255);</string>
                 <enum>Qt::ClickFocus</enum>
                </property>
                <property name="toolTip">
-                <string>Section/Location Entry</string>
+                <string>Section Entry</string>
                </property>
                <property name="accessibleName">
-                <string>Section/Location Entry</string>
+                <string>Section Entry</string>
                </property>
                <property name="accessibleDescription">
                 <string>Text entry box to enter the contacts ARRL section.</string>
                </property>
                <property name="placeholderText">
-                <string>Location</string>
-               </property>
-               <property name="fixedWidth">
-                <number>100</number>
+                <string>Section</string>
                </property>
               </widget>
              </item>
@@ -549,9 +539,6 @@ border-top-color: rgb(255, 255, 255);</string>
                </property>
                <property name="frame">
                 <bool>true</bool>
-               </property>
-               <property name="fixedWidth">
-                <number>100</number>
                </property>
                <property name="placeholderText">
                 <string>Frequency MHz</string>
@@ -589,16 +576,13 @@ border-top-color: rgb(255, 255, 255);</string>
                 <string>Text entery box, for entering the RST IN of the contact.</string>
                </property>
                <property name="maxLength">
-                <number>3</number>
+                <number>14</number>
                </property>
                <property name="frame">
                 <bool>true</bool>
                </property>
                <property name="placeholderText">
                 <string>RST IN</string>
-               </property>
-               <property name="fixedWidth">
-                <number>80</number>
                </property>
                <property name="value">
                 <string>59</string>
@@ -633,10 +617,7 @@ border-top-color: rgb(255, 255, 255);</string>
                 <string>Text entery box, for entering the RST OUT of the contact.</string>
                </property>
                <property name="maxLength">
-                <number>3</number>
-               </property>
-               <property name="fixedWidth">
-                <number>80</number>
+                <number>14</number>
                </property>
                <property name="frame">
                 <bool>true</bool>
@@ -682,8 +663,6 @@ border-top-color: rgb(255, 255, 255);</string>
               </widget>
              </item>
             </layout>
-            
-          
            </widget>
           </item>
           <item>
@@ -735,10 +714,6 @@ border-top-color: rgb(255, 255, 255);</string>
           </item>
          </layout>
         </item>
-
-      
-
-
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_8">
           <item>
