@@ -145,7 +145,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rstout_entry.textEdited.connect(self.rstouttest)
         self.notes_entry.textEdited.connect(self.notestest)
         self.freq_entry.textEdited.connect(self.freqtest)
-        
+
         self.callsign_entry.returnPressed.connect(self.log_contact)
         self.chat_entry.returnPressed.connect(self.send_chat)
         self.class_entry.returnPressed.connect(self.log_contact)
@@ -273,7 +273,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_socket = QUdpSocket()
         self.udp_socket.bind(QHostAddress.LocalHost, 2237)
         self.udp_socket.readyRead.connect(self.on_udp_socket_ready_read)
-
+        
     def get_opon(self) -> None:
         """
         Ctrl+O Open the OPON dialog.
@@ -1015,7 +1015,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 newfreq / 1000
             )
             self.setband(str(self.getband(str(newfreq))))
-            self.freq_entry.text = str(self.getband(str(newfreq))) / 1000
+            #self.freq_entry.setText(str(self.getband(str(newfreq))) / 1000)
+            print(self.freq_entry.text())
 
     def fakefreq(self, band, mode):
         """
@@ -1029,7 +1030,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return 0
         freqtoreturn = self.fakefreqs[band][modes[mode]]
         logger.info("fakefreq: returning:%s", freqtoreturn)
-        
+
         return freqtoreturn
 
     @staticmethod
@@ -1186,7 +1187,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.section_entry.deselect()
                 self.section_entry.end(False)
                 return
-           
+
             if self.rstin_entry.hasFocus():
                 logger.info("From RST IN")
                 self.rstout_entry.setFocus()
@@ -1198,14 +1199,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.notes_entry.setFocus()
                 self.notes_entry.deselect()
                 self.notes_entry.end(False)
-                return     
+                return
             if self.notes_entry.hasFocus():
                 logger.info("From Section")
                 self.callsign_entry.setFocus()
                 self.callsign_entry.deselect()
                 self.callsign_entry.end(False)
-                return     
-                
+                return
+
             if self.callsign_entry.hasFocus():
                 logger.info("From callsign")
                 _thethread = threading.Thread(
@@ -1410,21 +1411,25 @@ class MainWindow(QtWidgets.QMainWindow):
         self.class_entry.clear()
         self.section_entry.clear()
         self.callsign_entry.setFocus()
-        #self.rstin_entry.clear()  
-        #self.rstout_entry.clear()  
-        self.notes_entry.clear()   
+        #self.rstin_entry.clear()
+        #self.rstout_entry.clear()
+        self.notes_entry.clear()
 
     def changeband(self):
         """change band"""
-        vfo = int(float(self.fakefreq(self.band, self.mode)) * 1000)
+        
         if self.band != self.band_selector.currentText():
             self.band = self.band_selector.currentText()
             if self.cat_control is not None:
+                vfo = int(float(self.fakefreq(self.band, self.mode)) * 1000)
+                self.freq_entry.setText(str(vfo))
                 self.cat_control.set_vfo(vfo)
             self.send_status_udp()
+            #self.freq_entry.setText(str(int(float(self.fakefreq(self.band, self.mode)))))
         if len(self.freq_entry.text()) == 0:
-            self.freq_entry.text == vfo / 1000
-
+            print(self.freq_entry.text())
+        self.freq_entry.setText(str(int(float(self.fakefreq(self.band, self.mode)))))
+        
     def changemode(self):
         """change mode"""
         if self.mode != self.mode_selector.currentText():
@@ -1582,7 +1587,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 cleaned = "".join(ch for ch in text if ch.isalnum()).upper()
                 self.section_entry.setText(cleaned)
                 self.section_entry.setCursorPosition(washere)
-    
+
     def freqtest(self):
         """
         Test and strip class of bad characters, advance to next input field if space pressed.
@@ -1836,16 +1841,16 @@ class MainWindow(QtWidgets.QMainWindow):
             or len(self.rstout_entry.text()) == 0
         ):
             return
-        
-        
+
+
 
         if not self.cat_control:
             if len(self.freq_entry.text()) == 0:
                 self.oldfreq = int(float(self.fakefreq(self.band, self.mode)) * 1000)
-                self.freq_entry.text == self.oldfreq / 1000
+                self.freq_entry.setText(self.freq / 1000)
             else:
                 self.oldfreq = int(self.freq_entry.text()) * 1000
-            
+
         unique_id = uuid.uuid4().hex
         contact = (
             self.callsign_entry.text(),
@@ -2114,7 +2119,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.Section_EC.setStyleSheet(self.worked_section("EC"))
         self.Section_NC.setStyleSheet(self.worked_section("NC"))
         self.Section_FS.setStyleSheet(self.worked_section("FS"))
- 
+
 
     def sections_col2(self):
         """display sections worked"""
@@ -2146,11 +2151,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.Section_SZ.setStyleSheet(self.worked_section("SZ"))
         self.Section_TZ.setStyleSheet(self.worked_section("TZ"))
         self.Section_ZM.setStyleSheet(self.worked_section("ZM"))
-        self.Section_ZW.setStyleSheet(self.worked_section("ZW")) 
+        self.Section_ZW.setStyleSheet(self.worked_section("ZW"))
 
 #    def sections_col5(self):
 #        """display sections worked"""
-       
+
 
     def sections(self):
         """
@@ -2705,7 +2710,7 @@ class EditQSODialog(QtWidgets.QDialog):
         self.editNotes.setText(notes.replace("_"," "))
         # Get the RST and notes values from the database
         #contact_info = self.database.contact_by_id(self.theitem)
-        # if contact_info and len(contact_info) > 0:    
+        # if contact_info and len(contact_info) > 0:
         #     _, _, _, _, rstin, rstout, note, _, _, _, _, _, _, _, _, _ = contact_info[0]
         #     if hasattr(self, 'editRSTin'):
         #         self.editRSTin.setText(rstin)
@@ -2713,7 +2718,7 @@ class EditQSODialog(QtWidgets.QDialog):
         #         self.editRSTout.setText(rstout)
         #     if hasattr(self, 'editNotes'):
         #         self.editNotes.setText(note)
-        
+
         date_time = thedate + " " + thetime
         now = QtCore.QDateTime.fromString(date_time, "yyyy-MM-dd hh:mm:ss")
         self.editDateTime.setDateTime(now)
