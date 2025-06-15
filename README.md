@@ -333,9 +333,9 @@ A 'Statistics.txt' file which breaks down your band/mode/power usage.
 
 ## Group / Club logging
 
-I have added a group contact aggrigating server. This can be run on the same
-computer as the client program, or on a separate dedicated PC or Raspberry Pi
-on the same network.
+I have added a group contact aggrigating server (a separate package named 
+"fdserver"). This can be run on the same computer as the client program, or 
+on a separate dedicated PC or Raspberry Pi on the same network.
 
 ![Picture showing main server screen](https://github.com/mbridak/FieldDayLogger/raw/main/pics/server_pic.png)
 
