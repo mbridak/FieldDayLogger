@@ -807,6 +807,32 @@ class MainWindow(QtWidgets.QMainWindow):
                 unique_id,
             )
             self.db.log_ft8_contact(contact)
+            if self.connect_to_server:
+                stale = datetime.now() + timedelta(seconds=30)
+                server_contact = {
+                    "cmd": "POST",
+                    "hiscall": call,
+                    "class": hisclass,
+                    "section": hissect,
+                    "mode": "DI",
+                    "band": band,
+                    "frequency": freq,
+                    "date_and_time": the_dt,
+                    "power": int(self.preference["power"]),
+                    "grid": grid,
+                    "opname": name,
+                    "station": self.preference["mycall"],
+                    "unique_id": unique_id,
+                    "expire": stale.isoformat(),
+                }
+                self.server_commands.append(server_contact)
+                bytesToSend = bytes(dumps(server_contact), encoding="ascii")
+                try:
+                    self.server_udp.sendto(
+                        bytesToSend, (self.multicast_group, int(self.multicast_port))
+                    )
+                except OSError as err:
+                    logger.warning("%s", err)
             self.sections()
             self.stats()
             self.updatemarker()
