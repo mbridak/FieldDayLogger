@@ -53,6 +53,7 @@ try:
         write_adif,
         write_cabrillo,
     )
+    from fdlogger.lib.scoring import calculate_score
     from fdlogger.lib.version import __version__
 except ModuleNotFoundError:
     from lib.lookup import HamDBlookup, HamQTH, QRZlookup
@@ -70,6 +71,7 @@ except ModuleNotFoundError:
         write_adif,
         write_cabrillo,
     )
+    from lib.scoring import calculate_score
     from lib.version import __version__
 
 
@@ -1884,12 +1886,9 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.qrpcheck()
         c_dubs, phone, digital = self.db.contacts_under_101watts()
-        self.score = (int(c_dubs) * 2) + int(phone) + (int(digital) * 2)
-        self.basescore = self.score
-        multiplier = 2
-        if self.qrp and self.preference["altpower"]:
-            multiplier = 5
-        self.score = self.score * multiplier
+        self.score, self.basescore = calculate_score(
+            c_dubs, phone, digital, self.qrp, self.preference["altpower"]
+        )
         return self.score
 
     def qrpcheck(self):
