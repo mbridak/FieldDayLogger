@@ -34,7 +34,7 @@ from itertools import chain
 import requests
 from PyQt5.QtNetwork import QUdpSocket, QHostAddress
 from PyQt5.QtGui import QFontDatabase
-from PyQt5.QtCore import QDir, Qt
+from PyQt5.QtCore import Qt
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
 try:
@@ -45,6 +45,7 @@ try:
     from fdlogger.lib.cwinterface import CW
     from fdlogger.lib.n1mm import N1MM
     from fdlogger.lib.edit_opon import OpOn
+    from fdlogger.lib.resources import open_resource, resource_path
     from fdlogger.lib.version import __version__
 except ModuleNotFoundError:
     from lib.lookup import HamDBlookup, HamQTH, QRZlookup
@@ -54,18 +55,16 @@ except ModuleNotFoundError:
     from lib.cwinterface import CW
     from lib.n1mm import N1MM
     from lib.edit_opon import OpOn
+    from lib.resources import open_resource, resource_path
     from lib.version import __version__
 
 
-def load_fonts_from_dir(directory: str) -> set:
+def load_font(path: str) -> set:
     """
-    Well it loads fonts from a directory...
+    Well it loads a font...
     """
-    font_families = set()
-    for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
-        _id = QFontDatabase.addApplicationFont(_fi.absoluteFilePath())
-        font_families |= set(QFontDatabase.applicationFontFamilies(_id))
-    return font_families
+    font_id = QFontDatabase.addApplicationFont(path)
+    return set(QFontDatabase.applicationFontFamilies(font_id))
 
 
 class QsoEdit(QtCore.QObject):
@@ -123,9 +122,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         """Initialize"""
         super().__init__(*args, **kwargs)
-        self.working_path = os.path.dirname(__loader__.get_filename())
-        data_path = self.working_path + "/data/main.ui"
-        uic.loadUi(data_path, self)
+        with resource_path("data/main.ui") as data_path:
+            uic.loadUi(data_path, self)
         self.chat_window.hide()
         self.frame_5.show()
         self.frame_6.show()
@@ -154,13 +152,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.section_entry.textEdited.connect(self.section_check)
         self.genLogButton.clicked.connect(self.generate_logs)
         self.run_button.clicked.connect(self.run_button_pressed)
-        icon_path = self.working_path + "/icon/"
-        self.radio_grey = QtGui.QPixmap(icon_path + "radio_grey.png")
-        self.radio_red = QtGui.QPixmap(icon_path + "radio_red.png")
-        self.radio_green = QtGui.QPixmap(icon_path + "radio_green.png")
-        self.cloud_grey = QtGui.QPixmap(icon_path + "cloud_grey.png")
-        self.cloud_red = QtGui.QPixmap(icon_path + "cloud_red.png")
-        self.cloud_green = QtGui.QPixmap(icon_path + "cloud_green.png")
+        with resource_path("icon/radio_grey.png") as icon_path:
+            self.radio_grey = QtGui.QPixmap(icon_path)
+        with resource_path("icon/radio_red.png") as icon_path:
+            self.radio_red = QtGui.QPixmap(icon_path)
+        with resource_path("icon/radio_green.png") as icon_path:
+            self.radio_green = QtGui.QPixmap(icon_path)
+        with resource_path("icon/cloud_grey.png") as icon_path:
+            self.cloud_grey = QtGui.QPixmap(icon_path)
+        with resource_path("icon/cloud_red.png") as icon_path:
+            self.cloud_red = QtGui.QPixmap(icon_path)
+        with resource_path("icon/cloud_green.png") as icon_path:
+            self.cloud_green = QtGui.QPixmap(icon_path)
         self.radio_icon.setPixmap(self.radio_grey)
         self.cloudlog_icon.setPixmap(self.cloud_grey)
         self.callbook_icon.setStyleSheet("color: rgb(136, 138, 133);")
@@ -275,7 +278,7 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        self.opon_dialog = OpOn(os.path.dirname(__loader__.get_filename()))
+        self.opon_dialog = OpOn()
         self.opon_dialog.accepted.connect(self.new_op)
         self.opon_dialog.open()
 
@@ -870,8 +873,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if not Path("./cwmacros_fd.txt").exists():
             logger.info("read_cw_macros: copying default macro file.")
-            data_path = self.working_path + "/data/cwmacros_fd.txt"
-            copyfile(data_path, "./cwmacros_fd.txt")
+            with resource_path("data/cwmacros_fd.txt") as data_path:
+                copyfile(data_path, "./cwmacros_fd.txt")
         with open("./cwmacros_fd.txt", "r", encoding="utf-8") as file_descriptor:
             for line in file_descriptor:
                 try:
@@ -1932,8 +1935,9 @@ class MainWindow(QtWidgets.QMainWindow):
         Reads in the ARRL sections into some internal dictionaries.
         """
         try:
-            data_path = self.working_path + "/data/arrl_sect.dat"
-            with open(data_path, "r", encoding="utf-8") as file_descriptor:
+            with open_resource(
+                "data/arrl_sect.dat", "r", encoding="utf-8"
+            ) as file_descriptor:
                 while 1:
                     line = (
                         file_descriptor.readline().strip()
@@ -1974,8 +1978,9 @@ class MainWindow(QtWidgets.QMainWindow):
         Reads in a list of known contesters into an internal dictionary
         """
         try:
-            data_path = self.working_path + "/data/MASTER.SCP"
-            with open(data_path, "r", encoding="utf-8") as file_descriptor:
+            with open_resource(
+                "data/MASTER.SCP", "r", encoding="utf-8"
+            ) as file_descriptor:
                 self.scp = file_descriptor.readlines()
                 self.scp = list(map(lambda x: x.strip(), self.scp))
         except IOError as exception:
@@ -2616,9 +2621,8 @@ class EditQSODialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
         """initialize dialog"""
         super().__init__(parent)
-        self.working_path = os.path.dirname(__loader__.get_filename())
-        data_path = self.working_path + "/data/dialog.ui"
-        uic.loadUi(data_path, self)
+        with resource_path("data/dialog.ui") as data_path:
+            uic.loadUi(data_path, self)
         self.deleteButton.clicked.connect(self.delete_contact)
         self.buttonBox.accepted.connect(self.save_changes)
         self.change = QsoEdit()
@@ -2749,9 +2753,8 @@ class StartUp(QtWidgets.QDialog):
     def __init__(self, parent=None):
         """initialize dialog"""
         super().__init__(parent)
-        self.working_path = os.path.dirname(__loader__.get_filename())
-        data_path = self.working_path + "/data/startup.ui"
-        uic.loadUi(data_path, self)
+        with resource_path("data/startup.ui") as data_path:
+            uic.loadUi(data_path, self)
         self.continue_pushButton.clicked.connect(self.store)
 
     def set_call_sign(self, callsign):
@@ -2813,9 +2816,8 @@ else:
 
 app = QtWidgets.QApplication(sys.argv)
 app.setStyle("Fusion")
-working_path = os.path.dirname(__loader__.get_filename())
-font_path = working_path + "/data"
-families = load_fonts_from_dir(os.fspath(font_path))
+with resource_path("data/JetBrainsMono-Regular.ttf") as font_path:
+    families = load_font(font_path)
 window = MainWindow()
 window.setWindowTitle(f"K6GTE Field Day Logger v{__version__}")
 window.show()
@@ -2859,13 +2861,14 @@ timer3.timeout.connect(window.send_status_udp)
 
 def run():
     """Main Entry"""
-    PATH = os.path.dirname(__loader__.get_filename())
     if sys.platform == "linux":
-        os.system(
-            "xdg-icon-resource install --size 64 --context apps --mode user "
-            f"{PATH}/icon/k6gte-fdlogger.png k6gte-fdlogger"
-        )
-        os.system(f"xdg-desktop-menu install {PATH}/data/k6gte-fieldday.desktop")
+        with resource_path("icon/k6gte-fdlogger.png") as icon_path:
+            os.system(
+                "xdg-icon-resource install --size 64 --context apps --mode user "
+                f"{icon_path} k6gte-fdlogger"
+            )
+        with resource_path("data/k6gte-fieldday.desktop") as desktop_path:
+            os.system(f"xdg-desktop-menu install {desktop_path}")
     timer.start(1000)
     timer2.start(1000)
     timer3.start(15000)

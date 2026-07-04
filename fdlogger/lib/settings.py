@@ -1,9 +1,10 @@
 """Settings Dialog Class"""
 
 import logging
-from importlib.resources import as_file, files
 from json import dumps, loads
 from PyQt5 import QtWidgets, uic
+
+from .resources import resource_path
 
 
 class Settings(QtWidgets.QDialog):
@@ -13,8 +14,8 @@ class Settings(QtWidgets.QDialog):
         """initialize dialog"""
         super().__init__(parent)
         self.logger = logging.getLogger("__name__")
-        with as_file(files("fdlogger.data").joinpath("settings.ui")) as data_path:
-            uic.loadUi(str(data_path), self)
+        with resource_path("data/settings.ui") as data_path:
+            uic.loadUi(data_path, self)
         self.buttonBox.accepted.connect(self.save_changes)
         self.preference = None
         self.setup()
