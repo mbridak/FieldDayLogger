@@ -1,8 +1,7 @@
 """Settings Dialog Class"""
 
 import logging
-import os
-import pkgutil
+from importlib.resources import as_file, files
 from json import dumps, loads
 from PyQt5 import QtWidgets, uic
 
@@ -14,11 +13,8 @@ class Settings(QtWidgets.QDialog):
         """initialize dialog"""
         super().__init__(parent)
         self.logger = logging.getLogger("__name__")
-        self.working_path = os.path.dirname(
-            pkgutil.get_loader("fdlogger").get_filename()
-        )
-        data_path = self.working_path + "/data/settings.ui"
-        uic.loadUi(data_path, self)
+        with as_file(files("fdlogger.data").joinpath("settings.ui")) as data_path:
+            uic.loadUi(str(data_path), self)
         self.buttonBox.accepted.connect(self.save_changes)
         self.preference = None
         self.setup()
