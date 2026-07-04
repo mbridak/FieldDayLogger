@@ -1,9 +1,9 @@
 """Settings Dialog Class"""
 
 import logging
-from json import dumps, loads
 from PyQt5 import QtWidgets, uic
 
+from .preferences import load_preferences, save_preferences
 from .resources import resource_path
 
 
@@ -22,8 +22,9 @@ class Settings(QtWidgets.QDialog):
 
     def setup(self):
         """setup dialog"""
-        with open("./fd_preferences.json", "rt", encoding="utf-8") as file_descriptor:
-            self.preference = loads(file_descriptor.read())
+        defaults = getattr(self.parent(), "preference", None)
+        self.preference = load_preferences(defaults)
+        if self.preference:
             self.logger.info("reading: %s", self.preference)
             self.useqrz_radioButton.setChecked(bool(self.preference.get("useqrz")))
             self.usehamdb_radioButton.setChecked(bool(self.preference.get("usehamdb")))
@@ -128,10 +129,7 @@ class Settings(QtWidgets.QDialog):
 
         try:
             self.logger.info("save_changes:")
-            with open(
-                "./fd_preferences.json", "wt", encoding="utf-8"
-            ) as file_descriptor:
-                file_descriptor.write(dumps(self.preference, indent=4))
-                self.logger.info("writing: %s", self.preference)
+            save_preferences(self.preference)
+            self.logger.info("writing: %s", self.preference)
         except IOError as exception:
             self.logger.critical("save_changes: %s", exception)

@@ -46,6 +46,7 @@ try:
     from fdlogger.lib.n1mm import N1MM
     from fdlogger.lib.edit_opon import OpOn
     from fdlogger.lib.resources import open_resource, resource_path
+    from fdlogger.lib.preferences import load_preferences, save_preferences
     from fdlogger.lib.log_export import (
         generate_band_mode_tally,
         get_bands,
@@ -64,6 +65,7 @@ except ModuleNotFoundError:
     from lib.n1mm import N1MM
     from lib.edit_opon import OpOn
     from lib.resources import open_resource, resource_path
+    from lib.preferences import load_preferences, save_preferences
     from lib.log_export import (
         generate_band_mode_tally,
         get_bands,
@@ -1596,17 +1598,7 @@ class MainWindow(QtWidgets.QMainWindow):
         Restore preferences if they exist, otherwise create some sane defaults.
         """
         try:
-            if os.path.exists("./fd_preferences.json"):
-                with open(
-                    "./fd_preferences.json", "rt", encoding="utf-8"
-                ) as file_descriptor:
-                    self.preference = loads(file_descriptor.read())
-            else:
-                with open(
-                    "./fd_preferences.json", "wt", encoding="utf-8"
-                ) as file_descriptor:
-                    file_descriptor.write(dumps(self.preference, indent=4))
-                    logger.info("No preference, writing dafult.")
+            self.preference = load_preferences(self.preference)
         except IOError as exception:
             logger.critical("readpreferences: %s", exception)
         logger.info(self.preference)
@@ -1738,22 +1730,16 @@ class MainWindow(QtWidgets.QMainWindow):
         except KeyError as err:
             logger.warning("Corrupt preference, %s, loading clean version.", err)
             self.preference = self.reference_preference.copy()
-            with open(
-                "./fd_preferences.json", "wt", encoding="utf-8"
-            ) as file_descriptor:
-                file_descriptor.write(dumps(self.preference, indent=4))
-                logger.info("writing: %s", self.preference)
+            save_preferences(self.preference)
+            logger.info("writing: %s", self.preference)
 
     def writepreferences(self):
         """
         Write preferences to json file.
         """
         try:
-            with open(
-                "./fd_preferences.json", "wt", encoding="utf-8"
-            ) as file_descriptor:
-                file_descriptor.write(dumps(self.preference, indent=4))
-                logger.info("writing: %s", self.preference)
+            save_preferences(self.preference)
+            logger.info("writing: %s", self.preference)
         except IOError as exception:
             logger.critical("writepreferences: %s", exception)
 
