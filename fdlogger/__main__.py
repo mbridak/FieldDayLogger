@@ -22,6 +22,7 @@ from shutil import copyfile
 import struct
 import datetime as dt
 import os
+import signal
 import socket
 import sys
 import logging
@@ -2637,6 +2638,40 @@ timer2.timeout.connect(window.check_udp_queue)
 timer3 = QtCore.QTimer()
 timer3.timeout.connect(window.send_status_udp)
 
+interrupt_dialog_open = False
+
+
+def confirm_interrupt_exit():
+    """Ask whether a terminal interrupt should quit the app."""
+    global interrupt_dialog_open
+    if interrupt_dialog_open:
+        return
+    interrupt_dialog_open = True
+    try:
+        response = QtWidgets.QMessageBox.question(
+            window,
+            "Quit FieldDayLogger?",
+            "Quit FieldDayLogger?",
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+            QtWidgets.QMessageBox.No,
+        )
+        if response == QtWidgets.QMessageBox.Yes:
+            app.quit()
+    finally:
+        interrupt_dialog_open = False
+
+
+def handle_interrupt(_signum, _frame):
+    """Route terminal interrupts into the Qt event loop."""
+    QtCore.QTimer.singleShot(0, confirm_interrupt_exit)
+
+
+def install_signal_handlers():
+    """Install signal handlers for terminal-launched sessions."""
+    signal.signal(signal.SIGINT, handle_interrupt)
+    if hasattr(signal, "SIGHUP"):
+        signal.signal(signal.SIGHUP, handle_interrupt)
+
 
 def run():
     """Main Entry"""
@@ -2651,6 +2686,7 @@ def run():
     timer.start(1000)
     timer2.start(1000)
     timer3.start(15000)
+    install_signal_handlers()
     sys.exit(app.exec())
     # app.exec()
 
