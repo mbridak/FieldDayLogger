@@ -46,6 +46,13 @@ try:
     from fdlogger.lib.n1mm import N1MM
     from fdlogger.lib.edit_opon import OpOn
     from fdlogger.lib.resources import open_resource, resource_path
+    from fdlogger.lib.log_export import (
+        generate_band_mode_tally,
+        get_bands,
+        get_state,
+        write_adif,
+        write_cabrillo,
+    )
     from fdlogger.lib.version import __version__
 except ModuleNotFoundError:
     from lib.lookup import HamDBlookup, HamQTH, QRZlookup
@@ -56,6 +63,13 @@ except ModuleNotFoundError:
     from lib.n1mm import N1MM
     from lib.edit_opon import OpOn
     from lib.resources import open_resource, resource_path
+    from lib.log_export import (
+        generate_band_mode_tally,
+        get_bands,
+        get_state,
+        write_adif,
+        write_cabrillo,
+    )
     from lib.version import __version__
 
 
@@ -2164,34 +2178,12 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Returns a list of bands worked, and an empty list if none worked.
         """
-        bandlist = []
-        list_o_bands = self.db.get_bands()
-        if list_o_bands:
-            for count in list_o_bands:
-                bandlist.append(count[0])
-            return bandlist
-        return []
+        return get_bands(self.db)
 
     def generate_band_mode_tally(self):
         """generates band mode tally"""
-        blist = self.getbands()
-        bmtfn = "Statistics.txt"
         try:
-            with open(bmtfn, "w", encoding="utf-8") as file_descriptor:
-                print("\t\tCW\tPWR\tDI\tPWR\tPH\tPWR", end="\r\n", file=file_descriptor)
-                print("-" * 60, end="\r\n", file=file_descriptor)
-                for band in self.bands:
-                    if band in blist:
-                        cwt = self.get_band_mode_tally(band, "CW")
-                        dit = self.get_band_mode_tally(band, "DI")
-                        pht = self.get_band_mode_tally(band, "PH")
-                        print(
-                            f"Band:\t{band}\t{cwt[0]}\t{cwt[1]}\t{dit[0]}"
-                            f"\t{dit[1]}\t{pht[0]}\t{pht[1]}",
-                            end="\r\n",
-                            file=file_descriptor,
-                        )
-                        print("-" * 60, end="\r\n", file=file_descriptor)
+            generate_band_mode_tally(self.db, self.bands)
         except IOError as exception:
             logger.critical("generate_band_mode_tally: write error: %s", exception)
 
@@ -2199,15 +2191,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Returns the US state a section is in, or Bool False if none was found.
         """
-        try:
-            state = self.secState[section]
-            if state != "--":
-                return state
-        except IndexError:
-            return False
-        except KeyError:
-            return False
-        return False
+        return get_state(section, self.secState)
 
     @staticmethod
     def gridtolatlon(maiden):
@@ -2274,131 +2258,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.infobox.setTextColor(QtGui.QColor(211, 215, 207))
         self.infobox.insertPlainText(f"Saving ADIF to: {logname}\n")
         app.processEvents()
-        log = self.db.fetch_all_contacts_asc()
-        if not log:
-            return
-        grid = False
-        opname = False
         try:
-            with open(logname, "w", encoding="ascii") as file_descriptor:
-                print("<ADIF_VER:5>2.2.0", end="\r\n", file=file_descriptor)
-                print("<EOH>", end="\r\n", file=file_descriptor)
-                for contact in log:
-                    (
-                        _,
-                        hiscall,
-                        hisclass,
-                        hissection,
-                        the_datetime,
-                        freq,
-                        band,
-                        mode,
-                        _,
-                        grid,
-                        opname,
-                        _,
-                        _,
-                    ) = contact
-                    if mode == "DI":
-                        mode = "FT8"
-                    if mode == "PH":
-                        mode = "SSB"
-                    if mode == "CW":
-                        rst = "599"
-                    else:
-                        rst = "59"
-                    loggeddate = the_datetime[:10]
-                    loggedtime = the_datetime[11:13] + the_datetime[14:16]
-                    try:
-                        temp = str(freq / 1000000).split(".")
-                        freq = temp[0] + "." + temp[1].ljust(3, "0")
-                    except TypeError:
-                        freq = "UNKNOWN"
-
-                    if freq == "0.000":  # incase no freq was logged
-                        freq = int(self.fakefreq(band, mode))
-                        temp = str(freq / 1000).split(".")
-                        freq = temp[0] + "." + temp[1].ljust(3, "0")
-
-                    print(
-                        f"<QSO_DATE:{len(''.join(loggeddate.split('-')))}:d>"
-                        f"{''.join(loggeddate.split('-'))}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    print(
-                        f"<TIME_ON:{len(loggedtime)}>{loggedtime}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    print(
-                        f"<CALL:{len(hiscall)}>{hiscall}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    print(f"<MODE:{len(mode)}>{mode}", end="\r\n", file=file_descriptor)
-                    print(
-                        f"<BAND:{len(band + 'M')}>{band + 'M'}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    print(f"<FREQ:{len(freq)}>{freq}", end="\r\n", file=file_descriptor)
-                    print(
-                        f"<RST_SENT:{len(rst)}>{rst}", end="\r\n", file=file_descriptor
-                    )
-                    print(
-                        f"<RST_RCVD:{len(rst)}>{rst}", end="\r\n", file=file_descriptor
-                    )
-                    print(
-                        "<STX_STRING:"
-                        f"{len(self.preference['myclass'] + ' ' + self.preference['mysection'])}>"
-                        f"{self.preference['myclass'] + ' ' + self.preference['mysection']}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    print(
-                        f"<SRX_STRING:{len(hisclass + ' ' + hissection)}>"
-                        f"{hisclass + ' ' + hissection}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    print(
-                        f"<ARRL_SECT:{len(hissection)}>{hissection}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    print(
-                        f"<CLASS:{len(hisclass)}>{hisclass}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    state = self.get_state(hissection)
-                    if state:
-                        print(
-                            f"<STATE:{len(state)}>{state}",
-                            end="\r\n",
-                            file=file_descriptor,
-                        )
-                    if len(grid) > 1:
-                        print(
-                            f"<GRIDSQUARE:{len(grid)}>{grid}",
-                            end="\r\n",
-                            file=file_descriptor,
-                        )
-                    if len(opname) > 1:
-                        print(
-                            f"<NAME:{len(opname)}>{opname}",
-                            end="\r\n",
-                            file=file_descriptor,
-                        )
-                    comment = "ARRL-FD"
-                    print(
-                        f"<COMMENT:{len(comment)}>{comment}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    print("<EOR>", end="\r\n", file=file_descriptor)
-                    print("", end="\r\n", file=file_descriptor)
+            if not write_adif(
+                self.db, self.preference, self.secState, self.fakefreqs, logname
+            ):
+                return
         except IOError as exception:
             logger.critical("adif: IO error: %s", exception)
         self.infobox.insertPlainText("Done\n\n")
@@ -2491,95 +2355,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.infobox.setTextColor(QtGui.QColor(211, 215, 207))
         self.infobox.insertPlainText(f"Saving cabrillo to: {filename}\n")
         app.processEvents()
-        log = self.db.fetch_all_contacts_asc()
-        if not log:
-            return
-        catpower = ""
-        if self.qrp:
-            catpower = "QRP"
-        elif self.highpower:
-            catpower = "HIGH"
-        else:
-            catpower = "LOW"
         try:
-            with open(filename, "w", encoding="ascii") as file_descriptor:
-                print("START-OF-LOG: 3.0", end="\r\n", file=file_descriptor)
-                print(
-                    "CREATED-BY: K6GTE Field Day Logger",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print("CONTEST: ARRL-FD", end="\r\n", file=file_descriptor)
-                print(
-                    f"CALLSIGN: {self.preference['mycall']}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print("LOCATION:", end="\r\n", file=file_descriptor)
-                print(
-                    f"ARRL-SECTION: {self.preference['mysection']}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    f"CATEGORY: {self.preference['myclass']}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(f"CATEGORY-POWER: {catpower}", end="\r\n", file=file_descriptor)
-                print(
-                    f"CLAIMED-SCORE: {self.calcscore()}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    f"OPERATORS: {self.preference['mycall']}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print("NAME: ", end="\r\n", file=file_descriptor)
-                print("ADDRESS: ", end="\r\n", file=file_descriptor)
-                print("ADDRESS-CITY: ", end="\r\n", file=file_descriptor)
-                print("ADDRESS-STATE: ", end="\r\n", file=file_descriptor)
-                print("ADDRESS-POSTALCODE: ", end="\r\n", file=file_descriptor)
-                print("ADDRESS-COUNTRY: ", end="\r\n", file=file_descriptor)
-                print("EMAIL: ", end="\r\n", file=file_descriptor)
-                for contact in log:
-                    (
-                        _,
-                        hiscall,
-                        hisclass,
-                        hissection,
-                        the_datetime,
-                        freq,
-                        band,
-                        mode,
-                        _,
-                        _,
-                        _,
-                        _,
-                        _,
-                    ) = contact
-                    if mode == "DI":
-                        mode = "DG"
-                    loggeddate = the_datetime[:10]
-                    loggedtime = the_datetime[11:13] + the_datetime[14:16]
-                    try:
-                        temp = str(freq / 1000000).split(".")
-                        freq = temp[0] + temp[1].ljust(3, "0")[:3]
-                    except TypeError:
-                        freq = "UNKNOWN"
-                    if freq == "0000":
-                        freq = self.fakefreq(band, mode)
-                    print(
-                        f"QSO: {freq.rjust(6)} {mode} {loggeddate} {loggedtime} "
-                        f"{self.preference['mycall']} {self.preference['myclass']} "
-                        f"{self.preference['mysection']} {hiscall} "
-                        f"{hisclass} {hissection}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                print("END-OF-LOG:", end="\r\n", file=file_descriptor)
+            if not write_cabrillo(
+                self.db,
+                self.preference,
+                self.fakefreqs,
+                self.calcscore(),
+                self.qrp,
+                self.highpower,
+                filename,
+            ):
+                return
         except IOError as exception:
             logger.critical(
                 "cabrillo: IO error: %s, writing to %s", exception, filename
