@@ -2627,6 +2627,8 @@ class EditQSODialog(QtWidgets.QDialog):
         self.buttonBox.accepted.connect(self.save_changes)
         self.change = QsoEdit()
         self.unique_id = None
+        self.grid = ""
+        self.opname = ""
 
     def set_up(self, linetopass, thedatabase):
         """Set up variables"""
@@ -2654,6 +2656,10 @@ class EditQSODialog(QtWidgets.QDialog):
         self.editDateTime.setDateTime(now)
         self.database = thedatabase
         self.unique_id = self.database.get_unique_id(self.theitem)
+        contact = self.database.contact_by_id(self.theitem)
+        if contact:
+            self.grid = contact[0][9]
+            self.opname = contact[0][10]
 
     def save_changes(self):
         """Save update to db"""
@@ -2696,18 +2702,20 @@ class EditQSODialog(QtWidgets.QDialog):
             window.n1mm.contact_info["rxfreq"] = self.editFreq.text()[:-1]
             window.n1mm.contact_info["txfreq"] = self.editFreq.text()[:-1]
             window.n1mm.contact_info["mode"] = self.editMode.currentText().upper()
-            window.n1mm.contact_info["band"] = self.editBand.currentText()
+            window.n1mm.contact_info["band"] = window.n1mm.bandToUDPBand.get(
+                self.editBand.currentText(), self.editBand.currentText()
+            )
             window.n1mm.contact_info["mycall"] = window.preference.get("mycall")
-            window.n1mm.contact_info["IsRunQSO"] = self.contact.get("IsRunQSO")
-            window.n1mm.contact_info["timestamp"] = self.contact.get("date_time")
+            window.n1mm.contact_info["IsRunQSO"] = str(window.run_state)
+            window.n1mm.contact_info["timestamp"] = self.editDateTime.text()
             window.n1mm.contact_info["call"] = self.editCallsign.text().upper()
-            window.n1mm.contact_info["gridsquare"] = self.contact.get("grid")
+            window.n1mm.contact_info["gridsquare"] = self.grid
             window.n1mm.contact_info["exchange1"] = self.editClass.text().upper()
             window.n1mm.contact_info["section"] = self.editSection.text().upper()
-            window.n1mm.contact_info["name"] = self.contact.get("opname")
+            window.n1mm.contact_info["name"] = self.opname
             window.n1mm.contact_info["power"] = self.editPower.value()
-            window.n1mm.contact_info["ID"] = self.contact.get("unique_id")
-            if window.n1mm.contact_info["mode"] in ("CW", "DG"):
+            window.n1mm.contact_info["ID"] = self.unique_id
+            if window.n1mm.contact_info["mode"] in ("CW", "DG", "DI"):
                 window.n1mm.contact_info["points"] = "2"
             else:
                 window.n1mm.contact_info["points"] = "1"
