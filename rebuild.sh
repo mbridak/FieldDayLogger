@@ -1,6 +1,6 @@
 #!/bin/bash
-pip uninstall -y fdlogger
+pip3 uninstall -y fdlogger
 rm dist/*
 python3 -m build
-pip install -e .
+pip3 install -e .
 
