@@ -11,43 +11,49 @@ GPL V3
 # xplanet -body earth -window -longitude -117 -latitude 38
 # -config Default -projection azmithal -radius 200 -wait 5
 
-
-from math import radians, sin, cos, atan2, sqrt, asin, pi
-from pathlib import Path
-from datetime import datetime, timedelta
-from json import dumps, loads, JSONDecodeError
-from shutil import copyfile
+import datetime as dt
+import logging
+import os
+import queue
+import signal
+import socket
 
 # from xmlrpc.client import ServerProxy, Error
 import struct
-import datetime as dt
-import os
-import signal
-import socket
 import sys
-import logging
 import threading
-import uuid
-import queue
 import time
+import uuid
+from datetime import datetime, timedelta
 from itertools import chain
+from json import JSONDecodeError, dumps, loads
+from math import asin, atan2, cos, pi, radians, sin, sqrt
+from pathlib import Path
+from shutil import copyfile
+
+if sys.platform == "darwin":
+    try:
+        from Foundation import NSBundle
+
+        bundle = NSBundle.mainBundle()
+        if bundle:
+            info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
+            if info:
+                info["CFBundleName"] = "FDLogger"
+    except ImportError:
+        ...
 
 import requests
-from PyQt5.QtNetwork import QUdpSocket, QHostAddress
-from PyQt5.QtGui import QFontDatabase
-from PyQt5.QtCore import Qt
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFontDatabase
+from PyQt5.QtNetwork import QHostAddress, QUdpSocket
 
 try:
-    from fdlogger.lib.lookup import HamDBlookup, HamQTH, QRZlookup
     from fdlogger.lib.cat_interface import CAT
-    from fdlogger.lib.settings import Settings
-    from fdlogger.lib.database import DataBase
     from fdlogger.lib.cwinterface import CW
-    from fdlogger.lib.n1mm import N1MM
+    from fdlogger.lib.database import DataBase
     from fdlogger.lib.edit_opon import OpOn
-    from fdlogger.lib.resources import open_resource, resource_path
-    from fdlogger.lib.preferences import load_preferences, save_preferences
     from fdlogger.lib.log_export import (
         generate_band_mode_tally,
         get_bands,
@@ -55,18 +61,18 @@ try:
         write_adif,
         write_cabrillo,
     )
+    from fdlogger.lib.lookup import HamDBlookup, HamQTH, QRZlookup
+    from fdlogger.lib.n1mm import N1MM
+    from fdlogger.lib.preferences import load_preferences, save_preferences
+    from fdlogger.lib.resources import open_resource, resource_path
     from fdlogger.lib.scoring import calculate_score
+    from fdlogger.lib.settings import Settings
     from fdlogger.lib.version import __version__
 except ModuleNotFoundError:
-    from lib.lookup import HamDBlookup, HamQTH, QRZlookup
     from lib.cat_interface import CAT
-    from lib.settings import Settings
-    from lib.database import DataBase
     from lib.cwinterface import CW
-    from lib.n1mm import N1MM
+    from lib.database import DataBase
     from lib.edit_opon import OpOn
-    from lib.resources import open_resource, resource_path
-    from lib.preferences import load_preferences, save_preferences
     from lib.log_export import (
         generate_band_mode_tally,
         get_bands,
@@ -74,7 +80,12 @@ except ModuleNotFoundError:
         write_adif,
         write_cabrillo,
     )
+    from lib.lookup import HamDBlookup, HamQTH, QRZlookup
+    from lib.n1mm import N1MM
+    from lib.preferences import load_preferences, save_preferences
+    from lib.resources import open_resource, resource_path
     from lib.scoring import calculate_score
+    from lib.settings import Settings
     from lib.version import __version__
 
 
@@ -343,12 +354,12 @@ class MainWindow(QtWidgets.QMainWindow):
             if op_callsign in result:
                 self.users_list.setTextColor(QtGui.QColor(245, 121, 0))
                 self.users_list.insertPlainText(
-                    f"{op_callsign.rjust(6,' ')} {self.people.get(op_callsign).rjust(6, ' ')}\n"
+                    f"{op_callsign.rjust(6, ' ')} {self.people.get(op_callsign).rjust(6, ' ')}\n"
                 )
                 self.users_list.setTextColor(QtGui.QColor(211, 215, 207))
             else:
                 self.users_list.insertPlainText(
-                    f"{op_callsign.rjust(6,' ')} {self.people.get(op_callsign).rjust(6, ' ')}\n"
+                    f"{op_callsign.rjust(6, ' ')} {self.people.get(op_callsign).rjust(6, ' ')}\n"
                 )
 
     def show_dirty_records(self):
@@ -534,7 +545,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                 self.flash()
                                 self.infobox.setTextColor(QtGui.QColor(245, 121, 0))
                                 self.infobox.insertPlainText(
-                                    f"{json_data.get('contact')}: " "Server DUPE\n"
+                                    f"{json_data.get('contact')}: Server DUPE\n"
                                 )
 
                     self.remove_confirmed_commands(json_data)
@@ -1022,8 +1033,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 if result.status_code == 200 and result.text.find("<status>") > 0:
                     if (
                         result.text[
-                            result.text.find("<status>")
-                            + 8 : result.text.find("</status>")
+                            result.text.find("<status>") + 8 : result.text.find(
+                                "</status>"
+                            )
                         ]
                         == "Valid"
                     ):
@@ -1904,7 +1916,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 _,
             ) = contact
             logline = (
-                f"{str(logid).rjust(3,'0')} {hiscall.ljust(15)} {hisclass.rjust(3)} "
+                f"{str(logid).rjust(3, '0')} {hiscall.ljust(15)} {hisclass.rjust(3)} "
                 f"{hissection.rjust(3)} {the_datetime} {str(frequency).rjust(9)} "
                 f"{str(band).rjust(3)}M {mode} {str(power).rjust(3)}W"
             )

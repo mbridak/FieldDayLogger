@@ -16,6 +16,7 @@ dependencies = [
     "requests",
     "dicttoxml",
     "xmltodict",
+    "pyobjc-framework-Cocoa; sys_platform == 'darwin'",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
