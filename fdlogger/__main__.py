@@ -22,6 +22,7 @@ from shutil import copyfile
 import struct
 import datetime as dt
 import os
+import signal
 import socket
 import sys
 import logging
@@ -34,7 +35,7 @@ from itertools import chain
 import requests
 from PyQt5.QtNetwork import QUdpSocket, QHostAddress
 from PyQt5.QtGui import QFontDatabase
-from PyQt5.QtCore import QDir, Qt
+from PyQt5.QtCore import Qt
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
 try:
@@ -45,6 +46,16 @@ try:
     from fdlogger.lib.cwinterface import CW
     from fdlogger.lib.n1mm import N1MM
     from fdlogger.lib.edit_opon import OpOn
+    from fdlogger.lib.resources import open_resource, resource_path
+    from fdlogger.lib.preferences import load_preferences, save_preferences
+    from fdlogger.lib.log_export import (
+        generate_band_mode_tally,
+        get_bands,
+        get_state,
+        write_adif,
+        write_cabrillo,
+    )
+    from fdlogger.lib.scoring import calculate_score
     from fdlogger.lib.version import __version__
 except ModuleNotFoundError:
     from lib.lookup import HamDBlookup, HamQTH, QRZlookup
@@ -54,18 +65,25 @@ except ModuleNotFoundError:
     from lib.cwinterface import CW
     from lib.n1mm import N1MM
     from lib.edit_opon import OpOn
+    from lib.resources import open_resource, resource_path
+    from lib.preferences import load_preferences, save_preferences
+    from lib.log_export import (
+        generate_band_mode_tally,
+        get_bands,
+        get_state,
+        write_adif,
+        write_cabrillo,
+    )
+    from lib.scoring import calculate_score
     from lib.version import __version__
 
 
-def load_fonts_from_dir(directory: str) -> set:
+def load_font(path: str) -> set:
     """
-    Well it loads fonts from a directory...
+    Well it loads a font...
     """
-    font_families = set()
-    for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
-        _id = QFontDatabase.addApplicationFont(_fi.absoluteFilePath())
-        font_families |= set(QFontDatabase.applicationFontFamilies(_id))
-    return font_families
+    font_id = QFontDatabase.addApplicationFont(path)
+    return set(QFontDatabase.applicationFontFamilies(font_id))
 
 
 class QsoEdit(QtCore.QObject):
@@ -123,9 +141,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         """Initialize"""
         super().__init__(*args, **kwargs)
-        self.working_path = os.path.dirname(__loader__.get_filename())
-        data_path = self.working_path + "/data/main.ui"
-        uic.loadUi(data_path, self)
+        with resource_path("data/main.ui") as data_path:
+            uic.loadUi(data_path, self)
         self.chat_window.hide()
         self.frame_5.show()
         self.frame_6.show()
@@ -154,13 +171,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.section_entry.textEdited.connect(self.section_check)
         self.genLogButton.clicked.connect(self.generate_logs)
         self.run_button.clicked.connect(self.run_button_pressed)
-        icon_path = self.working_path + "/icon/"
-        self.radio_grey = QtGui.QPixmap(icon_path + "radio_grey.png")
-        self.radio_red = QtGui.QPixmap(icon_path + "radio_red.png")
-        self.radio_green = QtGui.QPixmap(icon_path + "radio_green.png")
-        self.cloud_grey = QtGui.QPixmap(icon_path + "cloud_grey.png")
-        self.cloud_red = QtGui.QPixmap(icon_path + "cloud_red.png")
-        self.cloud_green = QtGui.QPixmap(icon_path + "cloud_green.png")
+        with resource_path("icon/radio_grey.png") as icon_path:
+            self.radio_grey = QtGui.QPixmap(icon_path)
+        with resource_path("icon/radio_red.png") as icon_path:
+            self.radio_red = QtGui.QPixmap(icon_path)
+        with resource_path("icon/radio_green.png") as icon_path:
+            self.radio_green = QtGui.QPixmap(icon_path)
+        with resource_path("icon/cloud_grey.png") as icon_path:
+            self.cloud_grey = QtGui.QPixmap(icon_path)
+        with resource_path("icon/cloud_red.png") as icon_path:
+            self.cloud_red = QtGui.QPixmap(icon_path)
+        with resource_path("icon/cloud_green.png") as icon_path:
+            self.cloud_green = QtGui.QPixmap(icon_path)
         self.radio_icon.setPixmap(self.radio_grey)
         self.cloudlog_icon.setPixmap(self.cloud_grey)
         self.callbook_icon.setStyleSheet("color: rgb(136, 138, 133);")
@@ -275,7 +297,7 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        self.opon_dialog = OpOn(os.path.dirname(__loader__.get_filename()))
+        self.opon_dialog = OpOn()
         self.opon_dialog.accepted.connect(self.new_op)
         self.opon_dialog.open()
 
@@ -870,8 +892,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if not Path("./cwmacros_fd.txt").exists():
             logger.info("read_cw_macros: copying default macro file.")
-            data_path = self.working_path + "/data/cwmacros_fd.txt"
-            copyfile(data_path, "./cwmacros_fd.txt")
+            with resource_path("data/cwmacros_fd.txt") as data_path:
+                copyfile(data_path, "./cwmacros_fd.txt")
         with open("./cwmacros_fd.txt", "r", encoding="utf-8") as file_descriptor:
             for line in file_descriptor:
                 try:
@@ -1577,17 +1599,7 @@ class MainWindow(QtWidgets.QMainWindow):
         Restore preferences if they exist, otherwise create some sane defaults.
         """
         try:
-            if os.path.exists("./fd_preferences.json"):
-                with open(
-                    "./fd_preferences.json", "rt", encoding="utf-8"
-                ) as file_descriptor:
-                    self.preference = loads(file_descriptor.read())
-            else:
-                with open(
-                    "./fd_preferences.json", "wt", encoding="utf-8"
-                ) as file_descriptor:
-                    file_descriptor.write(dumps(self.preference, indent=4))
-                    logger.info("No preference, writing dafult.")
+            self.preference = load_preferences(self.preference)
         except IOError as exception:
             logger.critical("readpreferences: %s", exception)
         logger.info(self.preference)
@@ -1719,22 +1731,16 @@ class MainWindow(QtWidgets.QMainWindow):
         except KeyError as err:
             logger.warning("Corrupt preference, %s, loading clean version.", err)
             self.preference = self.reference_preference.copy()
-            with open(
-                "./fd_preferences.json", "wt", encoding="utf-8"
-            ) as file_descriptor:
-                file_descriptor.write(dumps(self.preference, indent=4))
-                logger.info("writing: %s", self.preference)
+            save_preferences(self.preference)
+            logger.info("writing: %s", self.preference)
 
     def writepreferences(self):
         """
         Write preferences to json file.
         """
         try:
-            with open(
-                "./fd_preferences.json", "wt", encoding="utf-8"
-            ) as file_descriptor:
-                file_descriptor.write(dumps(self.preference, indent=4))
-                logger.info("writing: %s", self.preference)
+            save_preferences(self.preference)
+            logger.info("writing: %s", self.preference)
         except IOError as exception:
             logger.critical("writepreferences: %s", exception)
 
@@ -1867,12 +1873,9 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.qrpcheck()
         c_dubs, phone, digital = self.db.contacts_under_101watts()
-        self.score = (int(c_dubs) * 2) + int(phone) + (int(digital) * 2)
-        self.basescore = self.score
-        multiplier = 2
-        if self.qrp and self.preference["altpower"]:
-            multiplier = 5
-        self.score = self.score * multiplier
+        self.score, self.basescore = calculate_score(
+            c_dubs, phone, digital, self.qrp, self.preference["altpower"]
+        )
         return self.score
 
     def qrpcheck(self):
@@ -1932,8 +1935,9 @@ class MainWindow(QtWidgets.QMainWindow):
         Reads in the ARRL sections into some internal dictionaries.
         """
         try:
-            data_path = self.working_path + "/data/arrl_sect.dat"
-            with open(data_path, "r", encoding="utf-8") as file_descriptor:
+            with open_resource(
+                "data/arrl_sect.dat", "r", encoding="utf-8"
+            ) as file_descriptor:
                 while 1:
                     line = (
                         file_descriptor.readline().strip()
@@ -1974,8 +1978,9 @@ class MainWindow(QtWidgets.QMainWindow):
         Reads in a list of known contesters into an internal dictionary
         """
         try:
-            data_path = self.working_path + "/data/MASTER.SCP"
-            with open(data_path, "r", encoding="utf-8") as file_descriptor:
+            with open_resource(
+                "data/MASTER.SCP", "r", encoding="utf-8"
+            ) as file_descriptor:
                 self.scp = file_descriptor.readlines()
                 self.scp = list(map(lambda x: x.strip(), self.scp))
         except IOError as exception:
@@ -2159,34 +2164,12 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Returns a list of bands worked, and an empty list if none worked.
         """
-        bandlist = []
-        list_o_bands = self.db.get_bands()
-        if list_o_bands:
-            for count in list_o_bands:
-                bandlist.append(count[0])
-            return bandlist
-        return []
+        return get_bands(self.db)
 
     def generate_band_mode_tally(self):
         """generates band mode tally"""
-        blist = self.getbands()
-        bmtfn = "Statistics.txt"
         try:
-            with open(bmtfn, "w", encoding="utf-8") as file_descriptor:
-                print("\t\tCW\tPWR\tDI\tPWR\tPH\tPWR", end="\r\n", file=file_descriptor)
-                print("-" * 60, end="\r\n", file=file_descriptor)
-                for band in self.bands:
-                    if band in blist:
-                        cwt = self.get_band_mode_tally(band, "CW")
-                        dit = self.get_band_mode_tally(band, "DI")
-                        pht = self.get_band_mode_tally(band, "PH")
-                        print(
-                            f"Band:\t{band}\t{cwt[0]}\t{cwt[1]}\t{dit[0]}"
-                            f"\t{dit[1]}\t{pht[0]}\t{pht[1]}",
-                            end="\r\n",
-                            file=file_descriptor,
-                        )
-                        print("-" * 60, end="\r\n", file=file_descriptor)
+            generate_band_mode_tally(self.db, self.bands)
         except IOError as exception:
             logger.critical("generate_band_mode_tally: write error: %s", exception)
 
@@ -2194,15 +2177,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Returns the US state a section is in, or Bool False if none was found.
         """
-        try:
-            state = self.secState[section]
-            if state != "--":
-                return state
-        except IndexError:
-            return False
-        except KeyError:
-            return False
-        return False
+        return get_state(section, self.secState)
 
     @staticmethod
     def gridtolatlon(maiden):
@@ -2269,131 +2244,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.infobox.setTextColor(QtGui.QColor(211, 215, 207))
         self.infobox.insertPlainText(f"Saving ADIF to: {logname}\n")
         app.processEvents()
-        log = self.db.fetch_all_contacts_asc()
-        if not log:
-            return
-        grid = False
-        opname = False
         try:
-            with open(logname, "w", encoding="ascii") as file_descriptor:
-                print("<ADIF_VER:5>2.2.0", end="\r\n", file=file_descriptor)
-                print("<EOH>", end="\r\n", file=file_descriptor)
-                for contact in log:
-                    (
-                        _,
-                        hiscall,
-                        hisclass,
-                        hissection,
-                        the_datetime,
-                        freq,
-                        band,
-                        mode,
-                        _,
-                        grid,
-                        opname,
-                        _,
-                        _,
-                    ) = contact
-                    if mode == "DI":
-                        mode = "FT8"
-                    if mode == "PH":
-                        mode = "SSB"
-                    if mode == "CW":
-                        rst = "599"
-                    else:
-                        rst = "59"
-                    loggeddate = the_datetime[:10]
-                    loggedtime = the_datetime[11:13] + the_datetime[14:16]
-                    try:
-                        temp = str(freq / 1000000).split(".")
-                        freq = temp[0] + "." + temp[1].ljust(3, "0")
-                    except TypeError:
-                        freq = "UNKNOWN"
-
-                    if freq == "0.000":  # incase no freq was logged
-                        freq = int(self.fakefreq(band, mode))
-                        temp = str(freq / 1000).split(".")
-                        freq = temp[0] + "." + temp[1].ljust(3, "0")
-
-                    print(
-                        f"<QSO_DATE:{len(''.join(loggeddate.split('-')))}:d>"
-                        f"{''.join(loggeddate.split('-'))}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    print(
-                        f"<TIME_ON:{len(loggedtime)}>{loggedtime}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    print(
-                        f"<CALL:{len(hiscall)}>{hiscall}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    print(f"<MODE:{len(mode)}>{mode}", end="\r\n", file=file_descriptor)
-                    print(
-                        f"<BAND:{len(band + 'M')}>{band + 'M'}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    print(f"<FREQ:{len(freq)}>{freq}", end="\r\n", file=file_descriptor)
-                    print(
-                        f"<RST_SENT:{len(rst)}>{rst}", end="\r\n", file=file_descriptor
-                    )
-                    print(
-                        f"<RST_RCVD:{len(rst)}>{rst}", end="\r\n", file=file_descriptor
-                    )
-                    print(
-                        "<STX_STRING:"
-                        f"{len(self.preference['myclass'] + ' ' + self.preference['mysection'])}>"
-                        f"{self.preference['myclass'] + ' ' + self.preference['mysection']}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    print(
-                        f"<SRX_STRING:{len(hisclass + ' ' + hissection)}>"
-                        f"{hisclass + ' ' + hissection}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    print(
-                        f"<ARRL_SECT:{len(hissection)}>{hissection}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    print(
-                        f"<CLASS:{len(hisclass)}>{hisclass}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    state = self.get_state(hissection)
-                    if state:
-                        print(
-                            f"<STATE:{len(state)}>{state}",
-                            end="\r\n",
-                            file=file_descriptor,
-                        )
-                    if len(grid) > 1:
-                        print(
-                            f"<GRIDSQUARE:{len(grid)}>{grid}",
-                            end="\r\n",
-                            file=file_descriptor,
-                        )
-                    if len(opname) > 1:
-                        print(
-                            f"<NAME:{len(opname)}>{opname}",
-                            end="\r\n",
-                            file=file_descriptor,
-                        )
-                    comment = "ARRL-FD"
-                    print(
-                        f"<COMMENT:{len(comment)}>{comment}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                    print("<EOR>", end="\r\n", file=file_descriptor)
-                    print("", end="\r\n", file=file_descriptor)
+            if not write_adif(
+                self.db, self.preference, self.secState, self.fakefreqs, logname
+            ):
+                return
         except IOError as exception:
             logger.critical("adif: IO error: %s", exception)
         self.infobox.insertPlainText("Done\n\n")
@@ -2486,95 +2341,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.infobox.setTextColor(QtGui.QColor(211, 215, 207))
         self.infobox.insertPlainText(f"Saving cabrillo to: {filename}\n")
         app.processEvents()
-        log = self.db.fetch_all_contacts_asc()
-        if not log:
-            return
-        catpower = ""
-        if self.qrp:
-            catpower = "QRP"
-        elif self.highpower:
-            catpower = "HIGH"
-        else:
-            catpower = "LOW"
         try:
-            with open(filename, "w", encoding="ascii") as file_descriptor:
-                print("START-OF-LOG: 3.0", end="\r\n", file=file_descriptor)
-                print(
-                    "CREATED-BY: K6GTE Field Day Logger",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print("CONTEST: ARRL-FD", end="\r\n", file=file_descriptor)
-                print(
-                    f"CALLSIGN: {self.preference['mycall']}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print("LOCATION:", end="\r\n", file=file_descriptor)
-                print(
-                    f"ARRL-SECTION: {self.preference['mysection']}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    f"CATEGORY: {self.preference['myclass']}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(f"CATEGORY-POWER: {catpower}", end="\r\n", file=file_descriptor)
-                print(
-                    f"CLAIMED-SCORE: {self.calcscore()}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    f"OPERATORS: {self.preference['mycall']}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print("NAME: ", end="\r\n", file=file_descriptor)
-                print("ADDRESS: ", end="\r\n", file=file_descriptor)
-                print("ADDRESS-CITY: ", end="\r\n", file=file_descriptor)
-                print("ADDRESS-STATE: ", end="\r\n", file=file_descriptor)
-                print("ADDRESS-POSTALCODE: ", end="\r\n", file=file_descriptor)
-                print("ADDRESS-COUNTRY: ", end="\r\n", file=file_descriptor)
-                print("EMAIL: ", end="\r\n", file=file_descriptor)
-                for contact in log:
-                    (
-                        _,
-                        hiscall,
-                        hisclass,
-                        hissection,
-                        the_datetime,
-                        freq,
-                        band,
-                        mode,
-                        _,
-                        _,
-                        _,
-                        _,
-                        _,
-                    ) = contact
-                    if mode == "DI":
-                        mode = "DG"
-                    loggeddate = the_datetime[:10]
-                    loggedtime = the_datetime[11:13] + the_datetime[14:16]
-                    try:
-                        temp = str(freq / 1000000).split(".")
-                        freq = temp[0] + temp[1].ljust(3, "0")[:3]
-                    except TypeError:
-                        freq = "UNKNOWN"
-                    if freq == "0000":
-                        freq = self.fakefreq(band, mode)
-                    print(
-                        f"QSO: {freq.rjust(6)} {mode} {loggeddate} {loggedtime} "
-                        f"{self.preference['mycall']} {self.preference['myclass']} "
-                        f"{self.preference['mysection']} {hiscall} "
-                        f"{hisclass} {hissection}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                print("END-OF-LOG:", end="\r\n", file=file_descriptor)
+            if not write_cabrillo(
+                self.db,
+                self.preference,
+                self.fakefreqs,
+                self.calcscore(),
+                self.qrp,
+                self.highpower,
+                filename,
+            ):
+                return
         except IOError as exception:
             logger.critical(
                 "cabrillo: IO error: %s, writing to %s", exception, filename
@@ -2616,13 +2393,14 @@ class EditQSODialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
         """initialize dialog"""
         super().__init__(parent)
-        self.working_path = os.path.dirname(__loader__.get_filename())
-        data_path = self.working_path + "/data/dialog.ui"
-        uic.loadUi(data_path, self)
+        with resource_path("data/dialog.ui") as data_path:
+            uic.loadUi(data_path, self)
         self.deleteButton.clicked.connect(self.delete_contact)
         self.buttonBox.accepted.connect(self.save_changes)
         self.change = QsoEdit()
         self.unique_id = None
+        self.grid = ""
+        self.opname = ""
 
     def set_up(self, linetopass, thedatabase):
         """Set up variables"""
@@ -2650,6 +2428,10 @@ class EditQSODialog(QtWidgets.QDialog):
         self.editDateTime.setDateTime(now)
         self.database = thedatabase
         self.unique_id = self.database.get_unique_id(self.theitem)
+        contact = self.database.contact_by_id(self.theitem)
+        if contact:
+            self.grid = contact[0][9]
+            self.opname = contact[0][10]
 
     def save_changes(self):
         """Save update to db"""
@@ -2692,18 +2474,20 @@ class EditQSODialog(QtWidgets.QDialog):
             window.n1mm.contact_info["rxfreq"] = self.editFreq.text()[:-1]
             window.n1mm.contact_info["txfreq"] = self.editFreq.text()[:-1]
             window.n1mm.contact_info["mode"] = self.editMode.currentText().upper()
-            window.n1mm.contact_info["band"] = self.editBand.currentText()
+            window.n1mm.contact_info["band"] = window.n1mm.bandToUDPBand.get(
+                self.editBand.currentText(), self.editBand.currentText()
+            )
             window.n1mm.contact_info["mycall"] = window.preference.get("mycall")
-            window.n1mm.contact_info["IsRunQSO"] = self.contact.get("IsRunQSO")
-            window.n1mm.contact_info["timestamp"] = self.contact.get("date_time")
+            window.n1mm.contact_info["IsRunQSO"] = str(window.run_state)
+            window.n1mm.contact_info["timestamp"] = self.editDateTime.text()
             window.n1mm.contact_info["call"] = self.editCallsign.text().upper()
-            window.n1mm.contact_info["gridsquare"] = self.contact.get("grid")
+            window.n1mm.contact_info["gridsquare"] = self.grid
             window.n1mm.contact_info["exchange1"] = self.editClass.text().upper()
             window.n1mm.contact_info["section"] = self.editSection.text().upper()
-            window.n1mm.contact_info["name"] = self.contact.get("opname")
+            window.n1mm.contact_info["name"] = self.opname
             window.n1mm.contact_info["power"] = self.editPower.value()
-            window.n1mm.contact_info["ID"] = self.contact.get("unique_id")
-            if window.n1mm.contact_info["mode"] in ("CW", "DG"):
+            window.n1mm.contact_info["ID"] = self.unique_id
+            if window.n1mm.contact_info["mode"] in ("CW", "DG", "DI"):
                 window.n1mm.contact_info["points"] = "2"
             else:
                 window.n1mm.contact_info["points"] = "1"
@@ -2749,9 +2533,8 @@ class StartUp(QtWidgets.QDialog):
     def __init__(self, parent=None):
         """initialize dialog"""
         super().__init__(parent)
-        self.working_path = os.path.dirname(__loader__.get_filename())
-        data_path = self.working_path + "/data/startup.ui"
-        uic.loadUi(data_path, self)
+        with resource_path("data/startup.ui") as data_path:
+            uic.loadUi(data_path, self)
         self.continue_pushButton.clicked.connect(self.store)
 
     def set_call_sign(self, callsign):
@@ -2813,9 +2596,8 @@ else:
 
 app = QtWidgets.QApplication(sys.argv)
 app.setStyle("Fusion")
-working_path = os.path.dirname(__loader__.get_filename())
-font_path = working_path + "/data"
-families = load_fonts_from_dir(os.fspath(font_path))
+with resource_path("data/JetBrainsMono-Regular.ttf") as font_path:
+    families = load_font(font_path)
 window = MainWindow()
 window.setWindowTitle(f"K6GTE Field Day Logger v{__version__}")
 window.show()
@@ -2856,19 +2638,55 @@ timer2.timeout.connect(window.check_udp_queue)
 timer3 = QtCore.QTimer()
 timer3.timeout.connect(window.send_status_udp)
 
+interrupt_dialog_open = False
+
+
+def confirm_interrupt_exit():
+    """Ask whether a terminal interrupt should quit the app."""
+    global interrupt_dialog_open
+    if interrupt_dialog_open:
+        return
+    interrupt_dialog_open = True
+    try:
+        response = QtWidgets.QMessageBox.question(
+            window,
+            "Quit FieldDayLogger?",
+            "Quit FieldDayLogger?",
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+            QtWidgets.QMessageBox.No,
+        )
+        if response == QtWidgets.QMessageBox.Yes:
+            app.quit()
+    finally:
+        interrupt_dialog_open = False
+
+
+def handle_interrupt(_signum, _frame):
+    """Route terminal interrupts into the Qt event loop."""
+    QtCore.QTimer.singleShot(0, confirm_interrupt_exit)
+
+
+def install_signal_handlers():
+    """Install signal handlers for terminal-launched sessions."""
+    signal.signal(signal.SIGINT, handle_interrupt)
+    if hasattr(signal, "SIGHUP"):
+        signal.signal(signal.SIGHUP, handle_interrupt)
+
 
 def run():
     """Main Entry"""
-    PATH = os.path.dirname(__loader__.get_filename())
     if sys.platform == "linux":
-        os.system(
-            "xdg-icon-resource install --size 64 --context apps --mode user "
-            f"{PATH}/icon/k6gte-fdlogger.png k6gte-fdlogger"
-        )
-        os.system(f"xdg-desktop-menu install {PATH}/data/k6gte-fieldday.desktop")
+        with resource_path("icon/k6gte-fdlogger.png") as icon_path:
+            os.system(
+                "xdg-icon-resource install --size 64 --context apps --mode user "
+                f"{icon_path} k6gte-fdlogger"
+            )
+        with resource_path("data/k6gte-fieldday.desktop") as desktop_path:
+            os.system(f"xdg-desktop-menu install {desktop_path}")
     timer.start(1000)
     timer2.start(1000)
     timer3.start(15000)
+    install_signal_handlers()
     sys.exit(app.exec())
     # app.exec()
 
