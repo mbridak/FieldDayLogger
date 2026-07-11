@@ -80,6 +80,7 @@ brother.
 
 ## Recent Changes
 
+- [26.7.10] Merged PR from @ajheller, several improvments.
 - [25.8.19] Merged PR from @roccoq Improving Speed of FT8 contacts syncing with server.
 - [24.5.26] Fixed FT8 logging.
 - [24.5.25] Fixed crash changing modes with no CAT.
