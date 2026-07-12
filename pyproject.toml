@@ -24,6 +24,7 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Environment :: X11 Applications :: Qt",
     "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS :: MacOS X",
     "Intended Audience :: End Users/Desktop",
     "Natural Language :: English",
     "Topic :: Communications :: Ham Radio",
