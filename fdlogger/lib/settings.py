@@ -1,7 +1,7 @@
 """Settings Dialog Class"""
 
 import logging
-from PyQt5 import QtWidgets, uic
+from PyQt6 import QtWidgets, uic
 
 from .preferences import load_preferences, save_preferences
 from .resources import resource_path

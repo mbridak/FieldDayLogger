@@ -1,6 +1,6 @@
 # K6GTE Field Day logger (GUI)
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  [![Python: 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)  [![Made With:PyQt5](https://img.shields.io/badge/Made%20with-PyQt5-red)](https://pypi.org/project/PyQt5/)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  [![Python: 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)  [![Made With:PyQt6](https://img.shields.io/badge/Made%20with-PyQt6-red)](https://pypi.org/project/PyQt6/)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/fdlogger?period=monthly&units=INTERNATIONAL_SYSTEM&left_color=GREY&right_color=GREEN&left_text=Monthly%20Downloads)](https://pepy.tech/projects/fdlogger)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/fdlogger?period=total&units=INTERNATIONAL_SYSTEM&left_color=GREY&right_color=GREEN&left_text=Total%20Downloads)](https://pepy.tech/projects/fdlogger)
 
@@ -9,7 +9,7 @@ preparidness event for radio amateurs (Hams). During the event, we try and
 make as many radio contacts with other Hams in a 24 hour period. You can find
 out more about amateur radio by visiting the [ARRL](https://www.arrl.org/).
 
-The logger is written in Python 3, and uses the PyQT5 lib. Qt5 is cross
+The logger is written in Python 3, and uses the PyQt6 lib. Qt6 is cross
 platform so it might work on everything. I have tested it on Linux, Rasperry
 Pi OS and Windows 10. This code is based off of a logger I had done earlier
 using Python and the curses library wich can be found
@@ -80,6 +80,7 @@ brother.
 
 ## Recent Changes
 
+- [26.7.30] Migrate to PyQt6.
 - [26.7.10] Merged PR from @ajheller, several improvments.
 - [25.8.19] Merged PR from @roccoq Improving Speed of FT8 contacts syncing with server.
 - [24.5.26] Fixed FT8 logging.

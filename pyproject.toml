@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fdlogger" 
-version = "26.7.11"
+version = "26.7.30"
 description = "ARRL Field Day logger GUI"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -12,7 +12,7 @@ authors = [
   { name="Michael Bridak", email="michael.bridak@gmail.com" },
 ]
 dependencies = [
-    "PyQt5",
+    "PyQt6",
     "requests",
     "dicttoxml",
     "xmltodict",

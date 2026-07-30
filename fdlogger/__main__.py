@@ -44,10 +44,10 @@ if sys.platform == "darwin":
         ...
 
 import requests
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFontDatabase
-from PyQt5.QtNetwork import QHostAddress, QUdpSocket
+from PyQt6 import QtCore, QtGui, QtWidgets, uic
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFontDatabase
+from PyQt6.QtNetwork import QHostAddress, QUdpSocket
 
 try:
     from fdlogger.lib.cat_interface import CAT
@@ -292,7 +292,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # ft8 udp server
         self.udp_socket = QUdpSocket()
-        self.udp_socket.bind(QHostAddress.LocalHost, 2237)
+        self.udp_socket.bind(QHostAddress.SpecialAddress.LocalHost, 2237)
         self.udp_socket.readyRead.connect(self.on_udp_socket_ready_read)
 
     def get_opon(self) -> None:
@@ -1189,7 +1189,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def keyPressEvent(self, event):  # pylint: disable=invalid-name
         """This extends QT's KeyPressEvent, handle tab, esc and function keys"""
         event_key = event.key()
-        if event_key == Qt.Key_Escape:
+        if event_key == Qt.Key.Key_Escape:
             self.clearinputs()
             self.clearcontactlookup()
             if self.cw is not None:
@@ -1210,7 +1210,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.cw.speed -= 1
                     self.cw.sendcw(f"\x1b2{self.cw.speed}")
                     self.infoline.setText(f"CW speed set to {self.cw.speed}")
-        if event_key == Qt.Key_Tab:
+        if event_key == Qt.Key.Key_Tab:
             if self.section_entry.hasFocus():
                 logger.info("From section")
                 self.callsign_entry.setFocus()
@@ -1235,40 +1235,40 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.class_entry.deselect()
                 self.class_entry.end(False)
                 return
-        if event_key == Qt.Key_F1:
+        if event_key == Qt.Key.Key_F1:
             self.sendf1()
             return
-        if event_key == Qt.Key_F2:
+        if event_key == Qt.Key.Key_F2:
             self.sendf2()
             return
-        if event_key == Qt.Key_F3:
+        if event_key == Qt.Key.Key_F3:
             self.sendf3()
             return
-        if event_key == Qt.Key_F4:
+        if event_key == Qt.Key.Key_F4:
             self.sendf4()
             return
-        if event_key == Qt.Key_F5:
+        if event_key == Qt.Key.Key_F5:
             self.sendf5()
             return
-        if event_key == Qt.Key_F6:
+        if event_key == Qt.Key.Key_F6:
             self.sendf6()
             return
-        if event_key == Qt.Key_F7:
+        if event_key == Qt.Key.Key_F7:
             self.sendf7()
             return
-        if event_key == Qt.Key_F8:
+        if event_key == Qt.Key.Key_F8:
             self.sendf8()
             return
-        if event_key == Qt.Key_F9:
+        if event_key == Qt.Key.Key_F9:
             self.sendf9()
             return
-        if event_key == Qt.Key_F10:
+        if event_key == Qt.Key.Key_F10:
             self.sendf10()
             return
-        if event_key == Qt.Key_F11:
+        if event_key == Qt.Key.Key_F11:
             self.sendf11()
             return
-        if event_key == Qt.Key_F12:
+        if event_key == Qt.Key.Key_F12:
             self.sendf12()
 
     def sendf1(self):
@@ -2664,10 +2664,11 @@ def confirm_interrupt_exit():
             window,
             "Quit FieldDayLogger?",
             "Quit FieldDayLogger?",
-            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-            QtWidgets.QMessageBox.No,
+            QtWidgets.QMessageBox.StandardButton.Yes
+            | QtWidgets.QMessageBox.StandardButton.No,
+            QtWidgets.QMessageBox.StandardButton.No,
         )
-        if response == QtWidgets.QMessageBox.Yes:
+        if response == QtWidgets.QMessageBox.StandardButton.Yes:
             app.quit()
     finally:
         interrupt_dialog_open = False
